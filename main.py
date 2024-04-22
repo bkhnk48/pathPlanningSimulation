@@ -20,11 +20,11 @@ graph = Graph()  # Assuming a Graph class has appropriate methods to handle upda
 events = []
 # Mở file để đọc
 with open('TSG_0.txt', 'r') as f:
-	# Đọc từng dòng của file
-	for line in f:
-    	# Phân tích dòng thành các phần tử, phân tách bởi khoảng trắng
-            parts = line.split()
-    	# Kiểm tra loại dữ liệu của dòng
+    # Đọc từng dòng của file
+    for line in f:
+        # Phân tích dòng thành các phần tử, phân tách bởi khoảng trắng
+        parts = line.split()
+        # Kiểm tra loại dữ liệu của dòng
             if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
                 if int(parts[2]) == 1:
 		    node_id = int(parts[1])
