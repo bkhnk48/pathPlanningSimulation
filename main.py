@@ -25,19 +25,19 @@ with open('TSG_0.txt', 'r') as f:
         # Phân tích dòng thành các phần tử, phân tách bởi khoảng trắng
         parts = line.split()
         # Kiểm tra loại dữ liệu của dòng
-            if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
-                if int(parts[2]) == 1:
-		    node_id = int(parts[1])
-                    agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
-                    start_event = StartEvent(0, agv, graph)  # Start event at time 0
-                    events.append(start_event)
-                    allAGVs.add(agv)  # Thêm vào tập hợp AGV
-                elif int(parts[2]) == -1:
-                    TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
+        if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
+            if int(parts[2]) == 1:
+		node_id = int(parts[1])
+                agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
+                start_event = StartEvent(0, agv, graph)  # Start event at time 0
+                events.append(start_event)
+                allAGVs.add(agv)  # Thêm vào tập hợp AGV
+            elif int(parts[2]) == -1:
+                TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
             elif parts[0] == 'a':  # Nếu là dòng chứa thông tin về mối quan hệ
-                    i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
-                    x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
-            graph.insertEdgesAndNodes(i, j, c_i_j)
+                i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
+                x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
+                graph.insertEdgesAndNodes(i, j, c_i_j)
 events = sorted(events, key=lambda x: x.startTime)
 
 """def parse_tsg_file(filename):
