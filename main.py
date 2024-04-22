@@ -27,7 +27,7 @@ with open('TSG_0.txt', 'r') as f:
         # Kiểm tra loại dữ liệu của dòng
         if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
             if int(parts[2]) == 1:
-		node_id = int(parts[1])
+                node_id = int(parts[1])
                 agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
                 start_event = StartEvent(0, agv, graph)  # Start event at time 0
                 events.append(start_event)
