@@ -1,5 +1,6 @@
-from main import graph
-from utility import get_largest_id_from_map
+#from main import graph
+#from utility import get_largest_id_from_map
+from model.utility import get_largest_id_from_map
 class AGV:
     def __init__(self, id, current_node, cost=0):
         self.id = id

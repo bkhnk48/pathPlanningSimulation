@@ -1,5 +1,5 @@
-import AGV
-import Edge
+#import AGV
+#import Edge
 from collections import deque, defaultdict
 from model.utility import utility
 class Graph:
@@ -31,6 +31,11 @@ class Graph:
                     self.matrix[pos,i] = int((pos-i)/list.M)
                     Q.append(i)      
 
+    def insertEdgesAndNodes(self, start_node, end_node, weight):
+        self.add_node(start_node)
+        self.add_node(end_node)
+        self.add_edge(start_node, end_node, weight)
+        
     def writefile(self,startpos,inAGV):
         with open("TSG.txt", "w") as file:
             size = len(self.matrix)
@@ -125,3 +130,8 @@ class Graph:
     
     def __str__(self):
         return "\n".join(f"{start} -> {end} (Weight: {edge.weight})" for (start, end), edge in self.edges.items())
+        
+graph = Graph()
+
+def initialize_graph():
+    return graph

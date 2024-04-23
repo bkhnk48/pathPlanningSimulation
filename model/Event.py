@@ -1,5 +1,5 @@
 from model.utility import utility
-from model.Graph import Graph, handle_edge_modifications, get_edge
+from model.Graph import Graph
 import subprocess
 from discrevpy import simulator
 from model.AGV import AGV
@@ -256,7 +256,7 @@ class StartEvent(Event):
     def process(self):
         print(f"StartEvent processed at time {self.startTime} for AGV {self.agv.id}. AGV is currently at node {self.agv.current_node}.")
         # Determine next event type based on external conditions or an initial assessment
-        self.determine_next_event()
+        #self.determine_next_event()
 
     def determine_next_event(self):
         # Placeholder: Logic to determine whether the next event is Moving or Holding

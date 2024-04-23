@@ -30,12 +30,12 @@ class utility:
                 my_list.add(id2)
         return my_list
     
-    def get_largest_id_from_map(filename):
-        largest_id = 0
-        with open('map.txt', 'r') as file:
-            for line in file:
-                parts = line.strip().split()
-                if parts[0] == 'a':  # Assuming arcs start with 'a'
-                    id1, id2 = int(parts[1]), int(parts[2])
-                    largest_id = max(largest_id, id1, id2)
-        return largest_id
+def get_largest_id_from_map(filename):
+    largest_id = 0
+    with open('map.txt', 'r') as file:
+        for line in file:
+            parts = line.strip().split()
+            if parts[0] == 'a':  # Assuming arcs start with 'a'
+                id1, id2 = int(parts[1]), int(parts[2])
+                largest_id = max(largest_id, id1, id2)
+    return largest_id

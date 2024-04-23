@@ -1,4 +1,4 @@
-import heapq  # Using heapq to manage a priority queue
+#import heapq  # Using heapq to manage a priority queue
 from discrevpy.simulator import Simulator
 from model.Graph import Graph
 from model.AGV import AGV
