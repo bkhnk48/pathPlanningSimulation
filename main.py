@@ -1,4 +1,4 @@
-from model.Graph import Graph
+from model.Graph import Graph, graph
 from model.AGV import AGV
 from model.Event import HoldingEvent, StartEvent
 from discrevpy import simulator
@@ -38,6 +38,7 @@ with open('TSG_0.txt', 'r') as f:
                 i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
                 x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
                 graph.insertEdgesAndNodes(i, j, c_i_j)
+
 events = sorted(events, key=lambda x: x.startTime)
 
 """def parse_tsg_file(filename):
