@@ -39,3 +39,4 @@ def get_largest_id_from_map(filename):
                 id1, id2 = int(parts[1]), int(parts[2])
                 largest_id = max(largest_id, id1, id2)
     return largest_id
+
