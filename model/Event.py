@@ -4,6 +4,7 @@ import subprocess
 from discrevpy import simulator
 from .AGV import AGV
 from .Edge import Edge
+import pdb;
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -291,6 +292,7 @@ class StartEvent(Event):
 
     def determine_next_event(self):
         # Example logic to determine the next event type
+        pdb.set_trace()
         if self.graph.has_initial_movement(self.agv.current_node):
             next_node = (
                 self.agv.current_node + 1
