@@ -1,8 +1,9 @@
 from model.Graph import Graph, graph
 from model.AGV import AGV
-from model.Event import HoldingEvent, StartEvent
+from model.Event import Event, HoldingEvent, StartEvent, numberOfNodesInSpaceGraph, debug
 from discrevpy import simulator
 import subprocess
+import sys
 def getReal():
     return 15
 
@@ -18,6 +19,11 @@ y = {}
 graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
 
 events = []
+Event.setValue("numberOfNodesInSpaceGraph", 23) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
+Event.setValue("debug", 0)
+# Kiểm tra xem có tham số nào được truyền qua dòng lệnh không
+if len(sys.argv) > 1:
+    Event.setValue("debug", 1 if sys.argv[1] == '-g' else 0)
 # Mở file để đọc
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
