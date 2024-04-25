@@ -6,6 +6,9 @@ from .AGV import AGV
 from .Edge import Edge
 import pdb;
 
+numberOfNodesInSpaceGraph = 0
+debug = 0
+
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
         self.startTime = int(startTime)
@@ -51,7 +54,7 @@ class Event:
     def getNext(self, graph):
         if Graph.lastChangedByAGV == self.agv:
             # Nếu đồ thị trước đó bị thay đổi bởi chính AGV này
-            next_vertex = AGV.getNextNode()  # Giả định phương thức này tồn tại
+            next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
             # Nếu đồ thị bị thay đổi bởi AGV khác, cần tìm lại đường đi
             self.updateGraph(graph)
@@ -292,7 +295,8 @@ class StartEvent(Event):
 
     def determine_next_event(self):
         # Example logic to determine the next event type
-        pdb.set_trace()
+        if(debug == 1):
+            pdb.set_trace()
         if self.graph.has_initial_movement(self.agv.current_node):
             next_node = (
                 self.agv.current_node + 1
