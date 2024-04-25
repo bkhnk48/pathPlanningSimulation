@@ -5,9 +5,15 @@ from discrevpy import simulator
 from .AGV import AGV
 from .Edge import Edge
 import pdb;
+import os
+from collections import defaultdict
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
+list1 = []
+neighbour_list = {}
+visited = set()
+id2_id4_list = []
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -23,7 +29,9 @@ class Event:
         if(name == "numberOfNodesInSpaceGraph"):
             global numberOfNodesInSpaceGraph
             numberOfNodesInSpaceGraph = value
-            
+    
+    
+
     def process(self):
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
