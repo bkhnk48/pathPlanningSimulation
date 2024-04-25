@@ -63,6 +63,7 @@ events = sorted(events, key=lambda x: x.startTime)
 
 def schedule_events(events):
     for event in events:
+        event.setValue("allAGVs", allAGVs)
         simulator.schedule(event.startTime, event.process)
 
 # Main execution
