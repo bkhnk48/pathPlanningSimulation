@@ -82,17 +82,20 @@ class Event:
             next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
-        if next_vertex == self.agv.current_node:
-            new_event = HoldingEvent(self.time + 10, self.agv, graph, 10)
+        global numberOfNodesInSpaceGraph
+        deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (self.agv.current_node / numberOfNodesInSpaceGraph)
+        if (next_vertex % numberOfNodesInSpaceGraph) == (self.agv.current_node % numberOfNodesInSpaceGraph):
+            new_event = HoldingEvent(self.endTime, self.endTime + deltaT, self.agv, graph, deltaT)
         elif next_vertex is self.agv.target_node:
-            new_event = ReachingTarget(self.time + 10, self.agv, graph, next_vertex)
+            new_event = ReachingTarget(self.endTime, self.endTime, self.agv, graph, next_vertex)
         else:
             new_event = MovingEvent(
-                self.time + 10, self.agv, graph, self.agv.current_node, next_vertex
+                self.endTime, self.endTime + deltaT, self.agv, graph, self.agv.current_node, next_vertex
             )
 
         # Lên lịch cho sự kiện mới
-        simulator.schedule(new_event.time, new_event.getNext, graph)
+        new_event.setValue("allAGVs", self.allAGVs)
+        simulator.schedule(new_event.endTime, new_event.getNext, graph)
 
     def updateGraph(self):
         # Assuming that `self.graph` is an instance of `Graph`
@@ -132,6 +135,7 @@ class Event:
             if(a.id != self.agv.id):
             	if(a.versionOfGraph < self.graph.version):
             	    a.traces = self.graph.getTraces(a.id)
+            	    a.versionOfGraph = self.graph.version
 
 
 def get_largest_id_from_map(filename):
