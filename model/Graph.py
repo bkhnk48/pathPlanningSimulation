@@ -6,6 +6,11 @@ class Graph:
         self.nodes = set()
         self.lastChangedByAGV = -1
         self.edges = {}
+        self.list1 = [ ]
+        self.neighbour_list = {}
+        self.visited = set()
+        self.id2_id4_list = []
+        
         
     def insertEdgesAndNodes(self, start, end, weight):
         if start not in self.edges:
@@ -135,6 +140,78 @@ class Graph:
     
     def __str__(self):
         return "\n".join(f"{start} -> {end} (Weight: {edge.weight})" for (start, end), edge in self.edges.items())
+    
+    def find_unique_numbers(file_path):
+        if not os.path.exists(file_path):
+            print(f"File {file_path} does not exist.")
+            return []
+    
+        unique_numbers = set()
+        id3_numbers = set()
+
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+            for line in lines:
+                if line.startswith('a'):
+                    numbers = line.split()
+                    id3 = int(numbers[3])
+                    id3_numbers.add(id3)
+
+            for line in lines:
+                if line.startswith('a'):
+                    numbers = line.split()
+                    id1 = int(numbers[1])
+                    if id1 not in id3_numbers:
+                        unique_numbers.add(id1)
+    
+        return unique_numbers
+    
+    def create_trees(file_path):
+        self.list1 = []
+        self.neighbour_list = {}
+        id1_id3_tree = defaultdict(list)
+
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        for line in lines:
+            if line.startswith('a'):
+                numbers = line.split()
+                id1 = int(numbers[1])
+                id3 = int(numbers[3])
+                id2 = int(numbers[2].strip('()'))
+                id4 = int(numbers[4].strip('()'))
+                neighbour_list[id1] = id2
+                neighbour_list[id3] = id4
+                list1.append(id1)
+                id1_id3_tree[id1].append(id3)
+                id1_id3_tree[id3].append(id1)
+    
+        return id1_id3_tree
+
+    def dfs(tree, start_node):
+        visited.add(start_node)
+        for node in tree[start_node]:
+            if node not in visited:
+                print(node, end=' ')
+                id2_id4_list.append(neighbour_list[node])
+                dfs(tree, node)
+    def setTrace(file_path):
+        file_path = 'traces.txt'
+        unique_numbers = find_unique_numbers(file_path)
+        #print(unique_numbers)
+        id1_id3_tree = create_trees(file_path)
+        self.visited = set()
+        self.id2_id4_list = []
+        for number in  list1:
+            if not number in visited:
+                print(number, end=' ')
+                id2_id4_list.append(neighbour_list[number])
+                dfs(id1_id3_tree, number)
+                print('#', end=' ')
+                print(' '.join(map(str, id2_id4_list)))
+                id2_id4_list = []
     
 graph = Graph()
 
