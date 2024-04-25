@@ -10,6 +10,7 @@ from collections import defaultdict
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
+allAGVs = {}
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -25,7 +26,9 @@ class Event:
         if(name == "numberOfNodesInSpaceGraph"):
             global numberOfNodesInSpaceGraph
             numberOfNodesInSpaceGraph = value
-    
+        if(name == "allAGVs"):
+            global allAGVs
+            allAGVs = value
     
 
     def process(self):
@@ -75,7 +78,7 @@ class Event:
             subprocess.run(lenh, shell=True)
             lenh = "python3 filter.py > traces.txt"
             subprocess.run(lenh, shell=True)
-            self.agv.traces = self.getTraces("traces.txt")
+            self.setTracesForAllAGVs()
             next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
@@ -118,11 +121,17 @@ class Event:
         command = "python3 filter.py > traces.txt"
         subprocess.run(command, shell=True)
 
-    def getTraces(self, filename):
+    def setTracesForAllAGVs(self):
         # Đọc và xử lý file traces để lấy các đỉnh tiếp theo
-        with open(filename, "r") as file:
-            traces = file.read().split()
-        return traces
+        #with open(filename, "r") as file:
+        #    traces = file.read().split()
+        #return traces
+        self.agv.traces = self.graph.getTraces(self.agv.id)
+        global allAGVs
+        for a in allAGVs:
+            if(a.id != self.agv.id):
+            	if(a.versionOfGraph < self.graph.version):
+            	    a.traces = self.graph.getTraces(a.id)
 
 
 def get_largest_id_from_map(filename):
