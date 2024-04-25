@@ -16,6 +16,14 @@ class Event:
         self.agv = agv
         self.graph = graph
 
+    def setValue(name, value):
+        if(name == "debug"):
+            global debug
+            debug = value
+        if(name == "numberOfNodesInSpaceGraph"):
+            global numberOfNodesInSpaceGraph
+            numberOfNodesInSpaceGraph = value
+            
     def process(self):
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
