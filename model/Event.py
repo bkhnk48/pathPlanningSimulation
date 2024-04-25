@@ -67,7 +67,7 @@ class Event:
         graph.writefile(self.pos, 1)
 
     def getNext(self, graph):
-        if self.graph.version == self.agv.versionOfGraph:
+        if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
             # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
