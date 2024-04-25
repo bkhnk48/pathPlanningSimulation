@@ -1,11 +1,13 @@
 from model.utility import get_largest_id_from_map
 class AGV:
-    def __init__(self, id, current_node, cost=0):
+    def __init__(self, id, current_node, cost = 0, versionOfGraph = -1):
         self.id = id
         self.current_node = current_node
         self.previous_node = None
         self.state = 'idle'
         self.cost = cost
+        self.versionOfGraph = -1
+        self.traces = {}
         
     def update_cost(self, amount):
         self.cost += amount
