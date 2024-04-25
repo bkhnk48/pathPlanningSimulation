@@ -10,6 +10,7 @@ class Graph:
         self.neighbour_list = {}
         self.visited = set()
         self.id2_id4_list = []
+        self.version = -1
         
         
     def insertEdgesAndNodes(self, start, end, weight):
@@ -212,6 +213,9 @@ class Graph:
                 print('#', end=' ')
                 print(' '.join(map(str, id2_id4_list)))
                 id2_id4_list = []
+
+    def getTrace(idOfAGV):
+        return self.map[idOfAGV]     
     
 graph = Graph()
 
