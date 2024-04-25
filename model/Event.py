@@ -67,11 +67,11 @@ class Event:
         graph.writefile(self.pos, 1)
 
     def getNext(self, graph):
-        if Graph.lastChangedByAGV == self.agv:
-            # Nếu đồ thị trước đó bị thay đổi bởi chính AGV này
+        if self.graph.version == self.agv.versionOfGraph:
+            # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
-            # Nếu đồ thị bị thay đổi bởi AGV khác, cần tìm lại đường đi
+            # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph(graph)
             filename = self.saveGraph(graph)
             lenh = f"./pns-seq -f {filename} > seq-f.txt"
