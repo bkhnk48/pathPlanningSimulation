@@ -10,10 +10,6 @@ from collections import defaultdict
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
-list1 = []
-neighbour_list = {}
-visited = set()
-id2_id4_list = []
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
