@@ -1,5 +1,6 @@
 from collections import deque, defaultdict
 from .utility import utility
+import os
 class Graph:
     def __init__(self):
         self.adjacency_list = defaultdict(list)
@@ -209,7 +210,7 @@ class Graph:
         self.visited = set()
         self.id2_id4_list = []
         self.map = {}
-        unique_numbers = self.find_unique_numbers(file_path)
+        unique_numbers = self.find_unique_numbers()
         #print(unique_numbers)
         id1_id3_tree = self.create_trees(file_path)
         for number in self.list1:
