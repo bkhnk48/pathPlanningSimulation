@@ -10,7 +10,7 @@ class Graph:
         self.neighbour_list = {}
         self.visited = set()
         self.id2_id4_list = []
-        self.version = -etTra1
+        self.version = -1
         self.file_path = None
         self.cur = []
         self.map = {}
