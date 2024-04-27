@@ -225,6 +225,7 @@ class Graph:
                 id2_id4_list = []
 
     def getTrace(self, idOfAGV):
+        idOfAGV = idOfAGV[3:]
         return self.map[idOfAGV]     
     
 graph = Graph()
