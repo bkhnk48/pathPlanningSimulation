@@ -79,16 +79,21 @@ class Event:
         graph.writefile(self.pos, 1)
 
     def getNext(self):
+        if self.graph.numberOfNodesInSpaceGraph == -1:
+            global numberOfNodesInSpaceGraph
+            self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
             # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph()
+            pdb.set_trace()
             filename = self.saveGraph()
             if (len(self.pns_path) == 0):
                 self.pns_path = input('Nhập vào đường dẫn của pns-seq: ')
             lenh = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+            print(lenh)
             subprocess.run(lenh, shell=True)
             lenh = "python3 filter.py > traces.txt"
             subprocess.run(lenh, shell=True)
@@ -96,7 +101,6 @@ class Event:
             next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
-        global numberOfNodesInSpaceGraph
         deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (self.agv.current_node / numberOfNodesInSpaceGraph)
         if (next_vertex % numberOfNodesInSpaceGraph) == (self.agv.current_node % numberOfNodesInSpaceGraph):
             new_event = HoldingEvent(self.endTime, self.endTime + deltaT, self.agv, graph, deltaT)
@@ -123,7 +127,7 @@ class Event:
 
     def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
-        filename = "current_graph.dimacs"
+        filename = "TSG_0.txt"
         # Code để lưu đồ thị vào file
         return filename
 
