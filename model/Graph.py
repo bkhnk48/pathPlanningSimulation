@@ -212,7 +212,7 @@ class Graph:
         self.map = {}
         unique_numbers = self.find_unique_numbers()
         #print(unique_numbers)
-        id1_id3_tree = self.create_trees(file_path)
+        id1_id3_tree = self.create_trees()
         for number in self.list1:
             if not number in visited:
                 #print(number, end=' ')
