@@ -1,6 +1,7 @@
 from collections import deque, defaultdict
 from .utility import utility
 import os
+import pdb
 class Graph:
     def __init__(self):
         self.adjacency_list = defaultdict(list)
@@ -225,7 +226,10 @@ class Graph:
                 id2_id4_list = []
 
     def getTrace(self, idOfAGV):
+        pdb.set_trace()
         idOfAGV = idOfAGV[3:]
+        for key, value in self.map.items():
+            print(f"Key: {key}, Value: {value}")
         return self.map[idOfAGV]     
     
 graph = Graph()
