@@ -143,12 +143,12 @@ class Event:
         #return traces
         if not self.graph.map:
             self.graph.setTrace('traces.txt')
-        self.agv.traces = self.graph.getTraces(self.agv.id)
+        self.agv.traces = self.graph.getTrace(self.agv.id)
         global allAGVs
         for a in allAGVs:
             if(a.id != self.agv.id):
                 if(a.versionOfGraph < self.graph.version):
-            	    a.traces = self.graph.getTraces(a.id)
+            	    a.traces = self.graph.getTrace(a.id)
             	    a.versionOfGraph = self.graph.version
 
 
