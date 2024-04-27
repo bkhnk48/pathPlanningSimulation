@@ -30,6 +30,17 @@ class Event:
             global allAGVs
             allAGVs = value
     
+    def getValue(name):
+        if(name == "debug"):
+            global debug
+            return debug
+        if(name == "numberOfNodesInSpaceGraph"):
+            global numberOfNodesInSpaceGraph
+            return numberOfNodesInSpaceGraph
+        if(name == "allAGVs"):
+            global allAGVs
+            return allAGVs
+    
 
     def process(self):
         edge = self.graph.get_edge(self.start_node, self.end_node)
@@ -66,14 +77,14 @@ class Event:
         graph = Graph(self.x)
         graph.writefile(self.pos, 1)
 
-    def getNext(self, graph):
+    def getNext(self):
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
             # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
-            self.updateGraph(graph)
-            filename = self.saveGraph(graph)
+            self.updateGraph()
+            filename = self.saveGraph()
             lenh = f"./pns-seq -f {filename} > seq-f.txt"
             subprocess.run(lenh, shell=True)
             lenh = "python3 filter.py > traces.txt"
@@ -94,19 +105,20 @@ class Event:
             )
 
         # Lên lịch cho sự kiện mới
-        new_event.setValue("allAGVs", self.allAGVs)
+        #new_event.setValue("allAGVs", self.allAGVs)
         simulator.schedule(new_event.endTime, new_event.getNext, graph)
 
     def updateGraph(self):
+        pass
         # Assuming that `self.graph` is an instance of `Graph`
-        edge = self.graph.get_edge(self.start_node, self.end_node)
-        if edge:
+        #edge = self.graph.get_edge(self.agv.start_node, self.end_node)
+        #if edge:
             # Proceed with your logic
-            print("Edge found:", edge)
-        else:
-            print("No edge found between", self.start_node, "and", self.end_node)
+            #print("Edge found:", edge)
+        #else:
+            #print("No edge found between", self.start_node, "and", self.end_node)
 
-    def saveGraph(self, graph):
+    def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
         filename = "current_graph.dimacs"
         # Code để lưu đồ thị vào file
@@ -318,7 +330,8 @@ class StartEvent(Event):
 
     def process(self):
         print(f"StartEvent processed at time {self.startTime} for AGV {self.agv.id}. AGV is currently at node {self.agv.current_node}.")
-        self.determine_next_event()
+        #self.determine_next_event()
+        self.getNext()
 
     def determine_next_event(self):
         # Example logic to determine the next event type
