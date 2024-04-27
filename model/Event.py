@@ -18,6 +18,7 @@ class Event:
         self.endTime = int(endTime)
         self.agv = agv
         self.graph = graph
+        self.pns_path = ''
 
     def setValue(name, value):
         if(name == "debug"):
@@ -85,7 +86,9 @@ class Event:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph()
             filename = self.saveGraph()
-            lenh = f"./pns-seq -f {filename} > seq-f.txt"
+            if (len(self.pns_path) == 0):
+                self.pns_path = input('Nhập vào đường dẫn của pns-seq: ')
+            lenh = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
             subprocess.run(lenh, shell=True)
             lenh = "python3 filter.py > traces.txt"
             subprocess.run(lenh, shell=True)
