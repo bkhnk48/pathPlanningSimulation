@@ -16,6 +16,7 @@ class Graph:
         self.file_path = None
         self.cur = []
         self.map = {}
+        self.numberOfNodesInSpaceGraph = -1
         
     def insertEdgesAndNodes(self, start, end, weight):
         if start not in self.edges:
@@ -50,7 +51,7 @@ class Graph:
                     Q.append(i)      
 
     def writefile(self,startpos,inAGV):
-        with open("TSG.txt", "w") as file:
+        with open("TSG_0.txt", "w") as file:
             size = len(self.matrix)
             file.write("p min 82800 "+str(size)+"\n")
             file.write("n "+str(startpos)+" "+str(inAGV)+"\n")
@@ -176,17 +177,19 @@ class Graph:
         #self.list1 = []
         #self.neighbour_list = {}
         id1_id3_tree = defaultdict(list)
+        pdb.set_trace()
 
         with open(self.file_path, 'r') as file:
             lines = file.readlines()
-
+        #print(lines)
         for line in lines:
             if line.startswith('a'):
+                #print(line)
                 numbers = line.split()
                 id1 = int(numbers[1])
-                id3 = int(numbers[3])
-                id2 = int(numbers[2].strip('()'))
-                id4 = int(numbers[4].strip('()'))
+                id3 = int(numbers[2])
+                id2 = id1 % self.numberOfNodesInSpaceGraph
+                id4 = id3 % self.numberOfNodesInSpaceGraph
                 self.neighbour_list[id1] = id2
                 self.neighbour_list[id3] = id4
                 self.list1.append(id1)
@@ -211,6 +214,7 @@ class Graph:
         self.visited = set()
         self.id2_id4_list = []
         self.map = {}
+        pdb.set_trace()
         unique_numbers = self.find_unique_numbers()
         #print(unique_numbers)
         id1_id3_tree = self.create_trees()
