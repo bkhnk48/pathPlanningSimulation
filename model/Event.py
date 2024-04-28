@@ -88,7 +88,7 @@ class Event:
         else:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph()
-            pdb.set_trace()
+            #pdb.set_trace()
             filename = self.saveGraph()
             if (len(self.pns_path) == 0):
                 self.pns_path = input('Nhập vào đường dẫn của pns-seq: ')
@@ -103,17 +103,17 @@ class Event:
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (self.agv.current_node / numberOfNodesInSpaceGraph)
         if (next_vertex % numberOfNodesInSpaceGraph) == (self.agv.current_node % numberOfNodesInSpaceGraph):
-            new_event = HoldingEvent(self.endTime, self.endTime + deltaT, self.agv, graph, deltaT)
+            new_event = HoldingEvent(self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT)
         elif next_vertex is self.agv.target_node:
-            new_event = ReachingTarget(self.endTime, self.endTime, self.agv, graph, next_vertex)
+            new_event = ReachingTarget(self.endTime, self.endTime, self.agv, self.graph, next_vertex)
         else:
             new_event = MovingEvent(
-                self.endTime, self.endTime + deltaT, self.agv, graph, self.agv.current_node, next_vertex
+                self.endTime, self.endTime + deltaT, self.agv, self.graph, self.agv.current_node, next_vertex
             )
 
         # Lên lịch cho sự kiện mới
         #new_event.setValue("allAGVs", self.allAGVs)
-        simulator.schedule(new_event.endTime, new_event.getNext, graph)
+        simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
 
     def updateGraph(self):
         pass
