@@ -177,7 +177,7 @@ class Graph:
         #self.list1 = []
         #self.neighbour_list = {}
         id1_id3_tree = defaultdict(list)
-        pdb.set_trace()
+        #pdb.set_trace()
 
         with open(self.file_path, 'r') as file:
             lines = file.readlines()
