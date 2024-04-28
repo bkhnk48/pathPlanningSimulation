@@ -45,3 +45,4 @@ class AGV:
     def print_status(self):
         """ Utility method to print current status of the AGV """
         print(f"AGV {self.id}: Current Node: {self.current_node}, Previous Node: {self.previous_node}, State: {self.state}, Cost: {self.cost}, Upcoming Path: {self.traces}")
+        
