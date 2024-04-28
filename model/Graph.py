@@ -122,11 +122,11 @@ class Graph:
             print("Edge does not exist to update.")
 
     def remove_node(self, node):
-            if node in self.nodes:
-                del self.nodes[node]
-                self.edges.pop(node, None)
-                for edges in self.edges.values():
-                    edges[:] = [(n, w) for n, w in edges if n != node]
+        if node in self.nodes:
+            del self.nodes[node]
+            self.edges.pop(node, None)
+            for edges in self.edges.values():
+                edges[:] = [(n, w) for n, w in edges if n != node]
 
     def remove_edge(self, start_node, end_node, agv_id):
         if (start_node, end_node) in self.edges:
@@ -201,10 +201,10 @@ class Graph:
     def dfs(self, tree, start_node):
         self.visited.add(start_node)
         for node in tree[start_node]:
-            if node not in visited:
+            if node not in self.visited:
                 #print(node, end=' ')
                 self.cur.append(node)
-                self.id2_id4_list.append(neighbour_list[node])
+                self.id2_id4_list.append(self.neighbour_list[node])
                 self.dfs(tree, node)
                 
     def setTrace(self, file_path):
@@ -214,23 +214,23 @@ class Graph:
         self.visited = set()
         self.id2_id4_list = []
         self.map = {}
-        pdb.set_trace()
+        #pdb.set_trace()
         unique_numbers = self.find_unique_numbers()
         #print(unique_numbers)
         id1_id3_tree = self.create_trees()
         for number in self.list1:
-            if not number in visited:
+            if not number in self.visited:
                 #print(number, end=' ')
-                self.id2_id4_list.append(neighbour_list[number])
+                self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
                 self.dfs(id1_id3_tree, number)
                 self.map[number] = self.cur
                 #print('#', end=' ')
                 #print(' '.join(map(str, id2_id4_list)))
-                id2_id4_list = []
+                self.id2_id4_list = []
 
     def getTrace(self, idOfAGV):
-        pdb.set_trace()
+        #pdb.set_trace()
         idOfAGV = idOfAGV[3:]
         for key, value in self.map.items():
             print(f"Key: {key}, Value: {value}")
