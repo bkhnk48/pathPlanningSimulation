@@ -113,7 +113,8 @@ class Event:
 
         # Lên lịch cho sự kiện mới
         #new_event.setValue("allAGVs", self.allAGVs)
-        simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
+        #simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
+        simulator.schedule(new_event.endTime, new_event.process)
 
     def updateGraph(self):
         pass
@@ -193,10 +194,12 @@ class HoldingEvent(Event):
 
     def process(self):
         added_cost = self.calculateCost()
-        print(
-            f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving to node {self.agv.current_node}"
-        )
-        self.updateGraph()
+        # Assuming next_node is calculated or retrieved from some method
+        #next_node = self.calculate_next_node()  
+        next_node = self.agv.getNextNode()
+        print(f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving from node ID {self.agv.current_node} to node ID {next_node}")
+        self.agv.current_node = next_node  # Update the AGV's current node
+        self.updateGraph()  # Optional, if there's a need to update the graph based on this event
 
 
 class MovingEvent(Event):
