@@ -19,9 +19,9 @@ class AGV:
         print(f"Cost updated for AGV {self.id}: {self.cost}.")
 
     def getNextNode(self, endedEvent = False):
-        stack = inspect.stack()
-        for frame in stack[1:]:
-            print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
+        #stack = inspect.stack()
+        #for frame in stack[1:]:
+            #print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self.traces:
             if(endedEvent):
                 self.current_node = self.traces.pop(0)
