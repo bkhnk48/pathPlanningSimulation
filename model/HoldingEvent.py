@@ -25,7 +25,7 @@ class HoldingEvent(Event):
         added_cost = self.calculateCost()
         # Assuming next_node is calculated or retrieved from some method
         #next_node = self.calculate_next_node()
-        pdb.set_trace() 
+        #pdb.set_trace() 
         #Lần 2 gọi getNextNode của AGV 
         next_node = self.agv.getNextNode(endedEvent = True)
         print(f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving from node ID {self.agv.current_node} to node ID {next_node}")
