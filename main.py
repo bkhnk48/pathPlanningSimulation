@@ -1,6 +1,7 @@
 from model.Graph import Graph, graph
 from model.AGV import AGV
-from model.Event import Event, HoldingEvent, StartEvent, debug
+from model.Event import Event, debug
+from model.StartEvent import StartEvent
 from discrevpy import simulator
 import subprocess
 import sys
