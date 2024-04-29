@@ -101,6 +101,7 @@ class Event:
             subprocess.run(lenh, shell=True)
             lenh = "python3 filter.py > traces.txt"
             subprocess.run(lenh, shell=True)
+            self.graph.version += 1
             self.setTracesForAllAGVs()
             #Lần 1 gọi getNextNode của AGV
             next_vertex = self.agv.getNextNode()
@@ -157,6 +158,7 @@ class Event:
         if not self.graph.map:
             self.graph.setTrace('traces.txt')
         self.agv.traces = self.graph.getTrace(self.agv.id)
+        self.agv.versionOfGraph = self.graph.version
         global allAGVs
         for a in allAGVs:
             if(a.id != self.agv.id):
