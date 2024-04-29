@@ -87,6 +87,7 @@ class Event:
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
             # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
+            #một lần nữa cũng gọi getNextNode của AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
@@ -174,5 +175,3 @@ def get_largest_id_from_map(filename):
                 id1, id2 = int(parts[1]), int(parts[2])
                 largest_id = max(largest_id, id1, id2)
     return largest_id
-
-
