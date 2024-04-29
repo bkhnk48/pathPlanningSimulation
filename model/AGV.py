@@ -1,5 +1,7 @@
 from model.utility import get_largest_id_from_map
 import inspect
+from sortedcontainers import SortedSet
+
 
 class AGV:
     def __init__(self, id, current_node, cost = 0, versionOfGraph = -1):
@@ -10,7 +12,7 @@ class AGV:
         self.cost = cost
         self.versionOfGraph = -1
         self.traces = [] #các đỉnh sắp đi qua
-        self.path = [] #các đỉnh đã đi qua 
+        self.path = SortedSet([]) #các đỉnh đã đi qua 
         
     def update_cost(self, amount):
         self.cost += amount
@@ -23,7 +25,7 @@ class AGV:
         if self.traces:
             if(endedEvent):
                 self.current_node = self.traces.pop(0)
-            self.path.append(self.current_node)
+            self.path.add(self.current_node)
             print(f"{self.path}")
             
             next_node = self.traces[0]
