@@ -9,18 +9,24 @@ class AGV:
         self.state = 'idle'
         self.cost = cost
         self.versionOfGraph = -1
-        self.traces = []
+        self.traces = [] #các đỉnh sắp đi qua
+        self.path = [] #các đỉnh đã đi qua 
         
     def update_cost(self, amount):
         self.cost += amount
         print(f"Cost updated for AGV {self.id}: {self.cost}.")
 
-    def getNextNode(self):
+    def getNextNode(self, endedEvent = False):
         stack = inspect.stack()
         for frame in stack[1:]:
             print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self.traces:
-            next_node = self.traces.pop(0)
+            if(endedEvent):
+                self.current_node = self.traces.pop(0)
+            self.path.append(self.current_node)
+            print(f"{self.path}")
+            
+            next_node = self.traces[0]
             print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
         else:
