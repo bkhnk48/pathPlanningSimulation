@@ -1,4 +1,6 @@
 from model.utility import get_largest_id_from_map
+import inspect
+
 class AGV:
     def __init__(self, id, current_node, cost = 0, versionOfGraph = -1):
         self.id = id
@@ -14,6 +16,9 @@ class AGV:
         print(f"Cost updated for AGV {self.id}: {self.cost}.")
 
     def getNextNode(self):
+        stack = inspect.stack()
+        for frame in stack[1:]:
+            print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self.traces:
             next_node = self.traces.pop(0)
             print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
