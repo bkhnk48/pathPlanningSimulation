@@ -1,12 +1,11 @@
-from model.Graph import Graph, graph
+from model.Graph import Graph#, graph
 from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
 from discrevpy import simulator
 import subprocess
 import sys
-def getReal():
-    return 15
+
 
 def getForecast():
     return 17
