@@ -12,6 +12,9 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
+def getReal():
+    return 15
+
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
         self.startTime = int(startTime)
@@ -113,6 +116,7 @@ class Event:
         elif next_vertex is self.agv.target_node:
             new_event = ReachingTarget(self.endTime, self.endTime, self.agv, self.graph, next_vertex)
         else:
+            deltaT = getReal()
             new_event = MovingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, self.agv.current_node, next_vertex
             )
