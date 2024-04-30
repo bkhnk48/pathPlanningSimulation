@@ -1,11 +1,13 @@
-from collections import deque, defaultdict
-from .utility import utility
 import os
 import pdb
+from collections import deque, defaultdict
+from .utility import utility
+import inspect
+
 class Graph:
     def __init__(self):
         self.adjacency_list = defaultdict(list)
-        self.nodes = set()
+        self.nodes = {}
         #self.lastChangedByAGV = -1
         self.edges = {}
         self.list1 = [ ]
@@ -17,11 +19,101 @@ class Graph:
         self.cur = []
         self.map = {}
         self.numberOfNodesInSpaceGraph = -1
+        print("Initialized a new graph.")
+        stack = inspect.stack()
+        for frame in stack[1:]:
+            print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
     def insertEdgesAndNodes(self, start, end, weight):
-        if start not in self.edges:
-            self.edges[start] = []
-        self.edges[start].append((end, weight))
+        self.adjacency_list[start].append((end, weight))
+        if start not in self.nodes:
+            self.nodes[start] = {'id': start}
+        if end not in self.nodes:
+            self.nodes[end] = {'id': end}
+    
+    def find_unique_nodes(self, file_path = 'traces.txt'):
+        """ Find nodes that are only listed as starting nodes in edges. """
+        if not os.path.exists(file_path):
+            print(f"File {file_path} does not exist.")
+            return []
+        
+        target_ids = set()
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith('a'):
+                    parts = line.split()
+                    target_ids.add(int(parts[3]))
+
+        unique_ids = set()
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith('a'):
+                    parts = line.split()
+                    node_id = int(parts[1])
+                    if node_id not in target_ids:
+                        unique_ids.add(node_id)
+
+        return list(unique_ids)
+    
+    def build_path_tree(self, file_path = 'traces.txt'):
+        """ Build a tree from edges listed in a file for path finding. """
+        id1_id3_tree = defaultdict(list)
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith('a'):
+                    numbers = line.split()
+                    id1 = int(numbers[1])
+                    id3 = int(numbers[2])
+                    id2 = id1 % self.numberOfNodesInSpaceGraph
+                    id4 = id3 % self.numberOfNodesInSpaceGraph
+                    self.insertEdgesAndNodes(id1, id3, id2)
+                    self.insertEdgesAndNodes(id3, id1, id4)
+                    self.neighbour_list[id1] = id2
+                    self.neighbour_list[id3] = id4
+                    self.list1.append(id1)
+                    id1_id3_tree[id1].append(id3)
+                    id1_id3_tree[id3].append(id1)
+        return id1_id3_tree
+
+    def dfs(self, tree, start_node):
+        self.visited.add(start_node)
+        for node in tree[start_node]:
+            if node not in self.visited:
+                #print(node, end=' ')
+                self.cur.append(node)
+                self.id2_id4_list.append(self.neighbour_list[node])
+                self.dfs(tree, node)
+
+    def setTrace(self, file_path = 'traces.txt'):
+        self.file_path = file_path #'traces.txt'
+        self.list1 = []
+        self.neighbour_list = {}
+        self.visited = set()
+        self.id2_id4_list = []
+        self.map = {}
+        #pdb.set_trace()
+        #unique_numbers = self.find_unique_numbers()
+        unique_numbers = self.find_unique_nodes()
+        #print(unique_numbers)
+        #id1_id3_tree = self.create_trees()
+        id1_id3_tree = self.build_path_tree()
+        for number in self.list1:
+            if not number in self.visited:
+                #print(number, end=' ')
+                self.id2_id4_list.append(self.neighbour_list[number])
+                self.cur = []
+                self.dfs(id1_id3_tree, number)
+                self.map[number] = self.cur
+                #print('#', end=' ')
+                #print(' '.join(map(str, id2_id4_list)))
+                self.id2_id4_list = []
+    
+    def getTrace(self, idOfAGV):
+        #pdb.set_trace()
+        idOfAGV = int(idOfAGV[3:])
+        #for key, value in self.map.items():
+        #    print(f"Key: {key}, Value: {value}")
+        return self.map[idOfAGV]     
     
     def has_initial_movement(self, node):
         # Check if there are any outgoing edges from 'node'
@@ -49,34 +141,32 @@ class Graph:
                 if (pos,i) not in self.matrix:
                     self.matrix[pos,i] = int((pos-i)/list.M)
                     Q.append(i)      
-
-    def writefile(self,startpos,inAGV):
-        with open("TSG_0.txt", "w") as file:
-            size = len(self.matrix)
-            file.write("p min 82800 "+str(size)+"\n")
-            file.write("n "+str(startpos)+" "+str(inAGV)+"\n")
-            file.write("n "+str(82800)+str(0-inAGV)+"\n")
-            for (i,j) in self.matrix:
-                file.write("a "+str(i)+" "+str(j)+" 0 1 "+str(self.matrix[i, j]) + "\n")
-                
-    def add_node(self, node, properties=None):
-        if properties is None:
-            properties = {}
-        self.nodes[node] = properties
-
-    def update_node(self, node, **properties):
+              
+    def update_node(self, node, properties):
         if node in self.nodes:
             self.nodes[node].update(properties)
+            print(f"Node {node} updated with properties {properties}.")
         else:
             self.nodes[node] = properties
-            
-    def add_edge(self, start_node, end_node, weight):
-        if start_node not in self.adjacency_list:
-            self.adjacency_list[start_node] = {}
-        self.adjacency_list[start_node][end_node] = weight
+            print(f"Node {node} added with properties {properties}.")
+ 
+    def add_edge(self, from_node, to_node, weight):
+        self.adjacency_list[from_node].append((to_node, weight))
+        print(f"Edge added from {from_node} to {to_node} with weight {weight}.")
 
+    def display_graph(self):
+        print("Displaying graph structure:")
+        for start_node in self.adjacency_list:
+            for end, weight in self.adjacency_list[start_node]:
+                print(f"{start_node} -> {end} (Weight: {weight})")
+            
     def get_edge(self, start_node, end_node):
-        return self.adjacency_list.get(start_node, {}).get(end_node, None)
+        for neighbor, weight in self.adjacency_list[start_node]:
+            if neighbor == end_node:
+                print(f"Edge found from {start_node} to {end_node} with weight {weight}.")
+                return weight
+        print(f"No edge found from {start_node} to {end_node}.")
+        return None
     
     def find_edge_by_weight(self, start_node, weight):
         # Find all edges from a node with a specific weight
@@ -112,21 +202,24 @@ class Graph:
                 for end_node, weight in self.adjacency_list[start_node]:
                     file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
                     
-    def update_edge(self, start_node, end_node, new_weight, agv):
-        if start_node in self.adjacency_list and end_node in self.adjacency_list[start_node]:
-            self.adjacency_list[start_node][end_node] = new_weight
-            # Update the last AGV to change this edge
-            self.lastChangedByAGV[(start_node, end_node)] = agv.id
-            print(f"Edge weight from {start_node} to {end_node} updated to {new_weight} by AGV {agv.id}.")
+    def update_edge(self, start_node, end_node, new_weight):
+        found = False
+        for i, (neighbor, weight) in enumerate(self.adjacency_list[start_node]):
+            if neighbor == end_node:
+                self.adjacency_list[start_node][i] = (end_node, new_weight)
+                found = True
+                break
+        if found:
+            print(f"Edge from {start_node} to {end_node} updated to new weight {new_weight}.")
         else:
-            print("Edge does not exist to update.")
+            print(f"Edge from {start_node} to {end_node} not found to update.")
 
     def remove_node(self, node):
-        if node in self.nodes:
-            del self.nodes[node]
-            self.edges.pop(node, None)
-            for edges in self.edges.values():
-                edges[:] = [(n, w) for n, w in edges if n != node]
+            if node in self.nodes:
+                del self.nodes[node]
+                self.edges.pop(node, None)
+                for edges in self.edges.values():
+                    edges[:] = [(n, w) for n, w in edges if n != node]
 
     def remove_edge(self, start_node, end_node, agv_id):
         if (start_node, end_node) in self.edges:
@@ -145,99 +238,10 @@ class Graph:
                 print(f"Updated weight of edge {end_node} to {adj_node} to {new_weight} due to changes at {start_node}.")
     
     def __str__(self):
-        return "\n".join(f"{start} -> {end} (Weight: {edge.weight})" for (start, end), edge in self.edges.items())
+        return "\n".join(f"{start} -> {end} (Weight: {weight})" for start in self.adjacency_list for end, weight in self.adjacency_list[start])
     
-    def find_unique_numbers(self):
-        if not os.path.exists(self.file_path):
-            print(f"File {self.file_path} does not exist.")
-            return []
-    
-        unique_numbers = set()
-        id3_numbers = set()
+#graph = Graph()
 
-        with open(self.file_path, 'r') as file:
-            lines = file.readlines()
-
-            for line in lines:
-                if line.startswith('a'):
-                    numbers = line.split()
-                    id3 = int(numbers[3])
-                    id3_numbers.add(id3)
-
-            for line in lines:
-                if line.startswith('a'):
-                    numbers = line.split()
-                    id1 = int(numbers[1])
-                    if id1 not in id3_numbers:
-                        unique_numbers.add(id1)
-    
-        return unique_numbers
-    
-    def create_trees(self):
-        #self.list1 = []
-        #self.neighbour_list = {}
-        id1_id3_tree = defaultdict(list)
-        #pdb.set_trace()
-
-        with open(self.file_path, 'r') as file:
-            lines = file.readlines()
-        #print(lines)
-        for line in lines:
-            if line.startswith('a'):
-                #print(line)
-                numbers = line.split()
-                id1 = int(numbers[1])
-                id3 = int(numbers[2])
-                id2 = id1 % self.numberOfNodesInSpaceGraph
-                id4 = id3 % self.numberOfNodesInSpaceGraph
-                self.neighbour_list[id1] = id2
-                self.neighbour_list[id3] = id4
-                self.list1.append(id1)
-                id1_id3_tree[id1].append(id3)
-                id1_id3_tree[id3].append(id1)
-    
-        return id1_id3_tree
-
-    def dfs(self, tree, start_node):
-        self.visited.add(start_node)
-        for node in tree[start_node]:
-            if node not in self.visited:
-                #print(node, end=' ')
-                self.cur.append(node)
-                self.id2_id4_list.append(self.neighbour_list[node])
-                self.dfs(tree, node)
-                
-    def setTrace(self, file_path):
-        self.file_path = file_path #'traces.txt'
-        self.list1 = []
-        self.neighbour_list = {}
-        self.visited = set()
-        self.id2_id4_list = []
-        self.map = {}
-        #pdb.set_trace()
-        unique_numbers = self.find_unique_numbers()
-        #print(unique_numbers)
-        id1_id3_tree = self.create_trees()
-        for number in self.list1:
-            if not number in self.visited:
-                #print(number, end=' ')
-                self.id2_id4_list.append(self.neighbour_list[number])
-                self.cur = []
-                self.dfs(id1_id3_tree, number)
-                self.map[number] = self.cur
-                #print('#', end=' ')
-                #print(' '.join(map(str, id2_id4_list)))
-                self.id2_id4_list = []
-
-    def getTrace(self, idOfAGV):
-        #pdb.set_trace()
-        idOfAGV = int(idOfAGV[3:])
-        for key, value in self.map.items():
-            print(f"Key: {key}, Value: {value}")
-        return self.map[idOfAGV]     
-    
-graph = Graph()
-
-def initialize_graph():
+#def initialize_graph():
     # Function to populate the graph if needed
-    return graph
+    #return graph
