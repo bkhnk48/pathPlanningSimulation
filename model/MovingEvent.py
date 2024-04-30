@@ -1,4 +1,5 @@
 from .Event import Event
+import pdb
 class MovingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
         super().__init__(startTime, endTime, agv, graph)
@@ -21,6 +22,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
+        pdb.set_trace()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
         print(
