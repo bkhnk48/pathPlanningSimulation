@@ -229,8 +229,10 @@ class Graph:
     def handle_edge_modifications(self, start_node, end_node, agv):
         # Example logic to adjust the weights of adjacent edges
         print(f"Handling modifications for edges connected to {start_node} and {end_node}.")
+        pdb.set_trace()
+        adjacent_nodes_with_weights = self.adjacency_list.get(end_node, [])
         # Check adjacent nodes and update as necessary
-        for adj_node, weight in self.adjacency_list.get(end_node, {}).items():
+        for adj_node, weight in adjacent_nodes_with_weights:
             if (end_node, adj_node) not in self.lastChangedByAGV or self.lastChangedByAGV[(end_node, adj_node)] != agv.id:
                 # For example, increase weight by 10% as a traffic delay simulation
                 new_weight = int(weight * 1.1)
