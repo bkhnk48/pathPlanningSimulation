@@ -215,11 +215,16 @@ class Graph:
             print(f"Edge from {start_node} to {end_node} not found to update.")
 
     def remove_node(self, node):
-            if node in self.nodes:
-                del self.nodes[node]
-                self.edges.pop(node, None)
-                for edges in self.edges.values():
-                    edges[:] = [(n, w) for n, w in edges if n != node]
+        R = [node]  # Khởi tạo danh sách R với nút cần xóa
+        while R:  # Tiếp tục cho đến khi R rỗng
+            current_node = R.pop()  # Lấy ra nút cuối cùng từ R
+            if current_node in self.nodes:  # Kiểm tra xem nút có tồn tại trong đồ thị hay không
+                del self.nodes[current_node]  # Nếu có, xóa nút khỏi danh sách các nút
+            self.edges.pop(current_node, None)  # Xóa tất cả các cạnh liên kết với nút này
+            for edge_list in self.edges.values():  # Duyệt qua tất cả các cạnh còn lại trong đồ thị
+                edge_list[:] = [(n, w) for n, w in edge_list if n != current_node]  # Loại bỏ nút khỏi danh sách các nút kết nối với mỗi cạnh
+            # Thêm các nút chỉ được dẫn đến bởi nút hiện tại vào R
+            R.extend([n for n in self.edges if all(edge[0] == current_node for edge in self.edges[n])])
 
     def remove_edge(self, start_node, end_node, agv_id):
         if (start_node, end_node) in self.edges:
