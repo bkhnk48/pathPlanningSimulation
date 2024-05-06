@@ -100,26 +100,17 @@ class Event:
             self.updateGraph()
             # pdb.set_trace()
             filename = self.saveGraph()
-
-        if hasattr(Event, 'use_custom_solver') and Event.use_custom_solver:
-            # Custom solver is selected
-            command = f"python3 {Event.custom_solver_path} {filename}"
-        else:
-            # Default to pns-seq if no custom solver or path to solver
             if len(self.pns_path) == 0:
-                self.pns_path = input("Enter the path for pns-seq: ")
-            command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-        
-        print(command)
-        subprocess.run(command, shell=True)
-        if not hasattr(Event, 'use_custom_solver') or not Event.use_custom_solver:
-            # Only run this for the default pns-seq method
-            filter_command = "python3 filter.py > traces.txt"
-            subprocess.run(filter_command, shell=True)
-
-        self.graph.version += 1
-        self.setTracesForAllAGVs()
-        next_vertex = self.agv.getNextNode()
+                self.pns_path = input("Nhập vào đường dẫn của pns-seq: ")
+            lenh = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+            print(lenh)
+            subprocess.run(lenh, shell=True)
+            lenh = "python3 filter.py > traces.txt"
+            subprocess.run(lenh, shell=True)
+            self.graph.version += 1
+            self.setTracesForAllAGVs()
+            # Lần 1 gọi getNextNode của AGV
+            next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (

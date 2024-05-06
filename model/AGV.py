@@ -36,9 +36,9 @@ class AGV:
             return None
     
     def move_to(self, graph, target_node):
-        if next_node is not None:
+        if self.next_node is not None:
             self.previous_node = self.current_node
-            self.current_node = next_node
+            self.current_node = self.next_node
             self.state = 'moving'
             print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
             self.state = 'idle'

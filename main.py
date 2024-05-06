@@ -71,22 +71,9 @@ def schedule_events(events):
     for event in events:
         simulator.schedule(event.startTime, event.process)
 
-def select_solver_method():
-    print("Select the method for solving:")
-    print("1 - Use Solver")
-    print("2 - Use Network Simplex")
-    choice = input("Enter your choice (1 or 2): ")
-    return choice
-
 # Main execution
 if __name__ == "__main__":
-    solver_choice = select_solver_method()
     simulator.ready()
     #events = parse_tsg_file('TSG_0.txt')
     schedule_events(events)
-    
-    if solver_choice == "1":
-        # Modify Event.py getNext() to use a custom solver
-        Event.use_custom_solver = True
-        Event.custom_solver_path = "python3 B_solver.py"
     simulator.run()
