@@ -4,7 +4,7 @@ import subprocess
 from discrevpy import simulator
 from .AGV import AGV
 from .Edge import Edge
-import pdb;
+import pdb
 import os
 from collections import defaultdict
 
@@ -21,37 +21,39 @@ class Event:
         self.endTime = int(endTime)
         self.agv = agv
         self.graph = graph
-        self.pns_path = ''
+        self.pns_path = ""
 
     def setValue(name, value):
-        if(name == "debug"):
+        if name == "debug":
             global debug
             debug = value
-        if(name == "numberOfNodesInSpaceGraph"):
+        if name == "numberOfNodesInSpaceGraph":
             global numberOfNodesInSpaceGraph
             numberOfNodesInSpaceGraph = value
-        if(name == "allAGVs"):
+        if name == "allAGVs":
             global allAGVs
             allAGVs = value
-    
+
     def getValue(name):
-        if(name == "debug"):
+        if name == "debug":
             global debug
             return debug
-        if(name == "numberOfNodesInSpaceGraph"):
+        if name == "numberOfNodesInSpaceGraph":
             global numberOfNodesInSpaceGraph
             return numberOfNodesInSpaceGraph
-        if(name == "allAGVs"):
+        if name == "allAGVs":
             global allAGVs
             return allAGVs
-    
 
     def process(self):
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
-            print(f"Edge found from {self.start_node} to {self.end_node} with weight {edge}")
+            print(
+                f"Edge found from {self.start_node} to {self.end_node} with weight {edge}"
+            )
         else:
             print(f"No edge found from {self.start_node} to {self.end_node}")
+
     def __repr__(self):
         return f"{self.type}(time={self.time}, agv_id={self.agv.id})"
 
@@ -85,56 +87,79 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
+
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
             # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
-            #một lần nữa cũng gọi getNextNode của AGV
+            # một lần nữa cũng gọi getNextNode của AGV
             next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
         else:
             # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph()
-            #pdb.set_trace()
+            # pdb.set_trace()
             filename = self.saveGraph()
-            if (len(self.pns_path) == 0):
-                self.pns_path = input('Nhập vào đường dẫn của pns-seq: ')
-            lenh = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-            print(lenh)
-            subprocess.run(lenh, shell=True)
-            lenh = "python3 filter.py > traces.txt"
-            subprocess.run(lenh, shell=True)
-            self.graph.version += 1
-            self.setTracesForAllAGVs()
-            #Lần 1 gọi getNextNode của AGV
-            next_vertex = self.agv.getNextNode()
+
+        if hasattr(Event, 'use_custom_solver') and Event.use_custom_solver:
+            # Custom solver is selected
+            command = f"python3 {Event.custom_solver_path} {filename}"
+        else:
+            # Default to pns-seq if no custom solver or path to solver
+            if len(self.pns_path) == 0:
+                self.pns_path = input("Enter the path for pns-seq: ")
+            command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+        
+        print(command)
+        subprocess.run(command, shell=True)
+        if not hasattr(Event, 'use_custom_solver') or not Event.use_custom_solver:
+            # Only run this for the default pns-seq method
+            filter_command = "python3 filter.py > traces.txt"
+            subprocess.run(filter_command, shell=True)
+
+        self.graph.version += 1
+        self.setTracesForAllAGVs()
+        next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
-        deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (self.agv.current_node / numberOfNodesInSpaceGraph)
-        if (next_vertex % numberOfNodesInSpaceGraph) == (self.agv.current_node % numberOfNodesInSpaceGraph):
-            new_event = HoldingEvent(self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT)
+        deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (
+            self.agv.current_node / numberOfNodesInSpaceGraph
+        )
+        if (next_vertex % numberOfNodesInSpaceGraph) == (
+            self.agv.current_node % numberOfNodesInSpaceGraph
+        ):
+            new_event = HoldingEvent(
+                self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
+            )
         elif next_vertex is self.agv.target_node:
-            new_event = ReachingTarget(self.endTime, self.endTime, self.agv, self.graph, next_vertex)
+            new_event = ReachingTarget(
+                self.endTime, self.endTime, self.agv, self.graph, next_vertex
+            )
         else:
             deltaT = getReal()
             new_event = MovingEvent(
-                self.endTime, self.endTime + deltaT, self.agv, self.graph, self.agv.current_node, next_vertex
+                self.endTime,
+                self.endTime + deltaT,
+                self.agv,
+                self.graph,
+                self.agv.current_node,
+                next_vertex,
             )
 
         # Lên lịch cho sự kiện mới
-        #new_event.setValue("allAGVs", self.allAGVs)
-        #simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
+        # new_event.setValue("allAGVs", self.allAGVs)
+        # simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
         simulator.schedule(new_event.endTime, new_event.process)
 
     def updateGraph(self):
         pass
         # Assuming that `self.graph` is an instance of `Graph`
-        #edge = self.graph.get_edge(self.agv.start_node, self.end_node)
-        #if edge:
-            # Proceed with your logic
-            #print("Edge found:", edge)
-        #else:
-            #print("No edge found between", self.start_node, "and", self.end_node)
+        # edge = self.graph.get_edge(self.agv.start_node, self.end_node)
+        # if edge:
+        # Proceed with your logic
+        # print("Edge found:", edge)
+        # else:
+        # print("No edge found between", self.start_node, "and", self.end_node)
 
     def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
@@ -156,21 +181,21 @@ class Event:
 
     def setTracesForAllAGVs(self):
         # Đọc và xử lý file traces để lấy các đỉnh tiếp theo
-        #with open(filename, "r") as file:
+        # with open(filename, "r") as file:
         #    traces = file.read().split()
-        #return traces
+        # return traces
         if not self.graph.map:
-            self.graph.setTrace('traces.txt')
+            self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
-            if(a.id != self.agv.id):
-                if(a.versionOfGraph < self.graph.version):
-            	    a.traces = self.graph.getTrace(a.id)
-            	    a.versionOfGraph = self.graph.version
-            	    a.target_node = a.traces[len(a.traces) - 1]
+            if a.id != self.agv.id:
+                if a.versionOfGraph < self.graph.version:
+                    a.traces = self.graph.getTrace(a.id)
+                    a.versionOfGraph = self.graph.version
+                    a.target_node = a.traces[len(a.traces) - 1]
 
 
 def get_largest_id_from_map(filename):

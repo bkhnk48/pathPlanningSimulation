@@ -1,3 +1,5 @@
+from .Node import Node
+
 class ArtificialNode(Node):
     def __init__(self, id, label=None, temporary=False):
         super().__init__(id, label)
