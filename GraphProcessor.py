@@ -3,7 +3,7 @@ import re
 import json
 from collections import deque
 from scipy.sparse import lil_matrix
-from ortools.linear_solver import pywraplp
+#from ortools.linear_solver import pywraplp
 import pdb
 """
 Mô tả yêu cầu của code:
@@ -275,9 +275,10 @@ class GraphProcessor:
                     max_val = max(max_val, int(parts[2]))
       except FileNotFoundError:
         pass
-
+      #print(f"max_val = {max_val}")
+      max_val += 1
       R = set()
-      new_edges = []
+      new_edges = set()
       # Duyệt các dòng của file TSG.txt
       try:
         with open('TSG.txt', 'r') as file:
@@ -289,17 +290,20 @@ class GraphProcessor:
                         j = i * self.M + self.ID
                         if j == ID2:
                             C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
-                            new_edges.append((j, max_val, 0, 1, C))
+                            new_edges.add((j, max_val, 0, 1, C))
                             break
 
       except FileNotFoundError:
         pass
 
+      #pdb.set_trace()
+      Count = 0
       # Ghi các cung mới vào file TSG.txt
       with open('TSG.txt', 'a') as file:
         for edge in new_edges:
+            Count += 1
             file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-      print("Đã cập nhật các cung mới vào file TSG.txt.")
+      print(f"Đã cập nhật {Count} cung mới vào file TSG.txt.")
 
 
 
