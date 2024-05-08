@@ -212,7 +212,8 @@ class GraphProcessor:
         self.alpha = int(alpha) if alpha else 1
         self.beta = int(beta) if beta else 1
         self.gamma = int(gamma) if gamma else 1
-        self.restriction_count = int(input("Hãy nhập số lượng các restriction: "))
+        restriction_count = input("Hãy nhập số lượng các restriction: ")
+        self.restriction_count = int(restriction_count) if restriction_count else 1
         startBan, endBan = map(int, input("Khung thời gian cấm: ").split())
         self.startBan = startBan
         self.endBan = endBan
