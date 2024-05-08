@@ -206,9 +206,9 @@ class GraphProcessor:
             print("Da cap nhat file TSG.txt.")
 
     def add_restrictions(self):
-        alpha = int(input("Nhập vào alpha: "))
-        beta = int(input("Nhập vào beta: "))
-        gamma = int(input("Nhập vào gamma: "))
+        alpha = input("Nhập vào alpha: ")
+        beta = input("Nhập vào beta: ")
+        gamma = input("Nhập vào gamma: ")
         self.alpha = int(alpha) if alpha else 1
         self.beta = int(beta) if beta else 1
         self.gamma = int(gamma) if gamma else 1
