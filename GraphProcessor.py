@@ -18,6 +18,7 @@ class GraphProcessor:
         self.d = 0
         self.alpha = 1
         self.beta = 1
+        self.gamma = 1
         self.ID = 0
         self.earliness = 0
         self.tardiness = 0
@@ -205,9 +206,12 @@ class GraphProcessor:
             print("Da cap nhat file TSG.txt.")
 
     def add_restrictions(self):
-        self.alpha = int(input("Nhập vào alpha: "))
-        self.beta = int(input("Nhập vào beta: "))
-        self.gamma = int(input("Nhập vào gamma: "))
+        alpha = int(input("Nhập vào alpha: "))
+        beta = int(input("Nhập vào beta: "))
+        gamma = int(input("Nhập vào gamma: "))
+        self.alpha = int(alpha) if alpha else 1
+        self.beta = int(beta) if beta else 1
+        self.gamma = int(gamma) if gamma else 1
         self.restriction_count = int(input("Hãy nhập số lượng các restriction: "))
         startBan, endBan = map(int, input("Khung thời gian cấm: ").split())
         self.startBan = startBan
