@@ -45,13 +45,13 @@ class GraphProcessor:
         #     print(' '.join(map(str, row)))
 
     def generate_adj_matrix(self):
-        size = self.H * self.M
+        size = (self.H + 1) * self.M + 1
         self.Adj = lil_matrix((size, size), dtype=int)
 
         for edge in self.edges:
             if len(edge) >= 6 and edge[3] == '0' and edge[4] == '1':
                 u, v, c = int(edge[1]), int(edge[2]), int(edge[5])
-                for i in range(self.H):
+                for i in range(self.H + 1):
                     source_idx = i * self.M + u
                     target_idx = (i + c) * self.M + v
                     print(f"i = {i} {source_idx} {target_idx} = 1")
@@ -74,7 +74,7 @@ class GraphProcessor:
 
     def create_tsg_file(self):
         output_lines = []
-        Q = deque(range(self.H * self.M))
+        Q = deque(range((self.H + 1)* self.M + 1))
 
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.edges if edge[3] == '0' and edge[4] == '1' }
 
