@@ -4,6 +4,7 @@ import json
 from collections import deque
 from scipy.sparse import lil_matrix
 from ortools.linear_solver import pywraplp
+import pdb
 """
 Mô tả yêu cầu của code:
 https://docs.google.com/document/d/13S_Ycg-aB4GjEm8xe6tAoUHzhS-Z1iFnM4jX_bWFddo/edit?usp=sharing
@@ -53,6 +54,7 @@ class GraphProcessor:
                 for i in range(self.H):
                     source_idx = i * self.M + u
                     target_idx = (i + c) * self.M + v
+                    print(f"i = {i} {source_idx} {target_idx} = 1")
 
                     if source_idx < size and target_idx < size:
                         self.Adj[source_idx, target_idx] = 1
@@ -80,7 +82,14 @@ class GraphProcessor:
             ID = Q.popleft()
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 u, v = ID % self.M, j % self.M
-                if ((ID // self.M) + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
+                u = u if u != 0 or ID == 0 else self.M
+                #if(v == 0):
+                #if (ID == 1 and j == 11):
+                    #pdb.set_trace()
+                v = v if v != 0 or ID == 0 else self.M
+                #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
+                #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
+                if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
                     c = edges_with_cost[(u, v)]
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
@@ -694,5 +703,3 @@ class GraphProcessor:
 if __name__ == "__main__":
     gp = GraphProcessor()
     gp.main_menu()
-
-
