@@ -22,9 +22,10 @@ class GraphProcessor:
         self.ID = 0
         self.earliness = 0
         self.tardiness = 0
-        self.edges = []
+        self.spaceEdges = []
+        self.tsEdges = set()
     def process_input_file(self, filepath):
-        self.edges = []
+        self.spaceEdges = []
         try:
             with open(filepath, 'r') as file:
                 self.M = 0
@@ -32,7 +33,7 @@ class GraphProcessor:
                     parts = line.strip().split()
                     if parts[0] == 'a' and len(parts) == 6:
                         id1, id2 = int(parts[1]), int(parts[2])
-                        self.edges.append(parts)
+                        self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
             print("Doc file hoan tat, M =", self.M)
         except FileNotFoundError:
@@ -49,7 +50,7 @@ class GraphProcessor:
         size = (self.H + 1) * self.M + 1
         self.Adj = lil_matrix((size, size), dtype=int)
 
-        for edge in self.edges:
+        for edge in self.spaceEdges:
             if len(edge) >= 6 and edge[3] == '0' and edge[4] == '1':
                 u, v, c = int(edge[1]), int(edge[2]), int(edge[5])
                 for i in range(self.H + 1):
@@ -77,7 +78,8 @@ class GraphProcessor:
         output_lines = []
         Q = deque(range((self.H + 1)* self.M + 1))
 
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.edges if edge[3] == '0' and edge[4] == '1' }
+        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        self.tsEdges = set()
 
         while Q:
             ID = Q.popleft()
@@ -93,8 +95,10 @@ class GraphProcessor:
                 if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
                     c = edges_with_cost[(u, v)]
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
+                    self.tsEdges.append((ID, j, 0, 1, c))
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
+                    self.tsEdges.append((ID, j, 0, 1, self.d))
 
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
@@ -214,7 +218,7 @@ class GraphProcessor:
         self.gamma = int(gamma) if gamma else 1
         restriction_count = input("Hãy nhập số lượng các restriction: ")
         self.restriction_count = int(restriction_count) if restriction_count else 1
-        startBan, endBan = map(int, input("Khung thời gian cấm: ").split())
+        startBan, endBan = map(int, input("Khung thời gian cấm (nhập a b): ").split())
         self.startBan = startBan
         self.endBan = endBan
         self.restrictions = []
@@ -222,32 +226,44 @@ class GraphProcessor:
         for i in range(self.restriction_count):
             print(f"Restriction {i + 1}:")
             #restriction = list(map(int, input("\tKhu vực cấm: ").split()))
-            u, v = map(int, input("\tKhu vực cấm: ").split())
+            u, v = map(int, input("\tKhu vực cấm (nhập a b): ").split())
 
             self.restrictions.append((u, v))
         self.Ur = int(input("Số lượng hạn chế: "))
 
     def process_restrictions(self):
         S = set()
-        R = set()
+        R = []
         newA = set()
         startBan = self.startBan
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
+        
 
         # Xác định các điểm bị cấm
-        """for restriction in self.restrictions:
-            for point in range(restriction[0], restriction[1] + 1):
-                S.add(point)"""
+        for restriction in self.restrictions:
+            for time in range(startBan, endBan + 1):
+                edge = []
+                for point in [restriction[0], restriction[1]]:
+                #S.add(point)
+                    timeSpacePoint = time*self.M + point
+                    edge.append(timeSpacePoint)
+                R.append(edge)
+                self.Adj[edge[0], edge[1]] = 0
 
+        pdb.set_trace()
         # Xử lý các cung cấm
-        for edge in self.edges:
-            ID1, ID2 = int(edge[1]), int(edge[2])
-            t1, u, v, t2 = ID1 // self.M, ID1 % self.M, ID2 % self.M, ID2 // self.M
-            if (u in S and v not in S) or (u in S and v in S):
-                if t2 <= startBan and t1 >= endBan:
-                    R.add((ID1, ID2))
-                if (u in S and v in S) and ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2)):
-                    R.add((ID1, ID2))
+        #for edge in self.spaceEdges:
+            #ID1, ID2 = int(edge[1]), int(edge[2])
+            #t1, u, v, t2 = ID1 // self.M, ID1 % self.M, ID2 % self.M, ID2 // self.M
+            #if (u in S and v in S):
+                #if ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2) or (t1 <= startBan and endBan <= t2)):
+                    #R.add((ID1, ID2))
+        
+        self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
+        with open('TSG.txt', 'w') as file:
+            for edge in self.tsEdges:
+                file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+        #self.create_tsg_file()
 
         # Tạo các cung mới dựa trên các cung cấm
         if R:
@@ -263,10 +279,15 @@ class GraphProcessor:
                 e5 = (aT, e[1], 0, 1, self.gamma)
                 newA.update({e4, e5})
 
+        self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
+
         # Ghi các cung mới vào file TSG.txt
         with open('TSG.txt', 'a') as file:
             for edge in newA:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+        #with open('TSG.txt', 'w') as file:
+        #    for edge in self.spaceEdges:
+        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         print("Đã cập nhật các cung mới vào file TSG.txt.")
 
     def update_tsg_with_constraints(self):
@@ -303,6 +324,7 @@ class GraphProcessor:
 
       #pdb.set_trace()
       Count = 0
+      self.tsEdges.extend(e for e in new_edges if e not in self.tsEdges)
       # Ghi các cung mới vào file TSG.txt
       with open('TSG.txt', 'a') as file:
         for edge in new_edges:
