@@ -95,10 +95,10 @@ class GraphProcessor:
                 if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
                     c = edges_with_cost[(u, v)]
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
-                    self.tsEdges.append((ID, j, 0, 1, c))
+                    self.tsEdges.add((ID, j, 0, 1, c))
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
-                    self.tsEdges.append((ID, j, 0, 1, self.d))
+                    self.tsEdges.add((ID, j, 0, 1, self.d))
 
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
@@ -324,7 +324,7 @@ class GraphProcessor:
 
       #pdb.set_trace()
       Count = 0
-      self.tsEdges.extend(e for e in new_edges if e not in self.tsEdges)
+      self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
       # Ghi các cung mới vào file TSG.txt
       with open('TSG.txt', 'a') as file:
         for edge in new_edges:
