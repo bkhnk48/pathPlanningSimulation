@@ -218,7 +218,7 @@ class GraphProcessor:
         self.gamma = int(gamma) if gamma else 1
         restriction_count = input("Hãy nhập số lượng các restriction: ")
         self.restriction_count = int(restriction_count) if restriction_count else 1
-        startBan, endBan = map(int, input("Khung thời gian cấm (nhập a b): ").split())
+        startBan, endBan = map(int, input("Khung thời gian cấm (nhập hai số phân tách bằng khoảng trắng a b): ").split())
         self.startBan = startBan
         self.endBan = endBan
         self.restrictions = []
@@ -226,7 +226,7 @@ class GraphProcessor:
         for i in range(self.restriction_count):
             print(f"Restriction {i + 1}:")
             #restriction = list(map(int, input("\tKhu vực cấm: ").split()))
-            u, v = map(int, input("\tKhu vực cấm (nhập a b): ").split())
+            u, v = map(int, input("\tKhu vực cấm (nhập hai số phân tách bằng khoảng trắng a b): ").split())
 
             self.restrictions.append((u, v))
         self.Ur = int(input("Số lượng hạn chế: "))
@@ -238,15 +238,18 @@ class GraphProcessor:
         startBan = self.startBan
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
         
-
+        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
             for time in range(startBan, endBan + 1):
                 edge = []
-                for point in [restriction[0], restriction[1]]:
+                #point = restriction[0] #, restriction[1]]:
                 #S.add(point)
-                    timeSpacePoint = time*self.M + point
-                    edge.append(timeSpacePoint)
+                timeSpacePoint_0 = time*self.M + restriction[0]
+                Cost = edges_with_cost.get((restriction[0], restriction[1]), -1)
+                timeSpacePoint_1 = (time + Cost)*self.M + restriction[1]
+                edge.append(timeSpacePoint_0)
+                edge.append(timeSpacePoint_1)
                 R.append(edge)
                 self.Adj[edge[0], edge[1]] = 0
 
