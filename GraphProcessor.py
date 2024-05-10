@@ -253,7 +253,6 @@ class GraphProcessor:
                 R.append(edge)
                 self.Adj[edge[0], edge[1]] = 0
 
-        pdb.set_trace()
         # Xử lý các cung cấm
         #for edge in self.spaceEdges:
             #ID1, ID2 = int(edge[1]), int(edge[2])
@@ -267,10 +266,11 @@ class GraphProcessor:
             for edge in self.tsEdges:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         #self.create_tsg_file()
-
+        pdb.set_trace()
         # Tạo các cung mới dựa trên các cung cấm
         if R:
-            Max = max(ID2 for _, ID2 in R) + 1
+            Max = getMaxID() + 1
+            #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
             Max += 3
             e1 = (aS, aT, 0, self.H, self.gamma/self.alpha)
@@ -288,13 +288,13 @@ class GraphProcessor:
         with open('TSG.txt', 'a') as file:
             for edge in newA:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+                print(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}")
         #with open('TSG.txt', 'w') as file:
         #    for edge in self.spaceEdges:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         print("Đã cập nhật các cung mới vào file TSG.txt.")
 
-    def update_tsg_with_constraints(self):
-      # Tìm giá trị lớn nhất trong TSG.txt
+    def getMaxID(self):
       max_val = 0
       try:
         with open('TSG.txt', 'r') as file:
@@ -304,6 +304,11 @@ class GraphProcessor:
                     max_val = max(max_val, int(parts[2]))
       except FileNotFoundError:
         pass
+      return max_val
+      
+    def update_tsg_with_constraints(self):
+      # Tìm giá trị lớn nhất trong TSG.txt
+      max_val = getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
       R = set()
