@@ -269,7 +269,7 @@ class GraphProcessor:
         pdb.set_trace()
         # Tạo các cung mới dựa trên các cung cấm
         if R:
-            Max = getMaxID() + 1
+            Max = self.getMaxID() + 1
             #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
             Max += 3
@@ -308,7 +308,7 @@ class GraphProcessor:
       
     def update_tsg_with_constraints(self):
       # Tìm giá trị lớn nhất trong TSG.txt
-      max_val = getMaxID()
+      max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
       R = set()
