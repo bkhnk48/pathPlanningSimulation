@@ -1,9 +1,11 @@
 import os
 import re
 import json
+from model.Node import Node
+from model.Edge import Edge
 from collections import deque
 from scipy.sparse import lil_matrix
-#from ortools.linear_solver import pywraplp
+from ortools.linear_solver import pywraplp
 import pdb
 """
 Mô tả yêu cầu của code:
@@ -24,6 +26,9 @@ class GraphProcessor:
         self.tardiness = 0
         self.spaceEdges = []
         self.tsEdges = set()
+        self.ts_nodes = []
+        self.ts_edges = []
+        
     def process_input_file(self, filepath):
         self.spaceEdges = []
         try:
@@ -74,13 +79,19 @@ class GraphProcessor:
                 file.write(f"({i}, {j})\n")
         print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
+    def check_and_add_nodes(self, ID1, ID2):
+        # Ensure that Node objects for ID1 and ID2 exist in ts_nodes
+        if not any(node.ID == ID1 for node in self.ts_nodes):
+            self.ts_nodes.append(Node(ID1))
+        if not any(node.ID == ID2 for node in self.ts_nodes):
+            self.ts_nodes.append(Node(ID2))
+            
     def create_tsg_file(self):
         output_lines = []
         Q = deque(range((self.H + 1)* self.M + 1))
 
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
-        self.tsEdges = set()
-
+        
         while Q:
             ID = Q.popleft()
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
@@ -96,14 +107,18 @@ class GraphProcessor:
                     c = edges_with_cost[(u, v)]
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                     self.tsEdges.add((ID, j, 0, 1, c))
+                    self.check_and_add_nodes(ID, j)
+                    self.ts_edges.append(Edge(Node(ID), Node(j), c))
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
+                    self.check_and_add_nodes(ID, j)
+                    self.ts_edges.append(Edge(Node(ID), Node(j), self.d))
 
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
                 file.write(line + "\n")
-        print("Da tao TSG.txt.")
+        print("TSG.txt file created.")
 
 
     def query_edges_by_source_id(self):
