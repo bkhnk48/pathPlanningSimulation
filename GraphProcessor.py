@@ -29,6 +29,7 @@ class GraphProcessor:
         self.ts_nodes = []
         self.ts_edges = []
         self.startedNodes = []
+
         
     def process_input_file(self, filepath):
         self.spaceEdges = []
@@ -307,8 +308,8 @@ class GraphProcessor:
         #    for edge in self.spaceEdges:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
-        self.getStartedPoints()
         with open('TSG.txt', 'w') as file:
+            self.getStartedPoints()
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
@@ -331,7 +332,7 @@ class GraphProcessor:
             p, t = map(int, input(f"Xe {i} xuất phát ở đâu và khi nào (nhập p t)?: ").split())
             p = t*self.M + p
             self.startedNodes.append(p)
-            
+
     def getMaxID(self):
       max_val = 0
       try:
