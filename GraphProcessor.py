@@ -51,7 +51,7 @@ class GraphProcessor:
     def find_node(self, id):
         # Tìm kiếm đối tượng Node có ID tương ứng
         for node in self.ts_nodes:
-            if node.id == id:
+            if node.ID == id:
                 return node
         # Nếu không tìm thấy, tạo mới và thêm vào danh sách
         new_node = Node(id)
