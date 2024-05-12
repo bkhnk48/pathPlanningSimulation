@@ -346,7 +346,7 @@ class GraphProcessor:
         pass
       return max_val
       
-    def update_tsg_with_constraints(self):
+    def add_time_windows_constraints(self):
       # Tìm giá trị lớn nhất trong TSG.txt
       max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
@@ -501,7 +501,7 @@ class GraphProcessor:
                   self.tardiness = time_values[1]
                   self.alpha = 1
                   self.beta =  1
-                  self.update_tsg_with_constraints()
+                  self.add_time_windows_constraints()
 
 
               # Ghi dòng thông tin về bài toán và lịch trình vào đầu file TSG.txt
@@ -760,7 +760,7 @@ class GraphProcessor:
                 beta = input("Nhập beta (nhấn Enter để lấy giá trị mặc định là 1): ")
                 self.alpha = int(alpha) if alpha else 1
                 self.beta = int(beta) if beta else 1
-                self.update_tsg_with_constraints()
+                self.add_time_windows_constraints()
             elif choice == 'i':
                 self.update_tsg_with_T()
             elif choice == 'j':
