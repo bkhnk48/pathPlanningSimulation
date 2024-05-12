@@ -51,7 +51,7 @@ class GraphProcessor:
     def find_node(self, id):
         # Tìm kiếm đối tượng Node có ID tương ứng
         for node in self.ts_nodes:
-            if node.ID == id:
+            if node.id == id:
                 return node
         # Nếu không tìm thấy, tạo mới và thêm vào danh sách
         new_node = Node(id)
@@ -95,7 +95,7 @@ class GraphProcessor:
     def check_and_add_nodes(self, *args):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
-            if not any(node.ID == id for node in self.ts_nodes):
+            if not any(node.id == id for node in self.ts_nodes):
                 self.ts_nodes.append(Node(id))
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
