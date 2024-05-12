@@ -64,12 +64,6 @@ class Event:
         self.time = self.time + waittime
         graph.writefile(self.pos, 1)
 
-    def saveGraph(self):
-        # Lưu đồ thị vào file DIMACS và trả về tên file
-        filename = "TSG_0.txt"
-        # Code để lưu đồ thị vào file
-        return filename
-    
     def getReal(self, currentpos, nextpos, realtime):
         obj = utility()
         graph = Graph(self.x)
@@ -88,6 +82,12 @@ class Event:
         self.time = self.time + forecastime
         graph = Graph(self.x)
         graph.writefile(self.pos, 1)
+
+    def saveGraph(self):
+        # Lưu đồ thị vào file DIMACS và trả về tên file
+        filename = "TSG_0.txt"
+        # Code để lưu đồ thị vào file
+        return filename
 
     def getNext(self):
         from .HoldingEvent import HoldingEvent

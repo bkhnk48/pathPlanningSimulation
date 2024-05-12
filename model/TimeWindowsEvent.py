@@ -28,6 +28,3 @@ class TimeWindowsEvent(Event):
             f"AGV {self.agv.id} processes TimeWindowsEvent at {self.target_node} at time {self.endTime}"
         )
         self.getNext(self.graph)
-
-
-

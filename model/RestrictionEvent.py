@@ -37,6 +37,3 @@ class RestrictionEvent(Event):
         )
         self.updateGraph(self.graph)
         self.calculateCost()
-
-
-
