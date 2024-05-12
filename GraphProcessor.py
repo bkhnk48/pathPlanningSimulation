@@ -277,9 +277,6 @@ class GraphProcessor:
                     #R.add((ID1, ID2))
         
         self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
-        with open('TSG.txt', 'w') as file:
-            for edge in self.tsEdges:
-                file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         #self.create_tsg_file()
         
         # Tạo các cung mới dựa trên các cung cấm
@@ -300,14 +297,19 @@ class GraphProcessor:
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
         #pdb.set_trace()
         # Ghi các cung mới vào file TSG.txt
-        with open('TSG.txt', 'a') as file:
-            for edge in newA:
-                c = int(edge[4])
-                file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}\n")
+        #with open('TSG.txt', 'a') as file:
+        #    for edge in newA:
+        #        c = int(edge[4])
+        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}\n")
                 #print(f"{c} a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}")
         #with open('TSG.txt', 'w') as file:
         #    for edge in self.spaceEdges:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+        self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
+        with open('TSG.txt', 'w') as file:
+            for edge in self.tsEdges:
+                file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+        
         print("Đã cập nhật các cung mới vào file TSG.txt.")
 
     def getMaxID(self):
