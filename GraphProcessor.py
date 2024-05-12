@@ -3,9 +3,10 @@ import re
 import json
 from model.Node import Node
 from model.Edge import Edge
+from model.ArtificialNode import ArtificialNode
 from collections import deque
 from scipy.sparse import lil_matrix
-from ortools.linear_solver import pywraplp
+#from ortools.linear_solver import pywraplp
 import pdb
 """
 Mô tả yêu cầu của code:
@@ -350,6 +351,7 @@ class GraphProcessor:
       max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
+      self.ts_nodes.append(ArtificialNode(max_val))
       R = set()
       new_edges = set()
       # Duyệt các dòng của file TSG.txt
