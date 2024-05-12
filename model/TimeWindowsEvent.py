@@ -9,9 +9,9 @@ class TimeWindowsEvent(Event):
         edge = self.graph.get_edge(self.agv.current_node, self.target_node)
         if edge:
             cost_increase = edge.weight
-            AGV.cost += cost_increase  # Cập nhật chi phí của AGV
+            self.agv.cost += cost_increase  # Cập nhật chi phí của AGV
             print(
-                f"Cost increased by {cost_increase} for AGV {AGV.id} due to TimeWindowsEvent at {self.target_node}"
+                f"Cost increased by {cost_increase} for AGV {self.agv.id} due to TimeWindowsEvent at {self.target_node}"
             )
         else:
             print("No edge found or incorrect edge weight.")

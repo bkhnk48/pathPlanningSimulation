@@ -10,7 +10,7 @@ class ReachingTarget(Event):
 
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
-        if self.previous_node is not None and self.target_node is not None:
+        if self.agv.previous_node is not None and self.target_node is not None:
             last_edge_weight = self.graph.get_edge(self.agv.previous_node, self.target_node)
             if last_edge_weight is not None:
                 # Calculate cost based on the weight of the last edge

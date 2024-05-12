@@ -28,6 +28,8 @@ class GraphProcessor:
         self.tsEdges = set()
         self.ts_nodes = []
         self.ts_edges = []
+        self.startedNodes = []
+
         
     def process_input_file(self, filepath):
         self.spaceEdges = []
@@ -307,6 +309,10 @@ class GraphProcessor:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         with open('TSG.txt', 'w') as file:
+            self.getStartedPoints()
+            file.write(f"p min {Max} {len(self.tsEdges)}\n")
+            for start in self.startedNodes:
+                file.write(f"n {start} 1\n")
             for edge in self.tsEdges:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
                 if(edge in newA):
@@ -318,6 +324,14 @@ class GraphProcessor:
                         file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
         
         print("Đã cập nhật các cung mới vào file TSG.txt.")
+
+    def getStartedPoints(self):
+        N = int(input("Nhập vào số lượng các xe AGV: "))
+        self.startedNodes = []
+        for i in range(1, N+1):
+            p, t = map(int, input(f"Xe {i} xuất phát ở đâu và khi nào (nhập p t)?: ").split())
+            p = t*self.M + p
+            self.startedNodes.append(p)
 
     def getMaxID(self):
       max_val = 0
