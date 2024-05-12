@@ -121,12 +121,12 @@ class GraphProcessor:
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                     self.tsEdges.add((ID, j, 0, 1, c))
                     self.check_and_add_nodes(ID, j)
-                    self.ts_edges.append(Edge(Node(ID), Node(j), c))
+                    self.ts_edges.append(Edge(find_node(ID), find_node(j), c))
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
                     self.check_and_add_nodes(ID, j)
-                    self.ts_edges.append(Edge(Node(ID), Node(j), self.d))
+                    self.ts_edges.append(Edge(find_node(ID), find_node(j), self.d))
 
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
