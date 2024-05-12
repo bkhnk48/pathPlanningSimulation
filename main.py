@@ -2,6 +2,7 @@ from model.Graph import Graph#, graph
 from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
+import config
 from discrevpy import simulator
 import subprocess
 import sys
@@ -77,25 +78,16 @@ def choose_solver():
     print("2 - Use network-simplex")
     choice = input("Enter your choice (1 or 2): ")
     if choice == '1':
-        return 'solver'
+        config.solver_choice = 'solver'
     elif choice == '2':
-        return 'network-simplex'
+        config.solver_choice = 'network-simplex'
     else:
         print("Invalid choice. Defaulting to network-simplex.")
-        return 'network-simplex'
-    
-def solver_process():
-    if len(pns_path) == 0:
-        pns_path = input("Enter the path for pns-seq: ")
-    command = f"python3 B_solver.py > solver_output.txt"
-    subprocess.run(command, shell=True)
-    print("Solver output redirected to solver_output.txt")
-    
-# Main execution
+        config.solver_choice = 'network-simplex'
+
 if __name__ == "__main__":
     simulator.ready()
-    method = choose_solver()
+    #events = parse_tsg_file('TSG_0.txt')
+    choose_solver()
     schedule_events(events)
-    if method == 'solver':
-        solver_process()
     simulator.run()

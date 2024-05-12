@@ -7,6 +7,7 @@ from .Edge import Edge
 import pdb
 import os
 from collections import defaultdict
+import config
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
@@ -97,25 +98,30 @@ class Event:
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
+
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
-            # Nếu đồ thị hiện tại đã được dùng để tìm đường cho AGV
-            # một lần nữa cũng gọi getNextNode của AGV
-            next_vertex = self.agv.getNextNode()  # Giả định phương thức này tồn tại
+            next_vertex = self.agv.getNextNode()
         else:
-            # Nếu đồ thị phiên bản này chưa dùng để tìm đường cho AGV, thì cần tìm lại đường đi
             self.updateGraph()
-            # pdb.set_trace()
             filename = self.saveGraph()
-            if len(self.pns_path) == 0:
-                self.pns_path = input("Nhập vào đường dẫn của pns-seq: ")
-            lenh = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-            print(lenh)
-            subprocess.run(lenh, shell=True)
-            lenh = "python3 filter.py > traces.txt"
-            subprocess.run(lenh, shell=True)
+
+            if config.solver_choice == 'solver':
+                command = f"python3 B_solver.py {filename} > solver_output.txt"
+                print("Running solver:", command)
+            else:
+                if len(self.pns_path) == 0:
+                    self.pns_path = input("Enter the path for pns-seq: ")
+                command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+                print("Running network-simplex:", command)
+
+            subprocess.run(command, shell=True)
+
+            if config.solver_choice != 'solver':
+                command = "python3 filter.py > traces.txt"
+                subprocess.run(command, shell=True)
+
             self.graph.version += 1
             self.setTracesForAllAGVs()
-            # Lần 1 gọi getNextNode của AGV
             next_vertex = self.agv.getNextNode()
 
         # Xác định kiểu sự kiện tiếp theo
