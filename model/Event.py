@@ -64,6 +64,12 @@ class Event:
         self.time = self.time + waittime
         graph.writefile(self.pos, 1)
 
+    def saveGraph(self):
+        # Lưu đồ thị vào file DIMACS và trả về tên file
+        filename = "TSG_0.txt"
+        # Code để lưu đồ thị vào file
+        return filename
+    
     def getReal(self, currentpos, nextpos, realtime):
         obj = utility()
         graph = Graph(self.x)
@@ -151,12 +157,6 @@ class Event:
         # print("Edge found:", edge)
         # else:
         # print("No edge found between", self.start_node, "and", self.end_node)
-
-    def saveGraph(self):
-        # Lưu đồ thị vào file DIMACS và trả về tên file
-        filename = "TSG_0.txt"
-        # Code để lưu đồ thị vào file
-        return filename
 
     def calculateCost(self):
         # Increase cost by the actual time spent in holding
