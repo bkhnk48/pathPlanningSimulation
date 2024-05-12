@@ -71,9 +71,31 @@ def schedule_events(events):
     for event in events:
         simulator.schedule(event.startTime, event.process)
 
+def choose_solver():
+    print("Choose the method for solving:")
+    print("1 - Use LINK II solver")
+    print("2 - Use network-simplex")
+    choice = input("Enter your choice (1 or 2): ")
+    if choice == '1':
+        return 'solver'
+    elif choice == '2':
+        return 'network-simplex'
+    else:
+        print("Invalid choice. Defaulting to network-simplex.")
+        return 'network-simplex'
+    
+def solver_process():
+    if len(pns_path) == 0:
+        pns_path = input("Enter the path for pns-seq: ")
+    command = f"python3 B_solver.py > solver_output.txt"
+    subprocess.run(command, shell=True)
+    print("Solver output redirected to solver_output.txt")
+    
 # Main execution
 if __name__ == "__main__":
     simulator.ready()
-    #events = parse_tsg_file('TSG_0.txt')
+    method = choose_solver()
     schedule_events(events)
+    if method == 'solver':
+        solver_process()
     simulator.run()
