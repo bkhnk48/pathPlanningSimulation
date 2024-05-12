@@ -93,7 +93,7 @@ class GraphProcessor:
         print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
     def check_and_add_nodes(self, *args):
-	for id in args:
+        for id in args:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.ID == id for node in self.ts_nodes):
                 self.ts_nodes.append(Node(id))
