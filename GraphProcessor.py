@@ -28,6 +28,7 @@ class GraphProcessor:
         self.tsEdges = set()
         self.ts_nodes = []
         self.ts_edges = []
+        self.startedNodes = []
         
     def process_input_file(self, filepath):
         self.spaceEdges = []
@@ -278,7 +279,7 @@ class GraphProcessor:
         
         self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
         #self.create_tsg_file()
-        
+        Max = 0
         # Tạo các cung mới dựa trên các cung cấm
         if R:
             Max = self.getMaxID() + 1
@@ -306,12 +307,31 @@ class GraphProcessor:
         #    for edge in self.spaceEdges:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
+        self.getStartedPoints()
         with open('TSG.txt', 'w') as file:
+            file.write(f"p min {Max} {len(self.tsEdges)}\n")
+            for start in self.startedNodes:
+                file.write(f"n {start} 1\n")
             for edge in self.tsEdges:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+                if(edge in newA):
+                    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
+                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is TS node and target is an artificial node\n");
+                    elif(edge[0]//self.M > self.H and edge[1]//self.M <= self.H):
+                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
+                    elif(edge[0] > edge[1]):
+                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
         
         print("Đã cập nhật các cung mới vào file TSG.txt.")
 
+    def getStartedPoints(self):
+        N = int(input("Nhập vào số lượng các xe AGV: "))
+        self.startedNodes = []
+        for i in range(1, N+1):
+            p, t = map(int, input(f"Xe {i} xuất phát ở đâu và khi nào (nhập p t)?: ").split())
+            p = t*self.M + p
+            self.startedNodes.append(p)
+            
     def getMaxID(self):
       max_val = 0
       try:
