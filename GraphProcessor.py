@@ -48,6 +48,16 @@ class GraphProcessor:
             print("File khong ton tai!")
             return
 
+    def find_node(self, id):
+        # Tìm kiếm đối tượng Node có ID tương ứng
+        for node in self.ts_nodes:
+            if node.id == id:
+                return node
+        # Nếu không tìm thấy, tạo mới và thêm vào danh sách
+        new_node = Node(id)
+        self.ts_nodes.append(new_node)
+        return new_node
+	
     def generate_hm_matrix(self):
         self.matrix = [[j + 1 + self.M * i for j in range(self.M)] for i in range(self.H)]
         print("Hoan tat khoi tao matrix HM!")
