@@ -399,52 +399,6 @@ class GraphProcessor:
 
 
 
-    #Dưới đây là chương trình Python theo yêu cầu của bạn:
-
-    def append_new_edges_to_tsg(self):
-        # Yêu cầu nhập liệu từ người dùng
-        ID = int(input("Nhập ID: "))
-        earliness = int(input("Nhập earliness: "))
-        tardiness = int(input("Nhập tardiness: "))
-        alpha = input("Nhập alpha (nhấn Enter để lấy giá trị mặc định là 1): ")
-        beta = input("Nhập beta (nhấn Enter để lấy giá trị mặc định là 1): ")
-
-        # Nếu người dùng không nhập gì, sử dụng giá trị mặc định là 1
-        self.alpha = int(alpha) if alpha else 1
-        self.beta = int(beta) if beta else 1
-
-        # Đọc file TSG.txt và tìm giá trị Max
-        max_id = 0
-        with open('TSG.txt', 'r') as file:
-            for line in file:
-                if line.startswith('a'):
-                    _, id1, id2, _, _, _ = line.split()
-                    max_id = max(max_id, int(id1), int(id2))
-
-        max_id += 1
-
-        # Tạo các cung mới và lưu vào R
-        R = []
-        with open('TSG.txt', 'r') as file:
-            for line in file:
-                if line.startswith('a'):
-                    _, id1, id2, _, _, _ = line.split()
-                    for i in range(1, self.H+1):  # Giả sử H là biến đã được định nghĩa trước
-                        j = i * self.M + ID  # Giả sử M là biến đã được định nghĩa trước
-                        if j == int(id2):
-                            C = self.beta * max(earliness - i, 0, i - tardiness) / self.alpha
-                            C = int(C)
-                            s = f'a {j} {max_id} 0 1 {C}'
-                            R.append(s)
-                            #max_id += 1  # Cập nhật Max sau mỗi lần thêm cung mới
-
-        # Ghi nối đuôi các cung mới vào TSG.txt
-        with open('TSG.txt', 'a') as file:
-            for s in R:
-                file.write(s + '\n')
-
-
-
     def update_tsg_with_T(self):
         T = int(input("Nhập giá trị T: "))
         # Đảm bảo T là một giá trị nguyên dương
