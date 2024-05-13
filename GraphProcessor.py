@@ -407,6 +407,7 @@ class GraphProcessor:
       #pdb.set_trace()
       Count = 0
       self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
+      self.create_set_of_edges(new_edges)
       # Ghi các cung mới vào file TSG.txt
       with open('TSG.txt', 'a') as file:
         for edge in new_edges:
