@@ -94,7 +94,8 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
-
+        from ForecastingModel import ForecastingModel, read_custom_dimacs, divide_node, sort_all_dicts
+        
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
@@ -106,8 +107,15 @@ class Event:
             filename = self.saveGraph()
 
             if config.solver_choice == 'solver':
-                command = f"python3 B_solver.py {filename} > solver_output.txt"
-                print("Running solver:", command)
+                print("Running ForecastingModel...")
+                # Assuming `filename` is a path to the file with necessary data for the model
+                problem_info, node_descriptors_dict, arc_descriptors_dict, earliness_tardiness_dict = read_custom_dimacs(filename)
+                supply_nodes_dict, demand_nodes_dict, zero_nodes_dict = divide_node(node_descriptors_dict, arc_descriptors_dict)
+                supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict = sort_all_dicts(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict)
+                model = ForecastingModel(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
+                model.solve()
+                model.output_solution()
+                model.save_solution(filename)
             else:
                 if len(self.pns_path) == 0:
                     self.pns_path = input("Enter the path for pns-seq: ")
