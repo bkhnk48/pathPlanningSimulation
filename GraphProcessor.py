@@ -92,11 +92,14 @@ class GraphProcessor:
                 file.write(f"({i}, {j})\n")
         print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
-    def check_and_add_nodes(self, *args):
+    def check_and_add_nodes(self, *args, isArtificialNode = False, label = ""):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes):
-                self.ts_nodes.append(Node(id))
+                if(isArtificialNode):
+                    self.ts_nodes.append(ArtificialNode(id, label))
+                else:
+                    self.ts_nodes.append(Node(id))
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
             
@@ -298,6 +301,7 @@ class GraphProcessor:
             Max = self.getMaxID() + 1
             #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
+            self.check_and_add_nodes(aS, aT, aSubT, True, "RestrictionNode")
             Max += 3
             e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
             e2 = (aS, aSubT, 0, self.H, int(self.gamma/self.alpha))
@@ -362,7 +366,7 @@ class GraphProcessor:
       max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
-      self.ts_nodes.append(ArtificialNode(max_val))
+      self.ts_nodes.append(ArtificialNode(max_val, "TimeWindowsNode"))
       R = set()
       new_edges = set()
       # Duyệt các dòng của file TSG.txt
