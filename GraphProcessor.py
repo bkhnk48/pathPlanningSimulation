@@ -338,7 +338,8 @@ class GraphProcessor:
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
             for target in self.targetNodes:
-                file.write(f"n {target} -1\n")
+                target_id = target.id
+                file.write(f"n {target_id} -1\n")
             for edge in self.tsEdges:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
                 if(edge in newA):
