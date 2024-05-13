@@ -7,6 +7,8 @@ from model.Edge import HoldingEdge
 from model.Edge import MovingEdge
 from model.Edge import ArtificialEdge
 from model.ArtificialNode import ArtificialNode
+from model.TimeWindowNode import TimeWindowNode
+from model.RestrictionNode import RestrictionNode
 from collections import deque
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
@@ -101,7 +103,12 @@ class GraphProcessor:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes):
                 if(isArtificialNode):
-                    self.ts_nodes.append(ArtificialNode(id, label))
+		    if(label == "TimeWindow"):
+	                self.ts_nodes.append(TimeWindowNode(id, label))
+		    elif(label == "Restriction"):
+		        self.ts_nodes.append(RestrictionNode(id, label))
+		    else:
+                        self.ts_nodes.append(ArtificialNode(id, label))
                 else:
                     self.ts_nodes.append(Node(id))
         #if not any(node.ID == ID2 for node in self.ts_nodes):
@@ -313,7 +320,7 @@ class GraphProcessor:
             Max = self.getMaxID() + 1
             #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
-            self.check_and_add_nodes(aS, aT, aSubT, True, "RestrictionNode")
+            self.check_and_add_nodes(aS, aT, aSubT, True, "Restriction")
             Max += 3
             e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
             e2 = (aS, aSubT, 0, self.H, int(self.gamma/self.alpha))
@@ -382,7 +389,7 @@ class GraphProcessor:
       max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
-      targetNode = ArtificialNode(max_val, "TimeWindowsNode")
+      targetNode = TimeWindowNode(max_val, "TimeWindow")
       self.ts_nodes.append(targetNode)
       self.targetNodes.append(targetNode)
       R = set()
