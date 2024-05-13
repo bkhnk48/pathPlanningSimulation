@@ -326,6 +326,7 @@ class GraphProcessor:
 
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
         self.create_set_of_edges(newA)
+        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         #pdb.set_trace()
         # Ghi các cung mới vào file TSG.txt
         #with open('TSG.txt', 'a') as file:
