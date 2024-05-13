@@ -267,6 +267,10 @@ class GraphProcessor:
             self.restrictions.append((u, v))
         self.Ur = int(input("Số lượng hạn chế: "))
 
+    def create_restriction_edges(self, edges, label = None):
+        for e in edges:
+            self.ts_edges.append(ArtificialEdge(self.find_node(e[0]), self.find_node(e[1]), e[4]))
+        
     def process_restrictions(self):
         S = set()
         R = []
@@ -321,6 +325,7 @@ class GraphProcessor:
                 newA.update({e4, e5})
 
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
+        self.create_restriction_edges(newA)
         #pdb.set_trace()
         # Ghi các cung mới vào file TSG.txt
         #with open('TSG.txt', 'a') as file:
