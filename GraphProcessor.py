@@ -3,6 +3,9 @@ import re
 import json
 from model.Node import Node
 from model.Edge import Edge
+from model.Edge import HoldingEdge
+from model.Edge import MovingEdge
+from model.Edge import ArtificialEdge
 from model.ArtificialNode import ArtificialNode
 from collections import deque
 from scipy.sparse import lil_matrix
@@ -126,12 +129,12 @@ class GraphProcessor:
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                     self.tsEdges.add((ID, j, 0, 1, c))
                     self.check_and_add_nodes(ID, j)
-                    self.ts_edges.append(Edge(self.find_node(ID), self.find_node(j), c))
+                    self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
                     self.check_and_add_nodes(ID, j)
-                    self.ts_edges.append(Edge(self.find_node(ID), self.find_node(j), self.d))
+                    self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
 
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
@@ -295,6 +298,10 @@ class GraphProcessor:
                     #R.add((ID1, ID2))
         
         self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
+        size1 = len(self.ts_edges)
+        self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in R]
+        size2 = len(self.ts_edges)
+        assert (size1 == size2 + len(R)), "Số lượng self.ts_edges phải bị thay đổi"
         #self.create_tsg_file()
         Max = 0
         # Tạo các cung mới dựa trên các cung cấm
