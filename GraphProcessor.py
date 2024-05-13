@@ -30,6 +30,7 @@ class GraphProcessor:
         self.ts_nodes = []
         self.ts_edges = []
         self.startedNodes = []
+        self.targetNodes = []
 
         
     def process_input_file(self, filepath):
@@ -366,7 +367,9 @@ class GraphProcessor:
       max_val = self.getMaxID()
       #print(f"max_val = {max_val}")
       max_val += 1
-      self.ts_nodes.append(ArtificialNode(max_val, "TimeWindowsNode"))
+      targetNode = ArtificialNode(max_val, "TimeWindowsNode")
+      self.ts_nodes.append(targetNode)
+      self.targetNodes.append(targetNode)
       R = set()
       new_edges = set()
       # Duyệt các dòng của file TSG.txt
