@@ -333,7 +333,6 @@ class GraphProcessor:
         #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         with open('TSG.txt', 'w') as file:
-            self.getStartedPoints()
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
@@ -695,6 +694,50 @@ class GraphProcessor:
 
 
 
+    def test_menu(self):
+        while True:
+            print("======================================")
+            print("Nhan (a) de chon file dau vao")
+            print("Nhan (b) de in ra ma tran HM")
+            print("Nhan (c) de in ra ma tran lien ke Adj")
+            print("Nhan (d) de tao ra file TSG.txt")
+            print("Nhan (h) de yeu cau nhap ID, earliness, tardiness")
+            print("Nhan (j) de cap nhat cac rang buoc ve su xuat hien cua xe")
+            print("Nhan cac phim ngoai (a-o) de ket thuc")
+
+            choice = input("Nhap lua chon cua ban: ").strip().lower()
+
+            if choice == 'a' or choice == 'b' or choice == 'c' or choice == 'd' or choice == 'h' or choice == 'j':
+                filepath = 'simplest.txt'
+                self.process_input_file(filepath)
+                self.H = 10
+                self.generate_hm_matrix()
+                self.d = 1
+                self.generate_adj_matrix()
+                self.create_tsg_file()
+                count = 0
+                while(count <= 1):
+                    self.ID = 3
+                    self.earliness = 4 if count == 0 else 7
+                    self.tardiness = 6 if count == 0 else 9
+                    self.alpha = 1
+                    self.beta = 1
+                    self.add_time_windows_constraints()
+                    count += 1
+                #self.update_tsg_with_T()
+                #self.add_restrictions()
+                self.gamma = 1
+                self.restriction_count = 1
+                self.startBan = 0
+                self.endBan = 2
+                self.restrictions = [[1, 2]]
+                self.Ur = 3
+                self.startNodes = [1, 10]
+                self.process_restrictions()
+            else:
+                print("Ket thuc chuong trinh.")
+                break
+                
     def main_menu(self):
         while True:
             print("======================================")
@@ -747,6 +790,7 @@ class GraphProcessor:
                 self.update_tsg_with_T()
             elif choice == 'j':
                 self.add_restrictions()
+                self.getStartedPoints()
                 self.process_restrictions()
             elif choice == 'k':
                 self.add_problem_info()
@@ -764,4 +808,4 @@ class GraphProcessor:
 
 if __name__ == "__main__":
     gp = GraphProcessor()
-    gp.main_menu()
+    gp.test_menu()
