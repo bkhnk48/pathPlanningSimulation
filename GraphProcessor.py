@@ -103,11 +103,11 @@ class GraphProcessor:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes):
                 if(isArtificialNode):
-		    if(label == "TimeWindow"):
-	                self.ts_nodes.append(TimeWindowNode(id, label))
-		    elif(label == "Restriction"):
-		        self.ts_nodes.append(RestrictionNode(id, label))
-		    else:
+                   if(label == "TimeWindow"):
+                        self.ts_nodes.append(TimeWindowNode(id, label))
+                   elif(label == "Restriction"):
+                       self.ts_nodes.append(RestrictionNode(id, label))
+                   else:
                         self.ts_nodes.append(ArtificialNode(id, label))
                 else:
                     self.ts_nodes.append(Node(id))
@@ -136,7 +136,8 @@ class GraphProcessor:
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                     self.tsEdges.add((ID, j, 0, 1, c))
                     self.check_and_add_nodes(ID, j)
-                    self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
+                    #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
+                    self.find_node(ID).create_edge(self.find_node(j), self.d, [ID, j, 0, 1, c])
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
