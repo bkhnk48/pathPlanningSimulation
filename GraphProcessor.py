@@ -361,15 +361,17 @@ class GraphProcessor:
             for target in self.targetNodes:
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
-            for edge in self.tsEdges:
-                file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-                if(edge in newA):
-                    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
-                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is TS node and target is an artificial node\n");
-                    elif(edge[0]//self.M > self.H and edge[1]//self.M <= self.H):
-                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
-                    elif(edge[0] > edge[1]):
-                        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
+            #for edge in self.tsEdges:
+            for edge in self.ts_edges:
+                #file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n") 
+                #if(edge in newA):
+                #    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
+                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is TS node and target is an artificial node\n");
+                #    elif(edge[0]//self.M > self.H and edge[1]//self.M <= self.H):
+                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
+                #    elif(edge[0] > edge[1]):
+                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
         
         print("Đã cập nhật các cung mới vào file TSG.txt.")
 
@@ -756,7 +758,7 @@ class GraphProcessor:
                 self.endBan = 2
                 self.restrictions = [[1, 2]]
                 self.Ur = 3
-                self.startNodes = [1, 10]
+                self.startedNodes = [1, 10]
                 self.process_restrictions()
             else:
                 print("Ket thuc chuong trinh.")
