@@ -5,6 +5,12 @@ class Node:
         self.edges = []
 
     def create_edge(self, node, M, d, e):
+        from .RestrictionNode import RestrictionNode
+        from .TimeWindowNode import TimeWindowNode
+        from .Edge import HoldingEdge
+        from .Edge import RestrictionEdge
+        from .Edge import TimeWindowEdge 
+        from .Edge import MovingEdge
         if node.id % M == self.id % M and ((node.id - self.id) // M == d) and isinstance(node, Node) and not isinstance(node, RestrictionNode) and not isinstance(node, TimeWindowNode):
             return HoldingEdge(self, node, d, d)
         elif isinstance(node, RestrictionNode):
@@ -13,7 +19,7 @@ class Node:
             return TimeWindowEdge(self, node, e[4], "TimeWindows")
         elif isinstance(node, Node):
             if node.id % M != self.id % M:
-                return MovingEdge(self, node)
+                return MovingEdge(self, node, d)
         else:
             return None
     
