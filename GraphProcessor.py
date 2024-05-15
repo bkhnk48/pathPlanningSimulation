@@ -129,6 +129,7 @@ class GraphProcessor:
                 #if (ID == 1 and j == 11):
                     #pdb.set_trace()
                 v = v if v != 0 or ID == 0 else self.M
+                temp = None
                 #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
                 #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
                 if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
@@ -137,14 +138,17 @@ class GraphProcessor:
                     self.tsEdges.add((ID, j, 0, 1, c))
                     self.check_and_add_nodes(ID, j)
                     #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
-                    self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
+                    temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
                     self.check_and_add_nodes(ID, j)
                     #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
-                    self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
+                    temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
+                if(temp != None):
+                    self.ts_edges.append(temp)
 
+        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
                 file.write(line + "\n")
@@ -279,7 +283,8 @@ class GraphProcessor:
     def create_set_of_edges(self, edges, label = None):
         for e in edges:
             #self.ts_edges.append(ArtificialEdge(self.find_node(e[0]), self.find_node(e[1]), e[4]))
-            self.find_node(e[0]).create_edge(self.find_node(e[1]), self.M, self.d, e)
+            temp = self.find_node(e[0]).create_edge(self.find_node(e[1]), self.M, self.d, e)
+            self.ts_edges.append(temp)
         
     def process_restrictions(self):
         S = set()
@@ -310,12 +315,13 @@ class GraphProcessor:
             #if (u in S and v in S):
                 #if ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2) or (t1 <= startBan and endBan <= t2)):
                     #R.add((ID1, ID2))
-        
+        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
         size1 = len(self.ts_edges)
+        #print(R)
         self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in R]
         size2 = len(self.ts_edges)
-        assert (size1 == size2 + len(R)), "Số lượng self.ts_edges phải bị thay đổi"
+        assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
         #self.create_tsg_file()
         Max = 0
         # Tạo các cung mới dựa trên các cung cấm
@@ -409,7 +415,6 @@ class GraphProcessor:
                         if j == ID2:
                             C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
                             new_edges.add((j, max_val, 0, 1, C))
-                            self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
                             break
 
       except FileNotFoundError:
@@ -741,6 +746,7 @@ class GraphProcessor:
                     self.alpha = 1
                     self.beta = 1
                     self.add_time_windows_constraints()
+                    assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
                     count += 1
                 #self.update_tsg_with_T()
                 #self.add_restrictions()
