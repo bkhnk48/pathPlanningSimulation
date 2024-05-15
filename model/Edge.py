@@ -33,3 +33,23 @@ class ArtificialEdge(Edge):
         # This method could be used to convert a temporary edge into a permanent one
         self.temporary = False
         print(f"ArtificialEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
+
+class RestrictionEdge(Edge):
+    def __init__(self, start_node, end_node, weight, temporary=False):
+        super().__init__(start_node, end_node, weight)
+        self.temporary = temporary  # Indicates if the edge is temporary
+
+    def make_permanent(self):
+        # This method could be used to convert a temporary edge into a permanent one
+        self.temporary = False
+        print(f"RestrictionEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
+
+class TimeWindowEdge(Edge):
+    def __init__(self, start_node, end_node, weight, temporary=False):
+        super().__init__(start_node, end_node, weight)
+        self.temporary = temporary  # Indicates if the edge is temporary
+
+    def make_permanent(self):
+        # This method could be used to convert a temporary edge into a permanent one
+        self.temporary = False
+        print(f"TimeWindowEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
