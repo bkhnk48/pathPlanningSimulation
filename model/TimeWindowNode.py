@@ -1,3 +1,4 @@
+from .Node import Node
 class TimeWindowNode(Node):
     def __init__(self, id, label=None):
         super().__init__(id,label)
