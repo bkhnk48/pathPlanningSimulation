@@ -278,7 +278,8 @@ class GraphProcessor:
 
     def create_set_of_edges(self, edges, label = None):
         for e in edges:
-            self.ts_edges.append(ArtificialEdge(self.find_node(e[0]), self.find_node(e[1]), e[4]))
+            #self.ts_edges.append(ArtificialEdge(self.find_node(e[0]), self.find_node(e[1]), e[4]))
+            self.find_node(e[0]).create_edge(self.find_node(e[1]), self.M, self.d, e)
         
     def process_restrictions(self):
         S = set()
