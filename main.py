@@ -3,6 +3,7 @@ from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
 from discrevpy import simulator
+from GraphProcessor import GraphProcessor
 import subprocess
 import sys
 
@@ -16,6 +17,9 @@ TASKS = set()
 x = {}
 y = {}
 
+pre_processor = GraphProcessor()
+pre_processor.use_in_main(False)
+
 graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
 
 events = []
@@ -27,6 +31,7 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
+
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
     for line in f:
