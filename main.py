@@ -23,7 +23,7 @@ pre_processor.use_in_main(False)
 graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
 
 events = []
-Event.setValue("numberOfNodesInSpaceGraph", 23) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
+Event.setValue("numberOfNodesInSpaceGraph", pre_processor.M) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
 Event.setValue("debug", 0)
 # Kiểm tra xem có tham số nào được truyền qua dòng lệnh không
 if len(sys.argv) > 1:
@@ -31,6 +31,16 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
+
+for start in pre_processor.startedNodes:
+    node_id = start.id
+    agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
+    #print(Event.getValue("numberOfNodesInSpaceGraph"))
+    startTime = node_id / numberOfNodesInSpaceGraph
+    endTime = startTime
+    start_event = StartEvent(startTime, endTime, agv, graph)  # Start event at time 0
+    events.append(start_event)
+    allAGVs.add(agv)  # Thêm vào tập hợp AGV
 
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
