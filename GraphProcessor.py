@@ -36,6 +36,7 @@ class GraphProcessor:
         self.ts_edges = []
         self.startedNodes = []
         self.targetNodes = []
+        self.printOut = True
 
         
     def process_input_file(self, filepath):
@@ -49,9 +50,11 @@ class GraphProcessor:
                         id1, id2 = int(parts[1]), int(parts[2])
                         self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
-            print("Doc file hoan tat, M =", self.M)
+            if(self.printOut):
+                print("Doc file hoan tat, M =", self.M)
         except FileNotFoundError:
-            print("File khong ton tai!")
+            if(self.printOut):
+                print("File khong ton tai!")
             return
 
     def find_node(self, id):
@@ -66,7 +69,8 @@ class GraphProcessor:
 	
     def generate_hm_matrix(self):
         self.matrix = [[j + 1 + self.M * i for j in range(self.M)] for i in range(self.H)]
-        print("Hoan tat khoi tao matrix HM!")
+        if(self.printOut):
+            print("Hoan tat khoi tao matrix HM!")
         # for row in self.matrix:
         #     print(' '.join(map(str, row)))
 
@@ -80,7 +84,8 @@ class GraphProcessor:
                 for i in range(self.H + 1):
                     source_idx = i * self.M + u
                     target_idx = (i + c) * self.M + v
-                    print(f"i = {i} {source_idx} {target_idx} = 1")
+                    if(self.printOut):
+                        print(f"i = {i} {source_idx} {target_idx} = 1")
 
                     if source_idx < size and target_idx < size:
                         self.Adj[source_idx, target_idx] = 1
@@ -90,13 +95,15 @@ class GraphProcessor:
             if j < size and (i % self.M == j % self.M):
                 self.Adj[i, j] = 1
 
-        print("Hoan tat khoi tao Adjacency matrix!")
+        if(self.printOut):
+            print("Hoan tat khoi tao Adjacency matrix!")
 
         rows, cols = self.Adj.nonzero()
         with open('adj_matrix.txt', 'w') as file:
             for i, j in zip(rows, cols):
                 file.write(f"({i}, {j})\n")
-        print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
+        if(self.printOut):
+            print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
     def check_and_add_nodes(self, *args, isArtificialNode = False, label = ""):
         for id in args:
@@ -152,9 +159,26 @@ class GraphProcessor:
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
                 file.write(line + "\n")
-        print("TSG.txt file created.")
+        if(self.printOut):
+            print("TSG.txt file created.")
 
-
+    def init_AGVs_n_events(self, allAGVs, events, graph):
+        from model.StartEvent import StartEvent
+        from model.AGV import AGV
+        for node_id in self.startedNodes:
+            #node_id = start.id
+            agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
+            #print(Event.getValue("numberOfNodesInSpaceGraph"))
+            startTime = node_id / self.M
+            endTime = startTime
+            start_event = StartEvent(startTime, endTime, agv, graph)  # Start event at time 0
+            events.append(start_event)
+            allAGVs.add(agv)  # Thêm vào tập hợp AGV
+    
+    def init_TASKs(self, TASKs):
+        for node_id in self.targetNodes:
+            TASKs.add(node_id)
+    
     def query_edges_by_source_id(self):
         source_id = int(input("Nhap vao ID nguon: "))
 
@@ -166,15 +190,18 @@ class GraphProcessor:
                     if parts[0] == 'a' and int(parts[1]) == source_id:
                         edges.append(line.strip())
         except FileNotFoundError:
-            print("File TSG.txt khong ton tai!")
+            if(self.printOut):
+                print("File TSG.txt khong ton tai!")
             return
 
         if edges:
-            print(f"Cac canh co ID nguon la {source_id}:")
+            if(self.printOut):
+                print(f"Cac canh co ID nguon la {source_id}:")
             for edge in edges:
                 print(edge)
         else:
-            print(f"Khong tim thay canh nao co ID nguon la {source_id}.")
+            if(self.printOut):
+                print(f"Khong tim thay canh nao co ID nguon la {source_id}.")
 
     def check_file_conditions(self):
         try:
@@ -372,8 +399,8 @@ class GraphProcessor:
                 #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
                 #    elif(edge[0] > edge[1]):
                 #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
-        
-        print("Đã cập nhật các cung mới vào file TSG.txt.")
+        if(self.printOut):
+            print("Đã cập nhật các cung mới vào file TSG.txt.")
 
     def getStartedPoints(self):
         N = int(input("Nhập vào số lượng các xe AGV: "))
@@ -431,10 +458,8 @@ class GraphProcessor:
         for edge in new_edges:
             Count += 1
             file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-      print(f"Đã cập nhật {Count} cung mới vào file TSG.txt.")
-
-
-
+      if(self.printOut):
+          print(f"Đã cập nhật {Count} cung mới vào file TSG.txt.")
 
     def update_tsg_with_T(self):
         T = int(input("Nhập giá trị T: "))
@@ -717,7 +742,8 @@ class GraphProcessor:
             print('The problem does not have an optimal solution.')
 
 
-    def use_in_main(self):
+    def use_in_main(self, printOutput = True):
+        self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         self.process_input_file(filepath)
         self.H = 10
@@ -861,6 +887,6 @@ class GraphProcessor:
                 print("Ket thuc chuong trinh.")
                 break
 
-if __name__ == "__main__":
-    gp = GraphProcessor()
-    gp.test_menu()
+#if __name__ == "__main__":
+#    gp = GraphProcessor()
+#    gp.test_menu()
