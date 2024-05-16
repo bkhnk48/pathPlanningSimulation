@@ -6,7 +6,7 @@ from discrevpy import simulator
 from GraphProcessor import GraphProcessor
 import subprocess
 import sys
-
+import pdb
 
 def getForecast():
     return 17
@@ -32,8 +32,9 @@ if len(sys.argv) > 1:
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
 
-for start in pre_processor.startedNodes:
-    node_id = start.id
+pdb.set_trace()
+for node_id in pre_processor.startedNodes:
+    #node_id = start.id
     agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
     #print(Event.getValue("numberOfNodesInSpaceGraph"))
     startTime = node_id / numberOfNodesInSpaceGraph
