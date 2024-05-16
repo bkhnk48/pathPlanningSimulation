@@ -717,7 +717,34 @@ class GraphProcessor:
             print('The problem does not have an optimal solution.')
 
 
-
+    def use_in_main(self):
+        filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        self.process_input_file(filepath)
+        self.H = 10
+        self.generate_hm_matrix()
+        self.d = 1
+        self.generate_adj_matrix()
+        self.create_tsg_file()
+        count = 0
+        while(count <= 1):
+            self.ID = 3
+            self.earliness = 4 if count == 0 else 7
+            self.tardiness = 6 if count == 0 else 9
+            self.alpha = 1
+            self.beta = 1
+            self.add_time_windows_constraints()
+            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+            count += 1
+        #self.update_tsg_with_T()
+        #self.add_restrictions()
+        self.gamma = 1
+        self.restriction_count = 1
+        self.startBan = 0
+        self.endBan = 2
+        self.restrictions = [[1, 2]]
+        self.Ur = 3
+        self.startedNodes = [1, 10]
+        self.process_restrictions()
 
     def test_menu(self):
         while True:
@@ -730,9 +757,11 @@ class GraphProcessor:
             print("Nhan (j) de cap nhat cac rang buoc ve su xuat hien cua xe")
             print("Nhan cac phim ngoai (a-o) de ket thuc")
 
-            choice = input("Nhap lua chon cua ban: ").strip().lower()
+            self.use_in_main()
 
-            if choice == 'a' or choice == 'b' or choice == 'c' or choice == 'd' or choice == 'h' or choice == 'j':
+            #choice = input("Nhap lua chon cua ban: ").strip().lower()
+
+            """if choice == 'a' or choice == 'b' or choice == 'c' or choice == 'd' or choice == 'h' or choice == 'j':
                 filepath = 'simplest.txt'
                 self.process_input_file(filepath)
                 self.H = 10
@@ -762,7 +791,7 @@ class GraphProcessor:
                 self.process_restrictions()
             else:
                 print("Ket thuc chuong trinh.")
-                break
+                break"""
                 
     def main_menu(self):
         while True:
