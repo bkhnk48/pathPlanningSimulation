@@ -162,7 +162,23 @@ class GraphProcessor:
         if(self.printOut):
             print("TSG.txt file created.")
 
-
+    def init_AGVs_n_events(self, allAGVs, events, graph):
+        from model.StartEvent import StartEvent
+        from model.AGV import AGV
+        for node_id in self.startedNodes:
+            #node_id = start.id
+            agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
+            #print(Event.getValue("numberOfNodesInSpaceGraph"))
+            startTime = node_id / self.M
+            endTime = startTime
+            start_event = StartEvent(startTime, endTime, agv, graph)  # Start event at time 0
+            events.append(start_event)
+            allAGVs.add(agv)  # Thêm vào tập hợp AGV
+    
+    def init_TASKs(self, TASKs):
+        for node_id in self.targetNodes:
+            TASKs.add(node_id)
+    
     def query_edges_by_source_id(self):
         source_id = int(input("Nhap vao ID nguon: "))
 
