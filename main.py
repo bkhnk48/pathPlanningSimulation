@@ -2,6 +2,7 @@ from model.Graph import Graph#, graph
 from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
+import config
 from discrevpy import simulator
 from GraphProcessor import GraphProcessor
 import subprocess
@@ -74,9 +75,22 @@ def schedule_events(events):
     for event in events:
         simulator.schedule(event.startTime, event.process)
 
-# Main execution
+def choose_solver():
+    print("Choose the method for solving:")
+    print("1 - Use LINK II solver")
+    print("2 - Use network-simplex")
+    choice = input("Enter your choice (1 or 2): ")
+    if choice == '1':
+        config.solver_choice = 'solver'
+    elif choice == '2':
+        config.solver_choice = 'network-simplex'
+    else:
+        print("Invalid choice. Defaulting to network-simplex.")
+        config.solver_choice = 'network-simplex'
+
 if __name__ == "__main__":
     simulator.ready()
     #events = parse_tsg_file('TSG_0.txt')
+    choose_solver()
     schedule_events(events)
     simulator.run()

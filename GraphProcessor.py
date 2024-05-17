@@ -1,7 +1,6 @@
 import os
 import re
 import json
-from model.Node import Node
 from model.Edge import Edge
 from model.Edge import HoldingEdge
 from model.Edge import MovingEdge
@@ -9,6 +8,7 @@ from model.Edge import ArtificialEdge
 from model.ArtificialNode import ArtificialNode
 from model.TimeWindowNode import TimeWindowNode
 from model.RestrictionNode import RestrictionNode
+from model.Node import Node
 from collections import deque
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
@@ -121,7 +121,7 @@ class GraphProcessor:
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
             
-    def create_tsg_file(self):
+    def create_tsg_file(self):          
         output_lines = []
         Q = deque(range((self.H + 1)* self.M + 1))
 
@@ -154,7 +154,6 @@ class GraphProcessor:
                     temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
                 if(temp != None):
                     self.ts_edges.append(temp)
-
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
@@ -444,6 +443,7 @@ class GraphProcessor:
                         if j == ID2:
                             C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
                             new_edges.add((j, max_val, 0, 1, C))
+                            self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
                             break
 
       except FileNotFoundError:
@@ -784,40 +784,6 @@ class GraphProcessor:
             print("Nhan cac phim ngoai (a-o) de ket thuc")
 
             self.use_in_main()
-
-            #choice = input("Nhap lua chon cua ban: ").strip().lower()
-
-            """if choice == 'a' or choice == 'b' or choice == 'c' or choice == 'd' or choice == 'h' or choice == 'j':
-                filepath = 'simplest.txt'
-                self.process_input_file(filepath)
-                self.H = 10
-                self.generate_hm_matrix()
-                self.d = 1
-                self.generate_adj_matrix()
-                self.create_tsg_file()
-                count = 0
-                while(count <= 1):
-                    self.ID = 3
-                    self.earliness = 4 if count == 0 else 7
-                    self.tardiness = 6 if count == 0 else 9
-                    self.alpha = 1
-                    self.beta = 1
-                    self.add_time_windows_constraints()
-                    assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-                    count += 1
-                #self.update_tsg_with_T()
-                #self.add_restrictions()
-                self.gamma = 1
-                self.restriction_count = 1
-                self.startBan = 0
-                self.endBan = 2
-                self.restrictions = [[1, 2]]
-                self.Ur = 3
-                self.startedNodes = [1, 10]
-                self.process_restrictions()
-            else:
-                print("Ket thuc chuong trinh.")
-                break"""
                 
     def main_menu(self):
         while True:
@@ -887,6 +853,6 @@ class GraphProcessor:
                 print("Ket thuc chuong trinh.")
                 break
 
-#if __name__ == "__main__":
-#    gp = GraphProcessor()
-#    gp.test_menu()
+if __name__ == "__main__":
+    gp = GraphProcessor()
+    gp.test_menu()

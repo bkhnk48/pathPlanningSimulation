@@ -1,10 +1,14 @@
 from .Node import Node
-class RestrictionNode(Node):
-    def __init__(self, id, label=None):
-        super().__init__(id,label)
+from RestrictionEdge import RestrictionEdge
 
+class RestrictionNode(Node):
+    def __init__(self, ID, restrictions):
+        super().__init__(ID)
+        self.restrictions = restrictions  # Restrictions associated with the node
+        
     def create_edge(self, node, M, d, e):
-        if isinstance(node, RestrictionNode):
-            return RestrictionEdge(self, node, e[4], "Restriction")
-        else:
-            return None
+        # Always returns a RestrictionEdge regardless of other node types or conditions.
+        return RestrictionEdge(self, node, e[4], "Restriction")
+
+    def __repr__(self):
+        return f"RestrictionNode(ID={self.ID}, restrictions={self.restrictions})"

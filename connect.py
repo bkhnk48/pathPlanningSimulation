@@ -17,5 +17,3 @@ def extract_time_values(output):
     for match in matches:
         s_values.append(int(match.group(1)))
     return s_values
-
-
