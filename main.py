@@ -13,16 +13,16 @@ def getForecast():
 
 allAGVs = set()
 TASKS = set()
-events = []
 
 x = {}
 y = {}
 
-graph_processor = GraphProcessor()
 pre_processor = GraphProcessor()
-graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
-graph.set_graph_data_from_processor(graph_processor)
+pre_processor.use_in_main(False)
 
+graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
+
+events = []
 Event.setValue("numberOfNodesInSpaceGraph", pre_processor.M) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
 Event.setValue("debug", 0)
 # Kiểm tra xem có tham số nào được truyền qua dòng lệnh không
@@ -33,11 +33,10 @@ numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
 
 pdb.set_trace()
-pre_processor.use_in_main(False)
 pre_processor.init_AGVs_n_events(allAGVs, events, graph)
 pre_processor.init_TASKs(TASKS)
 
-"""with open('TSG_0.txt', 'r') as f:
+with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
     for line in f:
         # Phân tích dòng thành các phần tử, phân tách bởi khoảng trắng
@@ -52,7 +51,7 @@ pre_processor.init_TASKs(TASKS)
             elif parts[0] == 'a':  # Nếu là dòng chứa thông tin về mối quan hệ
                 i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
                 x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
-                graph.insertEdgesAndNodes(i, j, c_i_j)"""
+                graph.insertEdgesAndNodes(i, j, c_i_j)
 
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)

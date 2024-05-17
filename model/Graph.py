@@ -5,7 +5,7 @@ from .utility import utility
 import inspect
 
 class Graph:
-    def __init__(self, graph_processor=None):
+    def __init__(self):
         self.adjacency_list = defaultdict(list)
         self.nodes = {}
         #self.lastChangedByAGV = -1
@@ -24,17 +24,6 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def set_graph_data_from_processor(self, processor):
-        # Fetch and set nodes
-        ts_nodes = processor.get_ts_nodes()
-        for node in ts_nodes:
-            self.nodes[node['id']] = node
-
-        # Fetch and set edges
-        ts_edges = processor.get_ts_edges()
-        for start_node, end_node, weight in ts_edges:
-            self.add_edge(start_node, end_node, weight)
-    
     def insertEdgesAndNodes(self, start, end, weight):
         self.adjacency_list[start].append((end, weight))
         if start not in self.nodes:

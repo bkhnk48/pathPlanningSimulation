@@ -38,12 +38,7 @@ class GraphProcessor:
         self.targetNodes = []
         self.printOut = True
 
-    def get_ts_nodes(self):
-        return self.ts_nodes
-
-    def get_ts_edges(self):
-        return self.ts_edges
-    
+        
     def process_input_file(self, filepath):
         self.spaceEdges = []
         try:
