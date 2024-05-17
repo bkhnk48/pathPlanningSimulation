@@ -4,9 +4,10 @@ from model.Event import Event, debug
 from model.StartEvent import StartEvent
 import config
 from discrevpy import simulator
+from GraphProcessor import GraphProcessor
 import subprocess
 import sys
-
+import pdb
 
 def getForecast():
     return 17
@@ -17,10 +18,13 @@ TASKS = set()
 x = {}
 y = {}
 
+pre_processor = GraphProcessor()
+pre_processor.use_in_main(False)
+
 graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
 
 events = []
-Event.setValue("numberOfNodesInSpaceGraph", 23) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
+Event.setValue("numberOfNodesInSpaceGraph", pre_processor.M) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
 Event.setValue("debug", 0)
 # Kiểm tra xem có tham số nào được truyền qua dòng lệnh không
 if len(sys.argv) > 1:
@@ -28,6 +32,11 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
+
+pdb.set_trace()
+pre_processor.init_AGVs_n_events(allAGVs, events, graph)
+pre_processor.init_TASKs(TASKS)
+
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
     for line in f:
@@ -36,16 +45,10 @@ with open('TSG_0.txt', 'r') as f:
         # Kiểm tra loại dữ liệu của dòng
         if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
             if int(parts[2]) == 1:
-                node_id = int(parts[1])
-                agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
-                #print(Event.getValue("numberOfNodesInSpaceGraph"))
-                startTime = node_id / numberOfNodesInSpaceGraph
-                endTime = startTime
-                start_event = StartEvent(startTime, endTime, agv, graph)  # Start event at time 0
-                events.append(start_event)
-                allAGVs.add(agv)  # Thêm vào tập hợp AGV
+                pass
             elif int(parts[2]) == -1:
-                TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
+                #TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
+                pass
             elif parts[0] == 'a':  # Nếu là dòng chứa thông tin về mối quan hệ
                 i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
                 x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x

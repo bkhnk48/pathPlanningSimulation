@@ -5,23 +5,29 @@ from .RestrictionNode import RestrictionNode
 from .TimeWindowNode import TimeWindowNode
 
 class Node:
-    def __init__(self, ID):
-        self.ID = ID
+    def __init__(self, id,label=None):
+        self.id = id
+        self.label=label
+        self.edges = []
 
-    def __repr__(self):
-        return f"Node(id={self.id}, label='{self.label}')"
-    
     def create_edge(self, node, M, d, e):
-        if isinstance(node, Node) and not isinstance(node, (TimeWindowNode, RestrictionNode)):
-            if node.ID % M == self.ID % M and ((node.ID - self.ID) // M == d):
-                return HoldingEdge(self, node, d, d)
-            elif node.ID % M != self.ID % M:
-                return MovingEdge(self, node, e[4])
-
-        if isinstance(node, RestrictionNode):
-            return RestrictionEdge(self, node, e[4], "Restriction")
-        
-        if isinstance(node, TimeWindowNode):
-            return TimeWindowEdge(self, node, e[4], "TimeWindows")
-        
-        return None  # This handles any unmatched conditions or types
+        from .RestrictionNode import RestrictionNode
+        from .TimeWindowNode import TimeWindowNode
+        from .Edge import HoldingEdge
+        from .Edge import RestrictionEdge
+        from .Edge import TimeWindowEdge 
+        from .Edge import MovingEdge
+        if node.id % M == self.id % M and ((node.id - self.id) // M == d) and isinstance(node, Node) and not isinstance(node, RestrictionNode) and not isinstance(node, TimeWindowNode):
+            return HoldingEdge(self, node, e[2], e[3], d, d)
+        elif isinstance(node, RestrictionNode):
+            return RestrictionEdge(self, node, e[2], e[3], e[4], "Restriction")
+        elif isinstance(node, TimeWindowNode):
+            return TimeWindowEdge(self, node, e[2], e[3], e[4], "TimeWindows")
+        elif isinstance(node, Node):
+            if node.id % M != self.id % M:
+                return MovingEdge(self, node, e[2], e[3], d)
+        else:
+            return None
+    
+    def __repr__(self):
+        return f"Node(id={self.id}, label='{self.label}')"   

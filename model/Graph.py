@@ -19,10 +19,10 @@ class Graph:
         self.cur = []
         self.map = {}
         self.numberOfNodesInSpaceGraph = -1
-        print("Initialized a new graph.")
-        stack = inspect.stack()
-        for frame in stack[1:]:
-            print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
+        #print("Initialized a new graph.")
+        #stack = inspect.stack()
+        #for frame in stack[1:]:
+        #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
     def insertEdgesAndNodes(self, start, end, weight):
         self.adjacency_list[start].append((end, weight))
