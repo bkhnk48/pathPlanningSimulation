@@ -8,7 +8,7 @@ from model.Edge import ArtificialEdge
 from model.ArtificialNode import ArtificialNode
 from model.TimeWindowNode import TimeWindowNode
 from model.RestrictionNode import RestrictionNode
-#from model.Node import Node
+from model.Node import Node
 from collections import deque
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
@@ -204,7 +204,7 @@ class GraphProcessor:
 
     def init_nodes_n_edges(self, graph):
         for edge in self.ts_edges:
-            graph.insertEdgesAndNodes(edge.start_node, edge.end_node, e)
+            graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
     
     def check_file_conditions(self):
         try:
