@@ -24,12 +24,12 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def insertEdgesAndNodes(self, start, end, weight):
-        self.adjacency_list[start].append((end, weight))
-        if start not in self.nodes:
-            self.nodes[start] = {'id': start}
-        if end not in self.nodes:
-            self.nodes[end] = {'id': end}
+    def insertEdgesAndNodes(self, start, end, edge):
+        self.adjacency_list[start.id].append((end, edge))
+        if start.id not in self.nodes:
+            self.nodes[start.id] = {'id': start}
+        if end.id not in self.nodes:
+            self.nodes[end.id] = {'id': end}
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
