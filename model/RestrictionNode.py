@@ -1,5 +1,5 @@
 from .Node import Node
-from RestrictionEdge import RestrictionEdge
+from .RestrictionEdge import RestrictionEdge
 
 class RestrictionNode(Node):
     def __init__(self, ID, restrictions):
@@ -11,4 +11,4 @@ class RestrictionNode(Node):
         return RestrictionEdge(self, node, e[4], "Restriction")
 
     def __repr__(self):
-        return f"RestrictionNode(ID={self.ID}, restrictions={self.restrictions})"
+        return f"RestrictionNode(ID={self.id}, restrictions={self.restrictions})"
