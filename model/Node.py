@@ -6,6 +6,8 @@
 
 class Node:
     def __init__(self, id,label=None):
+        if not isinstance(id, int):
+            raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
         self.id = id
         self.label=label
         self.edges = []
