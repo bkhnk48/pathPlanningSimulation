@@ -94,7 +94,7 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
-        from ForecastingModel import ForecastingModel, read_custom_dimacs, divide_node, sort_all_dicts
+        from .ForecastingModel import ForecastingModel, read_custom_dimacs, divide_node, sort_all_dicts
         
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
