@@ -33,12 +33,12 @@ if len(sys.argv) > 1:
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
 
-pdb.set_trace()
 pre_processor.init_AGVs_n_events(allAGVs, events, graph)
 pre_processor.init_TASKs(TASKS)
 pre_processor.init_nodes_n_edges(graph)
-assert (len(graph.adjacency_list) == len(pre_processor.ts_edges)), "Missing some edges elsewhere"
-assert (len(graph.nodes) == len(pre_processor.ts_nodes)), "Missing some nodes elsewhere"
+assert (graph.count_edges() == len(pre_processor.ts_edges)), "Missing some edges elsewhere"
+pdb.set_trace()
+assert (len(graph.nodes) == len(pre_processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(pre_processor.ts_nodes)}"
 
 
 with open('TSG_0.txt', 'r') as f:
