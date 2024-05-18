@@ -108,7 +108,7 @@ class GraphProcessor:
     def check_and_add_nodes(self, *args, isArtificialNode = False, label = ""):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
-            if not any(node.id == id for node in self.ts_nodes):
+            if not any(node.id == id for node in self.ts_nodes) and isinstance(id, int):
                 if(isArtificialNode):
                    if(label == "TimeWindow"):
                         self.ts_nodes.append(TimeWindowNode(id, label))
