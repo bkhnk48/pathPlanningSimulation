@@ -36,6 +36,10 @@ numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 pdb.set_trace()
 pre_processor.init_AGVs_n_events(allAGVs, events, graph)
 pre_processor.init_TASKs(TASKS)
+pre_processor.init_nodes_n_edges(graph)
+assert (len(graph.adjacency_list) == len(pre_processor.ts_edges)), "Missing some edges elsewhere"
+assert (len(graph.nodes) == len(pre_processor.ts_nodes)), "Missing some nodes elsewhere"
+
 
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
@@ -50,9 +54,10 @@ with open('TSG_0.txt', 'r') as f:
                 #TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
                 pass
             elif parts[0] == 'a':  # Nếu là dòng chứa thông tin về mối quan hệ
-                i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
-                x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
-                graph.insertEdgesAndNodes(i, j, c_i_j)
+                #i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
+                #x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
+                #graph.insertEdgesAndNodes(i, j, c_i_j)
+                pass
 
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)
