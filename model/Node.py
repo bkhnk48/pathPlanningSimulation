@@ -6,6 +6,8 @@
 
 class Node:
     def __init__(self, id,label=None):
+        if not isinstance(id, int):
+            raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
         self.id = id
         self.label=label
         self.edges = []
@@ -25,7 +27,7 @@ class Node:
             return TimeWindowEdge(self, node, e[2], e[3], e[4], "TimeWindows")
         elif isinstance(node, Node):
             if node.id % M != self.id % M:
-                return MovingEdge(self, node, e[2], e[3], d)
+                return MovingEdge(self, node, e[2], e[3], e[4])
         else:
             return None
     
