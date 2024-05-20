@@ -27,7 +27,7 @@ class Node:
             return TimeWindowEdge(self, node, e[2], e[3], e[4], "TimeWindows")
         elif isinstance(node, Node):
             if node.id % M != self.id % M:
-                return MovingEdge(self, node, e[2], e[3], d)
+                return MovingEdge(self, node, e[2], e[3], e[4])
         else:
             return None
     
