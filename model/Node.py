@@ -19,7 +19,11 @@ class Node:
         from .Edge import RestrictionEdge
         from .Edge import TimeWindowEdge 
         from .Edge import MovingEdge
-        if node.id % M == self.id % M and ((node.id - self.id) // M == d) and isinstance(node, Node) and not isinstance(node, RestrictionNode) and not isinstance(node, TimeWindowNode):
+        if node.id % M == self.id % M and \
+        ((node.id - self.id) // M == d) and \
+        isinstance(node, Node) and \
+        not isinstance(node, RestrictionNode) and \
+        not isinstance(node, TimeWindowNode):
             return HoldingEdge(self, node, e[2], e[3], d, d)
         elif isinstance(node, RestrictionNode):
             return RestrictionEdge(self, node, e[2], e[3], e[4], "Restriction")
