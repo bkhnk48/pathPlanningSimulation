@@ -108,7 +108,7 @@ class GraphProcessor:
     def check_and_add_nodes(self, *args, isArtificialNode = False, label = ""):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
-            if not any(node.id == id for node in self.ts_nodes):
+            if not any(node.id == id for node in self.ts_nodes) and isinstance(id, int):
                 if(isArtificialNode):
                    if(label == "TimeWindow"):
                         self.ts_nodes.append(TimeWindowNode(id, label))
@@ -145,6 +145,9 @@ class GraphProcessor:
                     self.tsEdges.add((ID, j, 0, 1, c))
                     self.check_and_add_nodes(ID, j)
                     #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
+                    #if(ID == 1 and j == 8):
+                    #    pdb.set_trace()
+                        #print()
                     temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
@@ -202,6 +205,10 @@ class GraphProcessor:
             if(self.printOut):
                 print(f"Khong tim thay canh nao co ID nguon la {source_id}.")
 
+    def init_nodes_n_edges(self, graph):
+        for edge in self.ts_edges:
+            graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
+    
     def check_file_conditions(self):
         try:
             seen_edges = set()
@@ -331,6 +338,7 @@ class GraphProcessor:
                 timeSpacePoint_1 = (time + Cost)*self.M + restriction[1]
                 edge.append(timeSpacePoint_0)
                 edge.append(timeSpacePoint_1)
+                edge.append(Cost)
                 R.append(edge)
                 self.Adj[edge[0], edge[1]] = 0
 
@@ -342,10 +350,13 @@ class GraphProcessor:
                 #if ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2) or (t1 <= startBan and endBan <= t2)):
                     #R.add((ID1, ID2))
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-        self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
+        #self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
+        self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in [r[:2] for r in R]]
         size1 = len(self.ts_edges)
         #print(R)
-        self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in R]
+        #self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id, _] not in R]
+        self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in [r[:2] for r in R]]
+        #self.ts_edges = [e for e in self.ts_edges if any(e.start_node.id != r[0] and e.end_node.id != r[1] for r in R)]
         size2 = len(self.ts_edges)
         assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
         #self.create_tsg_file()
@@ -358,12 +369,16 @@ class GraphProcessor:
             self.check_and_add_nodes(aS, aT, aSubT, True, "Restriction")
             Max += 3
             e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
-            e2 = (aS, aSubT, 0, self.H, int(self.gamma/self.alpha))
+            e2 = (aS, aSubT, 0, self.Ur, 0)
             e3 = (aSubT, aT, 0, self.H, 0)
             newA.update({e1, e2, e3})
+            pdb.set_trace()
+            print(R)
             for e in R:
                 e4 = (e[0], aS, 0, 1, 0)
-                e5 = (aT, e[1], 0, 1, int(self.gamma))
+                #cost = edges_with_cost.get((e[0], e[1]), -1)
+                e5 = (aT, e[1], 0, 1, e[2])
+                #e5 = (aT, e[1], 0, 1, 1)
                 newA.update({e4, e5})
 
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
@@ -390,6 +405,9 @@ class GraphProcessor:
             #for edge in self.tsEdges:
             for edge in self.ts_edges:
                 #file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+                #if(edge.start_node.id == 1 and edge.end_node.id == 8):
+                #    pdb.set_trace()
+                #    print(edge.weight)
                 file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n") 
                 #if(edge in newA):
                 #    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
@@ -855,4 +873,4 @@ class GraphProcessor:
 
 if __name__ == "__main__":
     gp = GraphProcessor()
-    gp.test_menu()
+    gp.main_menu()
