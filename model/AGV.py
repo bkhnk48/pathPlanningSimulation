@@ -4,15 +4,16 @@ from sortedcontainers import SortedSet
 
 
 class AGV:
-    def __init__(self, id, current_node, cost = 0, versionOfGraph = -1):
+    def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
         self.id = id
         self.current_node = current_node
         self.previous_node = None
         self.state = 'idle'
         self.cost = cost
-        self.versionOfGraph = -1
+        self.versionOfGraph = versionOfGraph
         self.traces = [] #các đỉnh sắp đi qua
         self.path = SortedSet([]) #các đỉnh đã đi qua 
+        self.graph = graph
         
     def update_cost(self, amount):
         self.cost += amount
@@ -35,7 +36,7 @@ class AGV:
             print(f"AGV {self.id} has no more nodes in the trace. Remaining at node: {self.current_node}.")
             return None
     
-    def move_to(self, graph, target_node):
+    def move_to(self):
         if self.next_node is not None:
             self.previous_node = self.current_node
             self.current_node = self.next_node

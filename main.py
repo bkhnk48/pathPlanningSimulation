@@ -18,13 +18,13 @@ TASKS = set()
 x = {}
 y = {}
 
-pre_processor = GraphProcessor()
-pre_processor.use_in_main(False)
+graph_processor = GraphProcessor()
+graph_processor.use_in_main(True)
 
-graph = Graph()  # Assuming a Graph class has appropriate methods to handle updates
+graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
 
 events = []
-Event.setValue("numberOfNodesInSpaceGraph", pre_processor.M) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
+Event.setValue("numberOfNodesInSpaceGraph", graph_processor.M) #sẽ phải đọc file Edges.txt để biết giá trị cụ thể
 Event.setValue("debug", 0)
 # Kiểm tra xem có tham số nào được truyền qua dòng lệnh không
 if len(sys.argv) > 1:
@@ -34,9 +34,10 @@ numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
 
 pdb.set_trace()
-pre_processor.init_AGVs_n_events(allAGVs, events, graph)
-pre_processor.init_TASKs(TASKS)
+graph_processor.init_AGVs_n_events(allAGVs, events, graph)
+graph_processor.init_TASKs(TASKS)
 
+"""
 with open('TSG_0.txt', 'r') as f:
     # Đọc từng dòng của file
     for line in f:
@@ -53,7 +54,7 @@ with open('TSG_0.txt', 'r') as f:
                 i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
                 x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
                 graph.insertEdgesAndNodes(i, j, c_i_j)
-
+"""
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)
 
