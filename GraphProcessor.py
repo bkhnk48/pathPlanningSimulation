@@ -243,7 +243,7 @@ class GraphProcessor:
     def update_file(self, id1 = -1, id2 = -1, c12 = -1):
         ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
         ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
-        C12 = int(input("Nhap trong so C12: ")) if C12 == -1 else C12
+        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
 
         i1, i2 = ID1 // self.M, ID2 // self.M
         if i2 - i1 != C12:
