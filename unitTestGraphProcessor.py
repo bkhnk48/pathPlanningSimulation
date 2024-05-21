@@ -55,6 +55,7 @@ assert (graph.count_edges() == len(processor.ts_edges)), "Missing some edges els
 #pdb.set_trace()
 assert (len(graph.nodes) == len(processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(processor.ts_nodes)}"
 
+processor.update_file(id1 = 1, id2 = 8, c12 = 3)
 graph.update(currentpos = 1, nextpos = 8, realtime = 3)
 #graph.update_file(id1 = 1, id2 = 8, c12 = 3)
 
