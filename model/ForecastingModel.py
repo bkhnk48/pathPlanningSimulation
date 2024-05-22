@@ -118,6 +118,8 @@ class ForecastingModel:
         self.zero_nodes_dict = zero_nodes_dict
         self.arc_descriptors_dict = arc_descriptors_dict
         self.earliness_tardiness_dict = earliness_tardiness_dict
+        self.z_vars = None
+        self.solve_time = None
         self.create_model()
         self.add_constraints()
         
