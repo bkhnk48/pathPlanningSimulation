@@ -169,7 +169,7 @@ class GraphProcessor:
         from model.AGV import AGV
         for node_id in self.startedNodes:
             #node_id = start.id
-            agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
+            agv = AGV("AGV" + str(node_id), node_id, graph)  # Create an AGV at this node
             #print(Event.getValue("numberOfNodesInSpaceGraph"))
             startTime = node_id / self.M
             endTime = startTime
@@ -243,7 +243,7 @@ class GraphProcessor:
     def update_file(self, id1 = -1, id2 = -1, c12 = -1):
         ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
         ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
-        C12 = int(input("Nhap trong so C12: ")) if C12 == -1 else C12
+        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
 
         i1, i2 = ID1 // self.M, ID2 // self.M
         if i2 - i1 != C12:
@@ -384,16 +384,6 @@ class GraphProcessor:
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
         self.create_set_of_edges(newA)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-        #pdb.set_trace()
-        # Ghi các cung mới vào file TSG.txt
-        #with open('TSG.txt', 'a') as file:
-        #    for edge in newA:
-        #        c = int(edge[4])
-        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}\n")
-                #print(f"{c} a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}")
-        #with open('TSG.txt', 'w') as file:
-        #    for edge in self.spaceEdges:
-        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         with open('TSG.txt', 'w') as file:
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
@@ -404,18 +394,7 @@ class GraphProcessor:
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
             for edge in self.ts_edges:
-                #file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-                #if(edge.start_node.id == 1 and edge.end_node.id == 8):
-                #    pdb.set_trace()
-                #    print(edge.weight)
-                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n") 
-                #if(edge in newA):
-                #    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is TS node and target is an artificial node\n");
-                #    elif(edge[0]//self.M > self.H and edge[1]//self.M <= self.H):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
-                #    elif(edge[0] > edge[1]):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
+                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
 

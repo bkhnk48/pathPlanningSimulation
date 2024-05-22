@@ -19,7 +19,7 @@ x = {}
 y = {}
 
 graph_processor = GraphProcessor()
-graph_processor.use_in_main(True)
+graph_processor.use_in_main()
 
 graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
 
@@ -33,44 +33,15 @@ if len(sys.argv) > 1:
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
 
-pdb.set_trace()
 graph_processor.init_AGVs_n_events(allAGVs, events, graph)
 graph_processor.init_TASKs(TASKS)
+#assert (graph.count_edges() == len(pre_processor.ts_edges)), "Missing some edges elsewhere"
+#pdb.set_trace()
+#assert (len(graph.nodes) == len(pre_processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(pre_processor.ts_nodes)}"
 
-"""
-with open('TSG_0.txt', 'r') as f:
-    # Đọc từng dòng của file
-    for line in f:
-        # Phân tích dòng thành các phần tử, phân tách bởi khoảng trắng
-        parts = line.split()
-        # Kiểm tra loại dữ liệu của dòng
-        if parts[0] == 'n':  # Nếu là dòng chứa thông tin về AGV hoặc công việc
-            if int(parts[2]) == 1:
-                pass
-            elif int(parts[2]) == -1:
-                #TASKS.add(parts[1])  # Thêm vào tập hợp TASKS
-                pass
-            elif parts[0] == 'a':  # Nếu là dòng chứa thông tin về mối quan hệ
-                i, j, c_i_j = int(parts[1]), int(parts[2]), int(parts[5])
-                x[i, j] = c_i_j  # Lưu thông tin về mối quan hệ vào từ điển x
-                graph.insertEdgesAndNodes(i, j, c_i_j)
-"""
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)
 
-"""def parse_tsg_file(filename):
-    events = []
-    with open(filename, 'r') as f:
-        for line in f:
-            parts = line.strip().split()
-            if parts[0] == 'n' and int(parts[2]) == 1:  # Assuming '1' signifies a starting condition
-                node_id = int(parts[1])
-                agv = AGV("AGV" + str(node_id), node_id)  # Create an AGV at this node
-                start_event = StartEvent(0, agv, graph)  # Start event at time 0
-                events.append(start_event)
-                # We could potentially break here if we only expect one starting event or continue if multiple starts are possible
-    return sorted(events, key=lambda x: x.startTime)
-"""
 
 def schedule_events(events):
     for event in events:
