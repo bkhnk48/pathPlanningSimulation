@@ -25,12 +25,12 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def insertEdgesAndNodes(self, start, end, edge):
-        self.adjacency_list[start.id].append((end, edge))
-        if start.id not in self.nodes:
-            self.nodes[start.id] = {'id': start}
-        if end.id not in self.nodes:
-            self.nodes[end.id] = {'id': end}
+    def insertEdgesAndNodes(self, start_id, end_id, edge):
+        self.adjacency_list[start_id].append((end_id, edge))
+        if start_id not in self.nodes:
+            self.nodes[start_id] = {'id': start_id}
+        if end_id not in self.nodes:
+            self.nodes[end_id] = {'id': end_id}
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
@@ -39,14 +39,14 @@ class Graph:
             return []
         
         target_ids = set()
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
                 if line.startswith('a'):
                     parts = line.split()
                     target_ids.add(int(parts[3]))
 
         unique_ids = set()
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
                 if line.startswith('a'):
                     parts = line.split()
@@ -59,7 +59,7 @@ class Graph:
     def build_path_tree(self, file_path = 'traces.txt'):
         """ Build a tree from edges listed in a file for path finding. """
         id1_id3_tree = defaultdict(list)
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
                 if line.startswith('a'):
                     numbers = line.split()
