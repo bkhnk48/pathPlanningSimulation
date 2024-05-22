@@ -2,7 +2,6 @@ from model.utility import get_largest_id_from_map
 import inspect
 from sortedcontainers import SortedSet
 
-
 class AGV:
     def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
         self.id = id
