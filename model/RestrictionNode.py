@@ -11,4 +11,4 @@ class RestrictionNode(Node):
         return RestrictionEdge(self, node, e[4], "Restriction")
 
     def __repr__(self):
-        return f"RestrictionNode(ID={self.ID}, restrictions={self.restrictions})"
+        return f"RestrictionNode(ID={self.id}, restrictions={self.restrictions})"
