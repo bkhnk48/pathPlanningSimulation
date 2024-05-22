@@ -372,8 +372,8 @@ class GraphProcessor:
             e2 = (aS, aSubT, 0, self.Ur, 0)
             e3 = (aSubT, aT, 0, self.H, 0)
             newA.update({e1, e2, e3})
-            pdb.set_trace()
-            print(R)
+            #pdb.set_trace()
+            #print(R)
             for e in R:
                 e4 = (e[0], aS, 0, 1, 0)
                 #cost = edges_with_cost.get((e[0], e[1]), -1)
@@ -384,16 +384,6 @@ class GraphProcessor:
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
         self.create_set_of_edges(newA)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-        #pdb.set_trace()
-        # Ghi các cung mới vào file TSG.txt
-        #with open('TSG.txt', 'a') as file:
-        #    for edge in newA:
-        #        c = int(edge[4])
-        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}\n")
-                #print(f"{c} a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {c}")
-        #with open('TSG.txt', 'w') as file:
-        #    for edge in self.spaceEdges:
-        #        file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         with open('TSG.txt', 'w') as file:
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
@@ -404,18 +394,7 @@ class GraphProcessor:
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
             for edge in self.ts_edges:
-                #file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-                #if(edge.start_node.id == 1 and edge.end_node.id == 8):
-                #    pdb.set_trace()
-                #    print(edge.weight)
-                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n") 
-                #if(edge in newA):
-                #    if(edge[0]//self.M <= self.H and edge[1]//self.M > self.H):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is TS node and target is an artificial node\n");
-                #    elif(edge[0]//self.M > self.H and edge[1]//self.M <= self.H):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with the source is an artificial node and target is a TS node\n");
-                #    elif(edge[0] > edge[1]):
-                #        file.write(f"c arc ({edge[0]}-{edge[1]}) is an artificial edge. Technically, it's a Restriction Edge with both artificial nodes\n");
+                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
 
@@ -760,7 +739,7 @@ class GraphProcessor:
             print('The problem does not have an optimal solution.')
 
 
-    def use_in_main(self, printOutput = True):
+    def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         self.process_input_file(filepath)
