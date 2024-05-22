@@ -93,6 +93,23 @@ def divide_node(node_descriptors_dict, arc_descriptors_dict):
 
     return supply_nodes, demand_nodes, zero_nodes
 
+# function to sort all dictionary
+def sort_all_dicts(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict):
+    # sort supply_nodes_dict by node_id from smallest to largest
+    supply_nodes_dict = dict(sorted(supply_nodes_dict.items(), key=lambda item: item[0]))
+
+    # sort demand_nodes_dict by node_id from smallest to largest
+    demand_nodes_dict = dict(sorted(demand_nodes_dict.items(), key=lambda item: item[0]))
+
+    # sort zero_nodes_dict by node_id from smallest to largest
+    zero_nodes_dict = dict(sorted(zero_nodes_dict.items(), key=lambda item: item[0]))
+
+    # sort arc_descriptors_dict by src from smallest to largest, then by dst from smallest to largest
+    arc_descriptors_dict = dict(sorted(arc_descriptors_dict.items(), key=lambda item: (item[0][0], item[0][1])))
+
+    return supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict
+
+
 class ForecastingModel:
     def __init__(self, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict):
         self.model = Model("Forecasting Minimum Cost Flow Problem")
