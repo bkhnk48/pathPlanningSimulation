@@ -116,8 +116,8 @@ class Event:
                 model.solve()
                 model.output_solution()
                 model.save_solution(filename)
-                self.graph.version += 1
-                self.agv.versionOfGraph = self.graph.version
+                #self.graph.version += 1
+                self.agv.versionOfGraph = self.graph.version + 1 #sẽ chính thức tăng ở dòng 133
             else:
                 if len(self.pns_path) == 0:
                     self.pns_path = input("Enter the path for pns-seq: ")
