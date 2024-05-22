@@ -5,12 +5,13 @@ from .utility import utility
 import inspect
 
 class Graph:
-    def __init__(self):
+    def __init__(self, graph_processor):
+        self.graph_processor = graph_processor 
         self.adjacency_list = defaultdict(list)
-        self.nodes = {}
+        self.nodes = self.graph_processor.ts_nodes
         #self.lastChangedByAGV = -1
-        self.edges = {}
-        self.list1 = [ ]
+        self.edges = self.graph_processor.ts_edges
+        self.list1 = []
         self.neighbour_list = {}
         self.visited = set()
         self.id2_id4_list = []

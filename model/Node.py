@@ -34,6 +34,9 @@ class Node:
                 return MovingEdge(self, node, e[2], e[3], e[4])
         else:
             return None
+        
+    def connect(self, other_node, weight, graph):
+        graph.add_edge(self.id, other_node.id, weight)
     
     def __repr__(self):
         return f"Node(id={self.id}, label='{self.label}')"   
