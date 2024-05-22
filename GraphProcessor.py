@@ -760,7 +760,7 @@ class GraphProcessor:
             print('The problem does not have an optimal solution.')
 
 
-    def use_in_main(self, printOutput = True):
+    def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         self.process_input_file(filepath)
