@@ -1,5 +1,5 @@
 from .Node import Node
-from RestrictionEdge import RestrictionEdge
+from .RestrictionEdge import RestrictionEdge
 
 class RestrictionNode(Node):
     def __init__(self, ID, restrictions):
