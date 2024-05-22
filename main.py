@@ -19,7 +19,7 @@ x = {}
 y = {}
 
 graph_processor = GraphProcessor()
-graph_processor.use_in_main(True)
+graph_processor.use_in_main()
 
 graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
 
