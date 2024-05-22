@@ -130,7 +130,6 @@ class Event:
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
 
-            self.graph.version += 1
             self.setTracesForAllAGVs()
             next_vertex = self.agv.getNextNode()
 
