@@ -372,8 +372,8 @@ class GraphProcessor:
             e2 = (aS, aSubT, 0, self.Ur, 0)
             e3 = (aSubT, aT, 0, self.H, 0)
             newA.update({e1, e2, e3})
-            pdb.set_trace()
-            print(R)
+            #pdb.set_trace()
+            #print(R)
             for e in R:
                 e4 = (e[0], aS, 0, 1, 0)
                 #cost = edges_with_cost.get((e[0], e[1]), -1)
