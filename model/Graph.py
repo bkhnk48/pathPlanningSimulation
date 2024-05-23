@@ -25,11 +25,18 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
+    def ensure_node_capacity(self, node_id):
+        # Ensure the list is large enough to hold the node_id
+        while len(self.nodes) <= node_id:
+            self.nodes.append(None)
+            
     def insertEdgesAndNodes(self, start_id, end_id, edge):
         self.adjacency_list[start_id].append((end_id, edge))
-        if start_id not in self.nodes:
+        self.ensure_node_capacity(start_id)
+        self.ensure_node_capacity(end_id)
+        if self.nodes[start_id] is None:
             self.nodes[start_id] = {'id': start_id}
-        if end_id not in self.nodes:
+        if self.nodes[end_id] is None:
             self.nodes[end_id] = {'id': end_id}
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
