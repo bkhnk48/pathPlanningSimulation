@@ -6,4 +6,4 @@ class RestrictionEdge(Edge):
         self.label = label
 
     def __repr__(self):
-        return f"RestrictionEdge({self.start_node}, {self.end_node}, weight={self.weight}, restrictions={self.restrictions})"
+        return f"RestrictionEdge({self.start_node.id}, {self.end_node.id}, weight={self.weight}, restrictions={self.restrictions})"
