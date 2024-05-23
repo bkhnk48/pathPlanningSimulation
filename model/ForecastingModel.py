@@ -93,7 +93,6 @@ def divide_node(node_descriptors_dict, arc_descriptors_dict):
 
     return supply_nodes, demand_nodes, zero_nodes
 
-# function to sort all dictionary
 def sort_all_dicts(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict):
     # sort supply_nodes_dict by node_id from smallest to largest
     supply_nodes_dict = dict(sorted(supply_nodes_dict.items(), key=lambda item: item[0]))
@@ -109,15 +108,14 @@ def sort_all_dicts(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_de
 
     return supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict
 
-
 class ForecastingModel:
     def __init__(self, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict):
         self.model = Model("Forecasting Minimum Cost Flow Problem")
-        self.supply_nodes_dict = supply_nodes_dict
-        self.demand_nodes_dict = demand_nodes_dict
-        self.zero_nodes_dict = zero_nodes_dict
-        self.arc_descriptors_dict = arc_descriptors_dict
-        self.earliness_tardiness_dict = earliness_tardiness_dict
+        self.supply_nodes_dict = supply_nodes_dict # {node_id(int): supply(int)}
+        self.demand_nodes_dict = demand_nodes_dict # {node_id(int): demand(int)}
+        self.zero_nodes_dict = zero_nodes_dict # {node_id(int): 0}
+        self.arc_descriptors_dict = arc_descriptors_dict # {(src(int), dst(int)): (low(int), cap(int), cost(int))}
+        self.earliness_tardiness_dict = earliness_tardiness_dict # {node_id(int): (earliness(int), tardiness(int))}
         self.z_vars = None
         self.solve_time = None
         self.create_model()

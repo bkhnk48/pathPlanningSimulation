@@ -121,16 +121,14 @@ class Event:
             else:
                 if len(self.pns_path) == 0:
                     self.pns_path = input("Enter the path for pns-seq: ")
-                command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-                print("Running network-simplex:", command)
-
-            subprocess.run(command, shell=True)
+                    command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+                    print("Running network-simplex:", command)
+                    subprocess.run(command, shell=True)
 
             if config.solver_choice != 'solver':
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
 
-            self.graph.version += 1
             self.setTracesForAllAGVs()
             next_vertex = self.agv.getNextNode()
 
