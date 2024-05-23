@@ -10,4 +10,4 @@ class TimeWindowNode(Node):
         return None
     
     def __repr__(self):
-        return f"TimeWindowNode(ID={self.ID}, time_window={self.time_window})"
+        return f"TimeWindowNode(ID={self.id}, time_window={self.time_window})"
