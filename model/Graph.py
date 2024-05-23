@@ -29,15 +29,29 @@ class Graph:
         # Ensure the list is large enough to hold the node_id
         while len(self.nodes) <= node_id:
             self.nodes.append(None)
+    
+    def count_edges(self):
+        count = 0
+        for node in self.adjacency_list:
+            count = count + len(self.adjacency_list[node])
+        return count
             
-    def insertEdgesAndNodes(self, start_id, end_id, edge):
+    """def insertEdgesAndNodes(self, start_id, end_id, edge):
         self.adjacency_list[start_id].append((end_id, edge))
-        self.ensure_node_capacity(start_id)
-        self.ensure_node_capacity(end_id)
+        #self.ensure_node_capacity(start_id)
+        #self.ensure_node_capacity(end_id)
         if self.nodes[start_id] is None:
             self.nodes[start_id] = {'id': start_id}
         if self.nodes[end_id] is None:
-            self.nodes[end_id] = {'id': end_id}
+            self.nodes[end_id] = {'id': end_id}"""
+    def insertEdgesAndNodes(self, start, end, edge):
+        self.adjacency_list[start.id].append((end.id, edge))
+        #self.ensure_node_capacity(start_id)
+        #self.ensure_node_capacity(end_id)
+        if self.nodes[start.id] is None:
+            self.nodes[start.id] = {'id': start.id}
+        if self.nodes[end.id] is None:
+            self.nodes[end.id] = {'id': end.id}
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
@@ -117,10 +131,10 @@ class Graph:
                 self.id2_id4_list = []
     
     def getTrace(self, idOfAGV):
-        #pdb.set_trace()
+        pdb.set_trace()
         idOfAGV = int(idOfAGV[3:])
-        #for key, value in self.map.items():
-        #    print(f"Key: {key}, Value: {value}")
+        for key, value in self.map.items():
+            print(f"Key: {key}, Value: {value}")
         return self.map[idOfAGV]     
     
     def has_initial_movement(self, node):
