@@ -117,7 +117,6 @@ class Event:
                 model.output_solution()
                 model.save_solution(filename)
                 #self.graph.version += 1
-                self.agv.versionOfGraph = self.graph.version + 1 #sẽ chính thức tăng ở dòng 133
             else:
                 if len(self.pns_path) == 0:
                     self.pns_path = input("Enter the path for pns-seq: ")
@@ -129,6 +128,7 @@ class Event:
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
 
+            self.graph.version += 1
             self.setTracesForAllAGVs()
             next_vertex = self.agv.getNextNode()
 
