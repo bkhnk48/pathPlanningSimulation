@@ -24,7 +24,7 @@ class MovingEdge(Edge):
     def update_weight_due_to_traffic(self, new_weight):
         # This method could be used to dynamically adjust the weight of the edge based on traffic conditions
         self.weight = new_weight
-        print(f"Weight of MovingEdge from {self.start_node.node_id} to {self.end_node.node_id} updated to {new_weight}")
+        print(f"Weight of MovingEdge from {self.start_node.id} to {self.end_node.id} updated to {new_weight}")
 
 class ArtificialEdge(Edge):
     def __init__(self, start_node, end_node, lower, upper, weight, temporary=False):
@@ -34,7 +34,7 @@ class ArtificialEdge(Edge):
     def make_permanent(self):
         # This method could be used to convert a temporary edge into a permanent one
         self.temporary = False
-        print(f"ArtificialEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
+        print(f"ArtificialEdge from {self.start_node.id} to {self.end_node.id} made permanent.")
 
 class RestrictionEdge(Edge):
     def __init__(self, start_node, end_node, lower, upper, weight, temporary=False):
@@ -44,7 +44,7 @@ class RestrictionEdge(Edge):
     def make_permanent(self):
         # This method could be used to convert a temporary edge into a permanent one
         self.temporary = False
-        print(f"RestrictionEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
+        print(f"RestrictionEdge from {self.start_node.id} to {self.end_node.id} made permanent.")
 
 class TimeWindowEdge(Edge):
     def __init__(self, start_node, end_node, lower, upper, weight, temporary=False):
@@ -54,4 +54,4 @@ class TimeWindowEdge(Edge):
     def make_permanent(self):
         # This method could be used to convert a temporary edge into a permanent one
         self.temporary = False
-        print(f"TimeWindowEdge from {self.start_node.node_id} to {self.end_node.node_id} made permanent.")
+        print(f"TimeWindowEdge from {self.start_node.id} to {self.end_node.id} made permanent.")
