@@ -23,6 +23,7 @@ class Event:
         self.agv = agv
         self.graph = graph
         self.pns_path = ""
+        self.edges = graph.edges if hasattr(graph, 'edges') else {}
 
     def setValue(name, value):
         if name == "debug":
@@ -89,7 +90,7 @@ class Event:
         filename = "TSG_0.txt"
         # Code để lưu đồ thị vào file
         return filename
-
+  
     def getNext(self):
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
@@ -116,6 +117,7 @@ class Event:
                 model.solve()
                 model.output_solution()
                 model.save_solution(filename)
+                self.graph.convert_solver_output_to_traces(solver_output_file='solver_solution.txt', output_file='traces.txt')
                 #self.graph.version += 1
                 self.agv.versionOfGraph = self.graph.version + 1 #sẽ chính thức tăng ở dòng 133
             else:
@@ -128,7 +130,8 @@ class Event:
             if config.solver_choice != 'solver':
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
-
+                
+            self.graph.version += 1
             self.setTracesForAllAGVs()
             next_vertex = self.agv.getNextNode()
 

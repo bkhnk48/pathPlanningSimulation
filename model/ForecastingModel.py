@@ -5,7 +5,7 @@ import time
 import datetime
 
 def read_dimacs_file(file_name):
-    file_name = 'TSG_0.txt'
+    file_name = 'TSG.txt'
     # DIMACS format: p <problem_type> <num_nodes> <num_arcs>
     problem_info = {} # Create a dictionary to store problem information
 
@@ -314,21 +314,16 @@ class ForecastingModel:
             print("No solution found")
 
 
-    def save_solution(self, filename):
-        # check if output folder exists
-        folder = "output_B_solver_v2"
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-        # generate filename base on file input and current time(DD-MM-YYYY_HH-MM-SS)
-        filename = filename.split(".")[0] + "_" + datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
-        filename = os.path.join(folder, filename)
+    def save_solution(self, filename="solver_solution.txt"):
+    # generate filename base on file input and current time(DD-MM-YYYY_HH-MM-SS)
+        filename = "solver_solution.txt"
+        
         with open(filename, 'w') as f:
             if self.model.getStatus() == "optimal":
                 f.write("Solution:\n")
-                # Lấy tất cả các biến từ mô hình
+                # Get all variables from the model
                 vars = self.model.getVars()
-                # In giá trị của tất cả các biến
+                # Print the value of all variables
                 for var in vars:
                     if self.model.getVal(var) > 0:
                         f.write(f"{var.name} = {self.model.getVal(var)}\n")
