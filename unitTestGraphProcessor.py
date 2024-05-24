@@ -55,7 +55,11 @@ assert (graph.count_edges() == len(processor.ts_edges)), "Missing some edges els
 #pdb.set_trace()
 assert (len(graph.nodes) == len(processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(processor.ts_nodes)}"
 
-processor.update_file(id1 = 1, id2 = 8, c12 = 3)
+id1 = 1
+id2 = 8
+c12 = 3
+processor.update_file(id1, id2, c12)
+current_time = id1 // processor.M + c12
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24
 (2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*
