@@ -8,9 +8,11 @@ class Graph:
     def __init__(self, graph_processor):
         self.graph_processor = graph_processor 
         self.adjacency_list = defaultdict(list)
-        self.nodes = self.graph_processor.ts_nodes
+        #self.nodes = self.graph_processor.ts_nodes
         #self.lastChangedByAGV = -1
-        self.edges = self.graph_processor.ts_edges
+        #self.edges = self.graph_processor.ts_edges
+        self.nodes = {}
+        self.adjacency_list = {}
         self.list1 = []
         self.neighbour_list = {}
         self.visited = set()
