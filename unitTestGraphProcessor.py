@@ -44,7 +44,7 @@ processor.process_restrictions()
 #realTime = int(input("Thời gian thực tế: "))
 #predictedChange = int(input("Sự thay đổi thời gian dự kiến của các cạnh còn lại: "))
 
-graph = Graph()
+graph = Graph(processor)
 """for edge in processor.ts_edges:
     start = edge.start_node
     end = edge.end_node
@@ -60,6 +60,7 @@ id2 = 8
 c12 = 3
 processor.update_file(id1, id2, c12)
 current_time = id1 // processor.M + c12
+
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24
 (2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*
