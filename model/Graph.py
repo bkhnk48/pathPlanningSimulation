@@ -121,8 +121,7 @@ class Graph:
         try:
             with open(solver_output_file, 'r') as f:
                 solver_output = f.read()
-                print(f"Solver output:\n{solver_output}")  # Debugging: print solver output
-
+ # Debugging: print solver output
             traces = []
             sum_val = 0  # Initialize sum to 0
 
