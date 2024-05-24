@@ -76,6 +76,5 @@ current_time = id1 // processor.M + c12
      số RestrictionEdge có đỉnh đích (không phải RestrictionNode) với thời điểm của đỉnh đích < thời điểm hiện tại     
 *thời điểm hiện tại: có công thức tính thời điểm hiện tại từ tham số của hàm update_file 
 """
-graph.update(currentpos = 1, nextpos = 8, realtime = 3)
+#graph.update(currentpos = 1, nextpos = 8, realtime = 3)
 #graph.update_file(id1 = 1, id2 = 8, c12 = 3)
-
