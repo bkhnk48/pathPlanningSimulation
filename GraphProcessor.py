@@ -105,7 +105,7 @@ class GraphProcessor:
         if(self.printOut):
             print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
-    def check_and_add_nodes(self, *args, isArtificialNode = False, label = ""):
+    def check_and_add_nodes(self, args, isArtificialNode = False, label = ""):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes) and isinstance(id, int):
@@ -143,7 +143,7 @@ class GraphProcessor:
                     c = edges_with_cost[(u, v)]
                     output_lines.append(f"a {ID} {j} 0 1 {c}")
                     self.tsEdges.add((ID, j, 0, 1, c))
-                    self.check_and_add_nodes(ID, j)
+                    self.check_and_add_nodes([ID, j])
                     #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
                     #if(ID == 1 and j == 8):
                     #    pdb.set_trace()
@@ -152,7 +152,7 @@ class GraphProcessor:
                 elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                     output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                     self.tsEdges.add((ID, j, 0, 1, self.d))
-                    self.check_and_add_nodes(ID, j)
+                    self.check_and_add_nodes([ID, j])
                     #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
                     temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
                 if(temp != None):
@@ -366,7 +366,8 @@ class GraphProcessor:
             Max = self.getMaxID() + 1
             #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
-            self.check_and_add_nodes(aS, aT, aSubT, True, "Restriction")
+            pdb.set_trace()
+            self.check_and_add_nodes([aS, aT, aSubT], True, "Restriction")
             Max += 3
             e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
             e2 = (aS, aSubT, 0, self.Ur, 0)
