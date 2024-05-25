@@ -8,7 +8,7 @@ class Graph:
     def __init__(self, graph_processor):
         self.graph_processor = graph_processor 
         self.adjacency_list = defaultdict(list)
-        self.nodes = {node.id: {'id': node.id} for node in graph_processor.ts_nodes}
+        self.nodes = {node.id: {'id': node} for node in graph_processor.ts_nodes}
         self.adjacency_list = {node.id: [] for node in graph_processor.ts_nodes}
         #self.nodes = self.graph_processor.ts_nodes
         #self.lastChangedByAGV = -1
@@ -53,9 +53,9 @@ class Graph:
         #self.ensure_node_capacity(start_id)
         #self.ensure_node_capacity(end_id)
         if self.nodes[start.id] is None:
-            self.nodes[start.id] = {'id': start.id}
+            self.nodes[start.id] = start
         if self.nodes[end.id] is None:
-            self.nodes[end.id] = {'id': end.id}
+            self.nodes[end.id] = end
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
