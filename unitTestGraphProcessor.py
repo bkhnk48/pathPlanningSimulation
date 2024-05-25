@@ -44,7 +44,7 @@ processor.process_restrictions()
 #realTime = int(input("Thời gian thực tế: "))
 #predictedChange = int(input("Sự thay đổi thời gian dự kiến của các cạnh còn lại: "))
 
-graph = Graph()
+graph = Graph(processor)
 """for edge in processor.ts_edges:
     start = edge.start_node
     end = edge.end_node
@@ -55,7 +55,12 @@ assert (graph.count_edges() == len(processor.ts_edges)), "Missing some edges els
 #pdb.set_trace()
 assert (len(graph.nodes) == len(processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(processor.ts_nodes)}"
 
-processor.update_file(id1 = 1, id2 = 8, c12 = 3)
+id1 = 1
+id2 = 8
+c12 = 3
+processor.update_file(id1, id2, c12)
+current_time = id1 // processor.M + c12
+
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24
 (2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*
@@ -71,6 +76,5 @@ processor.update_file(id1 = 1, id2 = 8, c12 = 3)
      số RestrictionEdge có đỉnh đích (không phải RestrictionNode) với thời điểm của đỉnh đích < thời điểm hiện tại     
 *thời điểm hiện tại: có công thức tính thời điểm hiện tại từ tham số của hàm update_file 
 """
-graph.update(currentpos = 1, nextpos = 8, realtime = 3)
+#graph.update(currentpos = 1, nextpos = 8, realtime = 3)
 #graph.update_file(id1 = 1, id2 = 8, c12 = 3)
-

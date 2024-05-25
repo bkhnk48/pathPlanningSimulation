@@ -35,9 +35,10 @@ numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 
 graph_processor.init_AGVs_n_events(allAGVs, events, graph)
 graph_processor.init_TASKs(TASKS)
-#assert (graph.count_edges() == len(pre_processor.ts_edges)), "Missing some edges elsewhere"
+graph_processor.init_nodes_n_edges(graph)
+assert (graph.count_edges() == len(graph_processor.ts_edges)), "Missing some edges elsewhere"
 #pdb.set_trace()
-#assert (len(graph.nodes) == len(pre_processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(pre_processor.ts_nodes)}"
+assert (len(graph.nodes) == len(graph_processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(graph_processor.ts_nodes)}"
 
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)

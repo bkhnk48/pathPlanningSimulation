@@ -1,8 +1,8 @@
 from .Node import Node
 
 class TimeWindowNode(Node):
-    def __init__(self, id, time_window):
-        super().__init__(id)
+    def __init__(self, ID, time_window):
+        super().__init__(ID)
         self.time_window = time_window  # Time window in which the node can be accessed
 
     def create_edge(self, node, M, d, e):
