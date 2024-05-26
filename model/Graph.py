@@ -134,6 +134,46 @@ class Graph:
                 #print(' '.join(map(str, id2_id4_list)))
                 self.id2_id4_list = []
     
+    def convert_solver_output_to_traces(self, solver_output_file, output_file='traces.txt'):
+        try:
+            with open(solver_output_file, 'r') as f:
+                solver_output = f.read()
+ # Debugging: print solver output
+            traces = []
+            sum_val = 0  # Initialize sum to 0
+
+            for line in solver_output.split('\n'):
+                if line.startswith('x'):
+                    parts = line.split('_')
+                    start_node = int(parts[1])
+                    end_node = int(parts[2].split('=')[0].strip())
+                    # Find the cost for the edge
+                    cost = 0
+                    for edge in self.edges:
+                        if edge.start_node.id == start_node and edge.end_node.id == end_node:
+                            cost = edge.weight
+                            break
+                    traces.append(f"a {start_node} {end_node} {sum_val} + {cost} = {sum_val + cost}\n")
+                    sum_val += cost
+
+                    # Populate self.map
+                    if start_node not in self.map:
+                        self.map[start_node] = []
+                    self.map[start_node].append(end_node)
+                    print(f"Processed trace: a {start_node} {end_node}, cost: {cost}, sum: {sum_val}")  # Debugging
+
+            traces.append(f"Final sum = {sum_val}\n")
+            with open(output_file, 'w') as f:
+                f.writelines(traces)
+
+            print(f"File {output_file} has been created successfully.")
+            print(f"Contents written to {output_file}:\n{''.join(traces)}")  # Debugging
+
+        except FileNotFoundError:
+            print(f"File {solver_output_file} not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            
     def getTrace(self, idOfAGV):
         pdb.set_trace()
         idOfAGV = int(idOfAGV[3:])

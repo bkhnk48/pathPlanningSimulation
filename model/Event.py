@@ -116,6 +116,7 @@ class Event:
                 model.solve()
                 model.output_solution()
                 model.save_solution(filename)
+                self.graph.convert_solver_output_to_traces(solver_output_file='solver_solution.txt', output_file='traces.txt')
                 #self.graph.version += 1
             else:
                 if len(self.pns_path) == 0:
