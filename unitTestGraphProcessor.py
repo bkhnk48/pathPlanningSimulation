@@ -3,6 +3,8 @@ from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
 from model.Graph import Graph
+from model.TimeWindowNode import TimeWindowNode
+from model.RestrictionNode import RestrictionNode
 import config
 #from discrevpy import simulator
 from GraphProcessor import GraphProcessor
@@ -50,9 +52,9 @@ graph = Graph(processor)
     end = edge.end_node
     graph.insertEdgesAndNodes(start, end, edge)"""
 
+pdb.set_trace()
 processor.init_nodes_n_edges(graph)
 assert (graph.count_edges() == len(processor.ts_edges)), "Missing some edges elsewhere"
-#pdb.set_trace()
 assert (len(graph.nodes) == len(processor.ts_nodes)), f"Missing some nodes elsewhere as {len(graph.nodes)} != {len(processor.ts_nodes)}"
 
 id1 = 1
@@ -60,6 +62,12 @@ id2 = 8
 c12 = 3
 processor.update_file(id1, id2, c12)
 current_time = id1 // processor.M + c12
+pdb.set_trace()
+
+for node in graph.nodes.values():
+    if not isinstance(node, (TimeWindowNode, RestrictionNode)):
+        time = node.id / graph.numberOfNodesInSpaceGraph
+        assert (time >= current_time) == 24, "Assertion failed for node with id {}".format(node.id)
 
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24
@@ -78,3 +86,4 @@ current_time = id1 // processor.M + c12
 """
 #graph.update(currentpos = 1, nextpos = 8, realtime = 3)
 #graph.update_file(id1 = 1, id2 = 8, c12 = 3)
+
