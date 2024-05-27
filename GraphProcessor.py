@@ -366,7 +366,7 @@ class GraphProcessor:
             Max = self.getMaxID() + 1
             #Max = max(ID2 for _, ID2 in R) + 1
             aS, aT, aSubT = Max, Max + 1, Max + 2
-            pdb.set_trace()
+            #pdb.set_trace()
             self.check_and_add_nodes([aS, aT, aSubT], True, "Restriction")
             Max += 3
             e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
