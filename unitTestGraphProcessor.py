@@ -166,13 +166,13 @@ current_time = id1 // processor.M + c12
 
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24"""
-#assert_Nodes(graph, current_time)
+assert_Nodes(graph, current_time)
 """(2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*"""
-#assert_Edges(graph, current_time)
+assert_Edges(graph, current_time)
 
 """
 (3) Tất cả các TimeWindowNode thì vẫn còn các đỉnh khác nối đến chúng"""
-#assert_connection_TimeWindowNodes(graph)
+assert_connection_TimeWindowNodes(graph)
 
 """(4) Tất cả các RestrictionNode thì vẫn còn đỉnh nối đến chúng"""
 assert_RestrictionNodes(graph)
