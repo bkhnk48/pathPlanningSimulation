@@ -8,7 +8,7 @@ class Graph:
     def __init__(self, graph_processor):
         self.graph_processor = graph_processor 
         self.adjacency_list = defaultdict(list)
-        self.nodes = {node.id: {'id': node} for node in graph_processor.ts_nodes}
+        self.nodes = {node.id: node for node in graph_processor.ts_nodes}
         self.adjacency_list = {node.id: [] for node in graph_processor.ts_nodes}
         #self.nodes = self.graph_processor.ts_nodes
         #self.lastChangedByAGV = -1
@@ -23,7 +23,7 @@ class Graph:
         self.file_path = None
         self.cur = []
         self.map = {}
-        self.numberOfNodesInSpaceGraph = -1
+        self.numberOfNodesInSpaceGraph = -1 if graph_processor is None else graph_processor.M
         #print("Initialized a new graph.")
         #stack = inspect.stack()
         #for frame in stack[1:]:
