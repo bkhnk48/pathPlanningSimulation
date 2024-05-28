@@ -3,6 +3,8 @@ import pdb
 from collections import deque, defaultdict
 from .utility import utility
 import inspect
+from .RestrictionNode import RestrictionNode
+from .TimeWindowNode import TimeWindowNode
 
 class Graph:
     def __init__(self, graph_processor):
@@ -215,9 +217,34 @@ class Graph:
                     path.append((node, neighbor, weight))
         return path
     
-    def update_graph(self, currentpos, nextpos, realtime):
+    def update_graph(self, id1 = -1, id2 = -1, c12 = -1):
         # Update the graph with new edge information
-        self.add_edge(currentpos, nextpos, realtime)
+        #self.add_edge(currentpos, nextpos, realtime)
+        ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
+        ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
+        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
+        M = self.numberOfNodesInSpaceGraph
+        i1, i2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
+        #if i2 - i1 != C12:
+        #    print('Status: i2 - i1 != C12')
+        #    ID2 = ID1 + M * C12
+        #existing_edges = set()
+        """old_time_window_edges = []
+        for source_id, edges in self.adjacency_list.items():
+            for destination_id, edge in edges:
+                if isinstance(edge, TimeWindowEdge):
+                    old_time_window_edges.append(edge)"""
+        current_time = i1 + C12 # Giá trị của current_time
+            
+        # Duyệt qua từng phần tử của adjacency_list
+        for source_id, edges in list(self.adjacency_list.items()):
+            # Tính giá trị time
+            node = self.nodes[source_id]
+            time = source_id // M - (1 if source_id % M == 0 else 0)
+            # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
+            if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
+                del self.adjacency_list[source_id]
+                del self.nodes[source_id]
         
     def write_to_file(self, filename="TSG.txt"):
         with open(filename, "w") as file:
