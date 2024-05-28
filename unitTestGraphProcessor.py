@@ -35,10 +35,17 @@ def assert_Edges(graph, current_time):
 def assert_connection_TimeWindowNodes(graph):
     # Giả sử 'graph' là đối tượng đồ thị của bạn
     for node in graph.nodes.values():
+        count = 0
         # Kiểm tra nếu node là TimeWindowNode
         if isinstance(node, TimeWindowNode):
             # Kiểm tra nếu có ít nhất một cạnh nối đến node
-            assert len(graph.adjacency_list[node.id]) > 0, f"TimeWindowNode with id {node.id} has no incoming edges"
+            for start_node in graph.nodes.values():
+                if(start_node != node):
+                    for end_id, edge in list(graph.adjacency_list[start_node.id]):
+                        if(end_id == node.id):
+                            count += 1
+            assert(count > 0), f"TimeWindowNode with id {node.id} has no incoming edges"
+
 
 def assert_number_TimeWindowEdges(graph, current_time):
     old_time_window_edges = []
@@ -164,10 +171,10 @@ id1 = 1
 id2 = 8
 c12 = 2
 #processor.update_file(id1, id2, c12)
-pdb.set_trace()
+#pdb.set_trace()
 graph.update_graph(id1, id2, c12)
 current_time = id1 // processor.M + c12
-pdb.set_trace()
+#pdb.set_trace()
 
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 27"""
