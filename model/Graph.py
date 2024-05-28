@@ -218,6 +218,9 @@ class Graph:
         return path
     
     def update_graph(self, id1 = -1, id2 = -1, c12 = -1):
+    #ý nghĩa của các tham số: id1 - id của nút nguồn X trong đồ thị TSG
+    #                         id2 - id cuả nút đích dự kiến Y trong đồ thị TSG
+    #                         c12 - thời gian thực tế mà AGV di chuyển từ nút X đến Y
         # Update the graph with new edge information
         #self.add_edge(currentpos, nextpos, realtime)
         ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
