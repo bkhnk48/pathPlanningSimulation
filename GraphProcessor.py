@@ -812,6 +812,7 @@ class GraphProcessor:
             choice = input("Nhap lua chon cua ban: ").strip().lower()
 
             if choice == 'a':
+                self.getStartedPoints()
                 filepath = input("Nhap ten file dau vao: ")
                 self.process_input_file(filepath)
             elif choice == 'b':
@@ -841,7 +842,6 @@ class GraphProcessor:
                 self.update_tsg_with_T()
             elif choice == 'j':
                 self.add_restrictions()
-                self.getStartedPoints()
                 self.process_restrictions()
             elif choice == 'k':
                 self.add_problem_info()
