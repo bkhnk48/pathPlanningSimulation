@@ -123,40 +123,46 @@ class GraphProcessor:
             
     def create_tsg_file(self):          
         output_lines = []
-        Q = deque(range((self.H + 1)* self.M + 1))
+        #Q = deque(range((self.H + 1)* self.M + 1))
+        Q = deque()
+        Q.extend(self.startedNodes)
 
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         
+        pdb.set_trace()
         while Q:
             ID = Q.popleft()
+            print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
-                u, v = ID % self.M, j % self.M
-                u = u if u != 0 or ID == 0 else self.M
-                #if(v == 0):
-                #if (ID == 1 and j == 11):
-                    #pdb.set_trace()
-                v = v if v != 0 or ID == 0 else self.M
-                temp = None
-                #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
-                #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
-                if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
-                    c = edges_with_cost[(u, v)]
-                    output_lines.append(f"a {ID} {j} 0 1 {c}")
-                    self.tsEdges.add((ID, j, 0, 1, c))
-                    self.check_and_add_nodes([ID, j])
-                    #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
-                    #if(ID == 1 and j == 8):
-                    #    pdb.set_trace()
-                        #print()
-                    temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
-                elif ID + self.M * self.d == j and ID % self.M == j % self.M:
-                    output_lines.append(f"a {ID} {j} 0 1 {self.d}")
-                    self.tsEdges.add((ID, j, 0, 1, self.d))
-                    self.check_and_add_nodes([ID, j])
-                    #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
-                    temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
-                if(temp != None):
-                    self.ts_edges.append(temp)
+                if(not any(edge[0] == ID and edge[1] == j for edge in self.tsEdges)):
+                    Q.append(j)
+                    u, v = ID % self.M, j % self.M
+                    u = u if u != 0 or ID == 0 else self.M
+                    #if(v == 0):
+                    #if (ID == 1 and j == 11):
+                        #pdb.set_trace()
+                    v = v if v != 0 or ID == 0 else self.M
+                    temp = None
+                    #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
+                    #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
+                    if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
+                        c = edges_with_cost[(u, v)]
+                        output_lines.append(f"a {ID} {j} 0 1 {c}")
+                        self.tsEdges.add((ID, j, 0, 1, c))
+                        self.check_and_add_nodes([ID, j])
+                        #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
+                        #if(ID == 1 and j == 8):
+                        #    pdb.set_trace()
+                            #print()
+                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
+                    elif ID + self.M * self.d == j and ID % self.M == j % self.M:
+                        output_lines.append(f"a {ID} {j} 0 1 {self.d}")
+                        self.tsEdges.add((ID, j, 0, 1, self.d))
+                        self.check_and_add_nodes([ID, j])
+                        #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
+                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
+                    if(temp != None):
+                        self.ts_edges.append(temp)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
@@ -743,6 +749,7 @@ class GraphProcessor:
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        self.startedNodes = [1, 10]
         self.process_input_file(filepath)
         self.H = 10
         self.generate_hm_matrix()
@@ -767,7 +774,6 @@ class GraphProcessor:
         self.endBan = 2
         self.restrictions = [[1, 2]]
         self.Ur = 3
-        self.startedNodes = [1, 10]
         self.process_restrictions()
 
     def test_menu(self):
