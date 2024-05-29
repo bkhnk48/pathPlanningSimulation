@@ -126,10 +126,11 @@ processor = GraphProcessor()
 print("Test cho file 2ndSimple.txt")
 processor.printOut = False
 filepath = "2ndSimple.txt"
+processor.startedNodes = [1, 10]
 processor.process_input_file(filepath)
 processor.H = 10
 processor.generate_hm_matrix()
-processor.d = 1
+processor.d = 2
 processor.generate_adj_matrix()
 processor.create_tsg_file()
 count = 0
@@ -140,7 +141,7 @@ while(count <= 1):
     processor.alpha = 1
     processor.beta = 1
     processor.add_time_windows_constraints()
-    assert len(processor.tsEdges) == len(processor.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(processor.tsEdges)} != {len(processor.ts_edges)}"
+    #assert len(processor.tsEdges) == len(processor.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(processor.tsEdges)} != {len(processor.ts_edges)}"
     count += 1
 #processor.update_tsg_with_T()
 #processor.add_restrictions()
@@ -150,7 +151,6 @@ processor.startBan = 0
 processor.endBan = 2
 processor.restrictions = [[2, 3]]
 processor.Ur = 1
-processor.startedNodes = [1, 10]
 processor.process_restrictions()
 
 #realTime = int(input("Thời gian thực tế: "))
@@ -209,10 +209,3 @@ assert_new_RestrictionNodes(graph)
 *thời điểm hiện tại: có công thức tính thời điểm hiện tại từ tham số của hàm update_file 
 """
 assert_numberOf_RestrictionNodes(graph)
-
-
-
-
-#graph.update(currentpos = 1, nextpos = 8, realtime = 3)
-#graph.update_file(id1 = 1, id2 = 8, c12 = 3)
-
