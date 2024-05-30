@@ -227,7 +227,7 @@ class Graph:
         ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
         C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
         M = self.numberOfNodesInSpaceGraph
-        i1, i2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
+        time1, time2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
         #if i2 - i1 != C12:
         #    print('Status: i2 - i1 != C12')
         #    ID2 = ID1 + M * C12
@@ -237,7 +237,8 @@ class Graph:
             for destination_id, edge in edges:
                 if isinstance(edge, TimeWindowEdge):
                     old_time_window_edges.append(edge)"""
-        current_time = i1 + C12 # Giá trị của current_time
+        current_time = time1 + C12 # Giá trị của current_time
+        new_node_id = current_time*M + (ID2 % M)
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
@@ -248,6 +249,23 @@ class Graph:
             if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
                 del self.adjacency_list[source_id]
                 del self.nodes[source_id]
+        
+        Q = deque()
+        Q.append(new_node_id)
+        self.graph_processor.insert_from_queue(Q)
+        for node in self.graph_processor.ts_nodes:
+            if node.id not in self.nodes:
+                self.nodes[node.id] = node
+        
+        for edge in self.graph_processor.ts_edges:
+            source_id = edge.start_node.id
+            end_id = edge.end_node.id
+            if source_id not in self.adjacency_list or [end_id, edge] not in self.adjacency_list[source_id]:
+                if source_id not in self.adjacency_list:
+                    self.adjacency_list[source_id] = []
+                self.adjacency_list[source_id].append([end_id, edge])
+
+
         
     def write_to_file(self, filename="TSG.txt"):
         with open(filename, "w") as file:
