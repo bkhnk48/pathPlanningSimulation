@@ -31,7 +31,7 @@ class GraphProcessor:
         self.earliness = 0
         self.tardiness = 0
         self.spaceEdges = []
-        self.tsEdges = set()
+        self.tsEdges = []
         self.ts_nodes = []
         self.ts_edges = []
         self.startedNodes = []
@@ -142,7 +142,7 @@ class GraphProcessor:
                     if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
                         c = edges_with_cost[(u, v)]
                         output_lines.append(f"a {ID} {j} 0 1 {c}")
-                        self.tsEdges.add((ID, j, 0, 1, c))
+                        self.tsEdges.append((ID, j, 0, 1, c))
                         self.check_and_add_nodes([ID, j])
                         #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
                         #if(ID == 1 and j == 8):
@@ -151,7 +151,7 @@ class GraphProcessor:
                         temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
                     elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                         output_lines.append(f"a {ID} {j} 0 1 {self.d}")
-                        self.tsEdges.add((ID, j, 0, 1, self.d))
+                        self.tsEdges.append((ID, j, 0, 1, self.d))
                         self.check_and_add_nodes([ID, j])
                         #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
                         temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
@@ -462,7 +462,8 @@ class GraphProcessor:
 
       #pdb.set_trace()
       Count = 0
-      self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
+      #self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
+      self.tsEdges.extend(e for e in new_edges if e not in self.tsEdges)
       self.create_set_of_edges(new_edges)
       # Ghi các cung mới vào file TSG.txt
       with open('TSG.txt', 'a') as file:
