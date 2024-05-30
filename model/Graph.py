@@ -252,8 +252,10 @@ class Graph:
         
         Q = deque()
         Q.append(new_node_id)
-        self.graph_processor.insert_from_queue(Q)
-        for node in self.graph_processor.ts_nodes:
+        pdb.set_trace()
+        new_edges = self.graph_processor.insert_from_queue(Q)
+        print(new_edges)
+        """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
         
@@ -265,7 +267,7 @@ class Graph:
                     self.adjacency_list[source_id] = []
                 self.adjacency_list[source_id].append([end_id, edge])
         
-        self.write_to_file()
+        self.write_to_file()"""
 
 
         
