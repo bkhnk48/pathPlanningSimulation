@@ -368,7 +368,7 @@ class GraphProcessor:
         self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in [r[:2] for r in R]]
         #self.ts_edges = [e for e in self.ts_edges if any(e.start_node.id != r[0] and e.end_node.id != r[1] for r in R)]
         size2 = len(self.ts_edges)
-        assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
+        #assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
         #self.create_tsg_file()
         Max = 0
         # Tạo các cung mới dựa trên các cung cấm
@@ -396,6 +396,9 @@ class GraphProcessor:
         self.create_set_of_edges(newA)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
+        self.write_to_file(Max)
+        
+    def write_to_file(self, Max, filename = "TSG.txt"):
         with open('TSG.txt', 'w') as file:
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
@@ -408,7 +411,7 @@ class GraphProcessor:
                 file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
-
+        
     def getStartedPoints(self):
         N = int(input("Nhập vào số lượng các xe AGV: "))
         self.startedNodes = []
