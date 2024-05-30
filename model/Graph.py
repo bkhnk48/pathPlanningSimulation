@@ -264,18 +264,34 @@ class Graph:
                 if source_id not in self.adjacency_list:
                     self.adjacency_list[source_id] = []
                 self.adjacency_list[source_id].append([end_id, edge])
+        
+        self.write_to_file()
 
 
         
     def write_to_file(self, filename="TSG.txt"):
-        with open(filename, "w") as file:
-            file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
-            for node in self.nodes:
-                file.write(f"n {node} 1\n")
-            for start_node in self.adjacency_list:
-                for end_node, weight in self.adjacency_list[start_node]:
-                    file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
-                    
+        #with open(filename, "w") as file:
+        #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
+        #    for node in self.nodes:
+        #        file.write(f"n {node} 1\n")
+        #    for start_node in self.adjacency_list:
+        #        for end_node, weight in self.adjacency_list[start_node]:
+        #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
+        Max = max(self.nodes, key=int)
+        num_edges = self.count_edges()
+        with open('TSG.txt', 'w') as file:
+            file.write(f"p min {Max} {num_edges}\n")
+            for start in self.graph_processor.startedNodes:
+                file.write(f"n {start} 1\n")
+            for target in self.graph_processor.targetNodes:
+                target_id = target.id
+                file.write(f"n {target_id} -1\n")
+            #for edge in self.tsEdges:
+            #for edge in self.ts_edges:
+            for source_id, edges in list(self.adjacency_list.items()):
+                for edge in edges:
+                    file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
+        
     def update_edge(self, start_node, end_node, new_weight):
         found = False
         for i, (neighbor, weight) in enumerate(self.adjacency_list[start_node]):
