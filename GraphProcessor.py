@@ -502,8 +502,6 @@ class GraphProcessor:
                 file.write(line)
         print("Đã tạo file TSG_new.txt mới với các dòng thỏa điều kiện.")
 
-
-
     def add_problem_info(self):
       json_filepath = input("Nhap ten file dau vao: ")
       try:
@@ -556,9 +554,6 @@ class GraphProcessor:
       except FileNotFoundError:
           print("Không tìm thấy file JSON hoặc TSG.txt.")
 
-
-
-
     def remove_duplicate_lines(self):
             try:
                 # Read lines from TSG.txt
@@ -582,8 +577,6 @@ class GraphProcessor:
                 print("Removed duplicate lines from TSG.txt.")
             except FileNotFoundError:
                 print("File TSG.txt not found.")
-
-
 
     def remove_redundant_edges(self):
             # Tập R: ID của nút nguồn
@@ -696,6 +689,7 @@ class GraphProcessor:
         file.writelines(new_lines)
 
       print("Đã gỡ bỏ các cung con cháu xuất phát từ điểm gốc trong đồ thị TSG.")
+    
     def process_tsg(self):
         AGV = set()
         TASKS = set()
