@@ -120,16 +120,10 @@ class GraphProcessor:
                     self.ts_nodes.append(Node(id))
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
-            
-    def create_tsg_file(self):          
-        output_lines = []
-        #Q = deque(range((self.H + 1)* self.M + 1))
-        Q = deque()
-        Q.extend(self.startedNodes)
 
+    def insert_from_queue(self, Q):
+        output_lines = []
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
-        
-        pdb.set_trace()
         while Q:
             ID = Q.popleft()
             print(Q)
@@ -164,6 +158,16 @@ class GraphProcessor:
                     if(temp != None):
                         self.ts_edges.append(temp)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+        return output_lines
+
+    def create_tsg_file(self):          
+        
+        #Q = deque(range((self.H + 1)* self.M + 1))
+        Q = deque()
+        Q.extend(self.startedNodes)
+
+        #pdb.set_trace()
+        output_lines = self.insert_from_queue(Q)
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
                 file.write(line + "\n")
