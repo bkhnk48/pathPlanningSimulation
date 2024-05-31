@@ -273,7 +273,7 @@ class Graph:
             if(not found):
                 anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
-        self.write_to_file("TSG_1.txt")
+        self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
