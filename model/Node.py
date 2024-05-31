@@ -26,7 +26,7 @@ class Node:
         not isinstance(node, TimeWindowNode):
             return HoldingEdge(self, node, e[2], e[3], d, d)
         elif isinstance(node, RestrictionNode):
-            return RestrictionEdge(self, node, e[4], "Restriction")
+            return RestrictionEdge(self, node, e, "Restriction")
         elif isinstance(node, TimeWindowNode):
             return TimeWindowEdge(self, node, e[4], "TimeWindows")
         elif isinstance(node, Node):
