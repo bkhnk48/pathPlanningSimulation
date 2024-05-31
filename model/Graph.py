@@ -273,7 +273,7 @@ class Graph:
             if(not found):
                 anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
-        self.write_to_file()
+        self.write_to_file("TSG_1.txt")
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
@@ -310,7 +310,7 @@ class Graph:
         Max = max(self.nodes, key=int)
         num_edges = self.count_edges()
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
-        with open('TSG.txt', 'w') as file:
+        with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
             for start in self.graph_processor.startedNodes:
                 file.write(f"n {start} 1\n")
