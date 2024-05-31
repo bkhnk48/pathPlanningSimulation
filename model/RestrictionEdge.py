@@ -1,8 +1,8 @@
 from .Edge import Edge
 
 class RestrictionEdge(Edge):
-    def __init__(self, start_node, end_node, weight, label):
-        super().__init__(start_node, end_node, 0, 1, weight)
+    def __init__(self, start_node, end_node, edge, label):
+        super().__init__(start_node, end_node, edge[2], edge[3], edge[4])
         self.label = label
 
     def make_permanent(self):
