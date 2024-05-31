@@ -391,7 +391,7 @@ class GraphProcessor:
                 e5 = (aT, e[1], 0, 1, e[2])
                 #e5 = (aT, e[1], 0, 1, 1)
                 newA.update({e4, e5})
-
+        print("NewA: ", newA)
         self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
         self.create_set_of_edges(newA)
         assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
