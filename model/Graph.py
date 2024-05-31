@@ -256,8 +256,9 @@ class Graph:
         new_edges = self.graph_processor.insert_from_queue(Q)
         print(new_edges)
         for edge in new_edges:
-            source_id = edge[1]
-            dest_id = edge[2]
+            arr = self.parse_string(edge)
+            source_id = arr[0]
+            dest_id = arr[1]
             if source_id not in self.nodes:
                 self.nodes[source_id] = self.graph_processor.find_node(source_id)
             if dest_id not in self.nodes:
@@ -270,8 +271,8 @@ class Graph:
                     found = True
                     break
             if(not found):
-                edge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, edge[3], edge[4], edge[5]])
-                self.adjacency_list[source_id].append([dest_id, edge])
+                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
+                self.adjacency_list[source_id].append([dest_id, anEdge])
         self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
@@ -287,6 +288,15 @@ class Graph:
         
         self.write_to_file()"""
 
+    def parse_string(self, input_string):
+        parts = input_string.split()
+        if len(parts) != 6 or parts[0] != "a":
+            return None  # Chuỗi không đúng định dạng
+        try:
+            ID1, ID2, L, U, C = map(int, parts[1:])
+            return [ID1, ID2, L, U, C]
+        except ValueError:
+            return None  # Không thể chuyển thành số nguyên
 
         
     def write_to_file(self, filename="TSG.txt"):
@@ -299,6 +309,7 @@ class Graph:
         #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
         Max = max(self.nodes, key=int)
         num_edges = self.count_edges()
+        sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
         with open('TSG.txt', 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
             for start in self.graph_processor.startedNodes:
@@ -308,7 +319,7 @@ class Graph:
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
             #for edge in self.ts_edges:
-            for source_id, edges in list(self.adjacency_list.items()):
+            for source_id, edges in sorted_edges:
                 for edge in edges:
                     file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
         
