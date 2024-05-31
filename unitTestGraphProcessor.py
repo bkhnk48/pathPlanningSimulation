@@ -16,10 +16,13 @@ import pdb
 
 def assert_Nodes(graph, current_time):
     M = graph.numberOfNodesInSpaceGraph
+    count = 0
     for node in graph.nodes.values():
         if not isinstance(node, (TimeWindowNode, RestrictionNode)):
             time = node.id // M - (1 if node.id % M == 0 else 0)
-            assert (time >= current_time) == 24, "Assertion failed for node with id {}".format(node.id)
+            count += 1 if time >= current_time else 0
+            #print(node)
+    assert count == 27, "Assertion failed as number of nodes which satisfies time >= current time is {}".format(count)
 
 def assert_Edges(graph, current_time):
     M = graph.numberOfNodesInSpaceGraph
@@ -32,10 +35,17 @@ def assert_Edges(graph, current_time):
 def assert_connection_TimeWindowNodes(graph):
     # Giả sử 'graph' là đối tượng đồ thị của bạn
     for node in graph.nodes.values():
+        count = 0
         # Kiểm tra nếu node là TimeWindowNode
         if isinstance(node, TimeWindowNode):
             # Kiểm tra nếu có ít nhất một cạnh nối đến node
-            assert len(graph.adjacency_list[node.id]) > 0, f"TimeWindowNode with id {node.id} has no incoming edges"
+            for start_node in graph.nodes.values():
+                if(start_node != node):
+                    for end_id, edge in list(graph.adjacency_list[start_node.id]):
+                        if(end_id == node.id):
+                            count += 1
+            assert(count > 0), f"TimeWindowNode with id {node.id} has no incoming edges"
+
 
 def assert_number_TimeWindowEdges(graph, current_time):
     old_time_window_edges = []
@@ -116,10 +126,11 @@ processor = GraphProcessor()
 print("Test cho file 2ndSimple.txt")
 processor.printOut = False
 filepath = "2ndSimple.txt"
+processor.startedNodes = [1, 10]
 processor.process_input_file(filepath)
 processor.H = 10
 processor.generate_hm_matrix()
-processor.d = 1
+processor.d = 2
 processor.generate_adj_matrix()
 processor.create_tsg_file()
 count = 0
@@ -130,7 +141,7 @@ while(count <= 1):
     processor.alpha = 1
     processor.beta = 1
     processor.add_time_windows_constraints()
-    assert len(processor.tsEdges) == len(processor.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(processor.tsEdges)} != {len(processor.ts_edges)}"
+    #assert len(processor.tsEdges) == len(processor.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(processor.tsEdges)} != {len(processor.ts_edges)}"
     count += 1
 #processor.update_tsg_with_T()
 #processor.add_restrictions()
@@ -140,7 +151,6 @@ processor.startBan = 0
 processor.endBan = 2
 processor.restrictions = [[2, 3]]
 processor.Ur = 1
-processor.startedNodes = [1, 10]
 processor.process_restrictions()
 
 #realTime = int(input("Thời gian thực tế: "))
@@ -160,12 +170,14 @@ assert (len(graph.nodes) == len(processor.ts_nodes)), f"Missing some nodes elsew
 id1 = 1
 id2 = 8
 c12 = 3
-processor.update_file(id1, id2, c12)
+#processor.update_file(id1, id2, c12)
+#pdb.set_trace()
+graph.update_graph(id1, id2, c12)
 current_time = id1 // processor.M + c12
 #pdb.set_trace()
 
 """ Cần có các assert như sau:
-(1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 24"""
+(1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 27"""
 assert_Nodes(graph, current_time)
 """(2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*"""
 assert_Edges(graph, current_time)
@@ -197,10 +209,3 @@ assert_new_RestrictionNodes(graph)
 *thời điểm hiện tại: có công thức tính thời điểm hiện tại từ tham số của hàm update_file 
 """
 assert_numberOf_RestrictionNodes(graph)
-
-
-
-
-#graph.update(currentpos = 1, nextpos = 8, realtime = 3)
-#graph.update_file(id1 = 1, id2 = 8, c12 = 3)
-

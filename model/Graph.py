@@ -3,6 +3,8 @@ import pdb
 from collections import deque, defaultdict
 from .utility import utility
 import inspect
+from .RestrictionNode import RestrictionNode
+from .TimeWindowNode import TimeWindowNode
 
 class Graph:
     def __init__(self, graph_processor):
@@ -255,19 +257,112 @@ class Graph:
                     path.append((node, neighbor, weight))
         return path
     
-    def update_graph(self, currentpos, nextpos, realtime):
+    def update_graph(self, id1 = -1, id2 = -1, c12 = -1):
+    #ý nghĩa của các tham số: id1 - id của nút nguồn X trong đồ thị TSG
+    #                         id2 - id cuả nút đích dự kiến Y trong đồ thị TSG
+    #                         c12 - thời gian thực tế mà AGV di chuyển từ nút X đến Y
         # Update the graph with new edge information
-        self.add_edge(currentpos, nextpos, realtime)
+        #self.add_edge(currentpos, nextpos, realtime)
+        ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
+        ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
+        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
+        M = self.numberOfNodesInSpaceGraph
+        time1, time2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
+        #if i2 - i1 != C12:
+        #    print('Status: i2 - i1 != C12')
+        #    ID2 = ID1 + M * C12
+        #existing_edges = set()
+        """old_time_window_edges = []
+        for source_id, edges in self.adjacency_list.items():
+            for destination_id, edge in edges:
+                if isinstance(edge, TimeWindowEdge):
+                    old_time_window_edges.append(edge)"""
+        current_time = time1 + C12 # Giá trị của current_time
+        new_node_id = current_time*M + (ID2 % M)
+            
+        # Duyệt qua từng phần tử của adjacency_list
+        for source_id, edges in list(self.adjacency_list.items()):
+            # Tính giá trị time
+            node = self.nodes[source_id]
+            time = source_id // M - (1 if source_id % M == 0 else 0)
+            # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
+            if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
+                del self.adjacency_list[source_id]
+                del self.nodes[source_id]
+        
+        Q = deque()
+        Q.append(new_node_id)
+        pdb.set_trace()
+        new_edges = self.graph_processor.insert_from_queue(Q)
+        print(new_edges)
+        for edge in new_edges:
+            arr = self.parse_string(edge)
+            source_id = arr[0]
+            dest_id = arr[1]
+            if source_id not in self.nodes:
+                self.nodes[source_id] = self.graph_processor.find_node(source_id)
+            if dest_id not in self.nodes:
+                self.nodes[dest_id] = self.graph_processor.find_node(dest_id)
+            if source_id not in self.adjacency_list:
+                self.adjacency_list[source_id] = []
+            found = False
+            for end_id, e in self.adjacency_list[source_id]:
+                if(end_id == dest_id):
+                    found = True
+                    break
+            if(not found):
+                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
+                self.adjacency_list[source_id].append([dest_id, anEdge])
+        self.write_to_file()
+        """for node in self.graph_processor.ts_nodes:
+            if node.id not in self.nodes:
+                self.nodes[node.id] = node
+        
+        for edge in self.graph_processor.ts_edges:
+            source_id = edge.start_node.id
+            end_id = edge.end_node.id
+            if source_id not in self.adjacency_list or [end_id, edge] not in self.adjacency_list[source_id]:
+                if source_id not in self.adjacency_list:
+                    self.adjacency_list[source_id] = []
+                self.adjacency_list[source_id].append([end_id, edge])
+        
+        self.write_to_file()"""
+
+    def parse_string(self, input_string):
+        parts = input_string.split()
+        if len(parts) != 6 or parts[0] != "a":
+            return None  # Chuỗi không đúng định dạng
+        try:
+            ID1, ID2, L, U, C = map(int, parts[1:])
+            return [ID1, ID2, L, U, C]
+        except ValueError:
+            return None  # Không thể chuyển thành số nguyên
+
         
     def write_to_file(self, filename="TSG.txt"):
-        with open(filename, "w") as file:
-            file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
-            for node in self.nodes:
-                file.write(f"n {node} 1\n")
-            for start_node in self.adjacency_list:
-                for end_node, weight in self.adjacency_list[start_node]:
-                    file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
-                    
+        #with open(filename, "w") as file:
+        #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
+        #    for node in self.nodes:
+        #        file.write(f"n {node} 1\n")
+        #    for start_node in self.adjacency_list:
+        #        for end_node, weight in self.adjacency_list[start_node]:
+        #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
+        Max = max(self.nodes, key=int)
+        num_edges = self.count_edges()
+        sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
+        with open('TSG.txt', 'w') as file:
+            file.write(f"p min {Max} {num_edges}\n")
+            for start in self.graph_processor.startedNodes:
+                file.write(f"n {start} 1\n")
+            for target in self.graph_processor.targetNodes:
+                target_id = target.id
+                file.write(f"n {target_id} -1\n")
+            #for edge in self.tsEdges:
+            #for edge in self.ts_edges:
+            for source_id, edges in sorted_edges:
+                for edge in edges:
+                    file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
+        
     def update_edge(self, start_node, end_node, new_weight):
         found = False
         for i, (neighbor, weight) in enumerate(self.adjacency_list[start_node]):
