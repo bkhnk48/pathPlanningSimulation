@@ -255,6 +255,24 @@ class Graph:
         pdb.set_trace()
         new_edges = self.graph_processor.insert_from_queue(Q)
         print(new_edges)
+        for edge in new_edges:
+            source_id = edge[1]
+            dest_id = edge[2]
+            if source_id not in self.nodes:
+                self.nodes[source_id] = self.graph_processor.find_node(source_id)
+            if dest_id not in self.nodes:
+                self.nodes[dest_id] = self.graph_processor.find_node(dest_id)
+            if source_id not in self.adjacency_list:
+                self.adjacency_list[source_id] = []
+            found = False
+            for end_id, e in self.adjacency_list[source_id]:
+                if(end_id == dest_id):
+                    found = True
+                    break
+            if(not found):
+                edge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, edge[3], edge[4], edge[5]])
+                self.adjacency_list[source_id].append([dest_id, edge])
+        self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
