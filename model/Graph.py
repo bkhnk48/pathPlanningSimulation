@@ -252,7 +252,7 @@ class Graph:
         
         Q = deque()
         Q.append(new_node_id)
-        pdb.set_trace()
+        #pdb.set_trace()
         new_edges = self.graph_processor.insert_from_queue(Q)
         print(new_edges)
         for edge in new_edges:
@@ -307,7 +307,7 @@ class Graph:
         #    for start_node in self.adjacency_list:
         #        for end_node, weight in self.adjacency_list[start_node]:
         #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
-        Max = max(self.nodes, key=int)
+        Max = len(self.nodes)
         num_edges = self.count_edges()
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
         with open(filename, 'w') as file:
