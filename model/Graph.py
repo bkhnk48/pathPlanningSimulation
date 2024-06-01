@@ -38,22 +38,22 @@ class Graph:
             count = count + len(self.adjacency_list[node])
         return count
             
-    def insertEdgesAndNodes(self, start_id, end_id, edge):
+    """def insertEdgesAndNodes(self, start_id, end_id, edge):
         self.adjacency_list[start_id].append((end_id, edge))
         #self.ensure_node_capacity(start_id)
         #self.ensure_node_capacity(end_id)
         if self.nodes[start_id] is None:
             self.nodes[start_id] = {'id': start_id}
         if self.nodes[end_id] is None:
-            self.nodes[end_id] = {'id': end_id}
-    # def insertEdgesAndNodes(self, start, end, edge):
-    #     self.adjacency_list[start.id].append((end.id, edge))
-    #     #self.ensure_node_capacity(start_id)
-    #     #self.ensure_node_capacity(end_id)
-    #     if self.nodes[start.id] is None:
-    #         self.nodes[start.id] = start
-    #     if self.nodes[end.id] is None:
-    #         self.nodes[end.id] = end
+            self.nodes[end_id] = {'id': end_id}"""
+    def insertEdgesAndNodes(self, start, end, edge):
+        self.adjacency_list[start.id].append((end.id, edge))
+        #self.ensure_node_capacity(start_id)
+        #self.ensure_node_capacity(end_id)
+        if self.nodes[start.id] is None:
+            self.nodes[start.id] = start
+        if self.nodes[end.id] is None:
+            self.nodes[end.id] = end
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
@@ -267,7 +267,9 @@ class Graph:
                     found = True
                     break
             if(not found):
-                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
+                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], \
+                        self.graph_processor.M, self.graph_processor.d, [source_id, \
+                        dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
         self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
