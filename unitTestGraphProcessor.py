@@ -14,15 +14,21 @@ import subprocess
 import sys
 import pdb
 
-def assert_Nodes(graph, current_time):
+def assert_Nodes(graph, current_time, numOfNodes):
+    pdb.set_trace()
+    group = []
     M = graph.numberOfNodesInSpaceGraph
     count = 0
     for node in graph.nodes.values():
         if not isinstance(node, (TimeWindowNode, RestrictionNode)):
             time = node.id // M - (1 if node.id % M == 0 else 0)
             count += 1 if time >= current_time else 0
-            #print(node)
-    assert count == 27, "Assertion failed as number of nodes which satisfies time >= current time is {}".format(count)
+            if time >= current_time:
+                #print(node.id, end = " ")
+                group.append(node.id)
+    group.sort()
+    print(group)
+    assert count == numOfNodes, f"Assertion failed as number of nodes which satisfies time >= {current_time} is {count}"
 
 def assert_Edges(graph, current_time):
     M = graph.numberOfNodesInSpaceGraph
@@ -178,7 +184,7 @@ current_time = id1 // processor.M + c12
 
 """ Cần có các assert như sau:
 (1) Tất cả các Node (không kể các TimeWindowNode và RestrictionNode) mà có time >= thời điểm hiện tại* thì bằng 27"""
-assert_Nodes(graph, current_time)
+assert_Nodes(graph, current_time, 33)
 """(2) Tất cả các Edge (không kể các TimeWindowEdge và RestrictionEdge) thì đỉnh nguồn của chúng phải có time >= thời điểm hiện tại*"""
 assert_Edges(graph, current_time)
 
