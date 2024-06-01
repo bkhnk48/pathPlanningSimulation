@@ -31,10 +31,6 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def ensure_node_capacity(self, node_id):
-        # Ensure the list is large enough to hold the node_id
-        while len(self.nodes) <= node_id:
-            self.nodes.append(None)
     
     def count_edges(self):
         count = 0
