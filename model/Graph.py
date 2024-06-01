@@ -250,7 +250,7 @@ class Graph:
         Q.append(new_node_id)
         #pdb.set_trace()
         new_edges = self.graph_processor.insert_from_queue(Q)
-        print(new_edges)
+        #print(new_edges)
         for edge in new_edges:
             arr = self.parse_string(edge)
             source_id = arr[0]
@@ -271,6 +271,10 @@ class Graph:
                         self.graph_processor.M, self.graph_processor.d, [source_id, \
                         dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
+            
+            #add TimeWindowEdge
+            self.graph_processor.time_window_controller.generate_time_window_edges(\
+                self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
         self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
