@@ -86,8 +86,8 @@ class Event:
 
     def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
-        #filename = "TSG.txt"
-        filename = "input_dimacs/supply_03_demand_69_edit.txt"
+        filename = "TSG.txt"
+        #filename = "input_dimacs/supply_03_demand_69_edit.txt"
         # Code để lưu đồ thị vào file
         return filename
 
