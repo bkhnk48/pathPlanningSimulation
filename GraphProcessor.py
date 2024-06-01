@@ -37,6 +37,7 @@ class GraphProcessor:
         self.startedNodes = []
         self.targetNodes = []
         self.printOut = True
+        self.time_window_controller = None 
 
         
     def process_input_file(self, filepath):
@@ -432,45 +433,49 @@ class GraphProcessor:
       return max_val
       
     def add_time_windows_constraints(self):
-      # Tìm giá trị lớn nhất trong TSG.txt
-      max_val = self.getMaxID()
-      #print(f"max_val = {max_val}")
-      max_val += 1
-      targetNode = TimeWindowNode(max_val, "TimeWindow")
-      self.ts_nodes.append(targetNode)
-      self.targetNodes.append(targetNode)
-      R = set()
-      new_edges = set()
-      # Duyệt các dòng của file TSG.txt
-      try:
-        with open('TSG.txt', 'r') as file:
-            for line in file:
-                parts = line.strip().split()
-                if parts[0] == 'a' and len(parts) == 6:
-                    ID2 =int(parts[2])
-                    for i in range(1, self.H + 1):
-                        j = i * self.M + self.ID
-                        if j == ID2:
-                            C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
-                            new_edges.add((j, max_val, 0, 1, C))
-                            self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
-                            break
-
-      except FileNotFoundError:
-        pass
-
-      #pdb.set_trace()
-      Count = 0
-      #self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
-      self.tsEdges.extend(e for e in new_edges if e not in self.tsEdges)
-      self.create_set_of_edges(new_edges)
-      # Ghi các cung mới vào file TSG.txt
-      with open('TSG.txt', 'a') as file:
-        for edge in new_edges:
-            Count += 1
-            file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-      if(self.printOut):
-          print(f"Đã cập nhật {Count} cung mới vào file TSG.txt.")
+        from model.TimeWindowController import TimeWindowController
+        # Tìm giá trị lớn nhất trong TSG.txt
+        max_val = self.getMaxID()
+        #print(f"max_val = {max_val}")
+        max_val += 1
+        targetNode = TimeWindowNode(max_val, "TimeWindow")
+        self.ts_nodes.append(targetNode)
+        self.targetNodes.append(targetNode)
+        if(self.time_window_controller == None):
+            self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma)
+        self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
+        R = set()
+        new_edges = set()
+        # Duyệt các dòng của file TSG.txt
+        try:
+          with open('TSG.txt', 'r') as file:
+              for line in file:
+                  parts = line.strip().split()
+                  if parts[0] == 'a' and len(parts) == 6:
+                      ID2 =int(parts[2])
+                      for i in range(1, self.H + 1):
+                          j = i * self.M + self.ID
+                          if j == ID2:
+                              C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
+                              new_edges.add((j, max_val, 0, 1, C))
+                              self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
+                              break
+        
+        except FileNotFoundError:
+          pass
+        
+        #pdb.set_trace()
+        Count = 0
+        #self.tsEdges.update(e for e in new_edges if e not in self.tsEdges)
+        self.tsEdges.extend(e for e in new_edges if e not in self.tsEdges)
+        self.create_set_of_edges(new_edges)
+        # Ghi các cung mới vào file TSG.txt
+        with open('TSG.txt', 'a') as file:
+          for edge in new_edges:
+              Count += 1
+              file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
+        if(self.printOut):
+            print(f"Đã cập nhật {Count} cung mới vào file TSG.txt.")
 
     def update_tsg_with_T(self):
         T = int(input("Nhập giá trị T: "))
