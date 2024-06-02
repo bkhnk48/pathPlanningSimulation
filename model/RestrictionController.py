@@ -9,7 +9,7 @@ from .RestrictionNode import RestrictionNode
 from .Node import Node
 
 class RestrictionController:
-    def __init__(self, alpha, beta, gamma, H, Ur, M):
+    def __init__(self, alpha, beta, gamma, H, Ur, M, graph_processor):
         self.restrictionEdges = defaultdict(list)
         self.alpha = alpha
         self.beta = beta
@@ -17,6 +17,7 @@ class RestrictionController:
         self.H = H 
         self.Ur = Ur
         self.M = M
+        self.graph_processor = graph_processor
     
     def add_nodes_and_ReNode(self, end_at_aS, start_at_aT, restriction):
         #pdb.set_trace()
@@ -36,9 +37,11 @@ class RestrictionController:
         if(key in self.restrictionEdges):
             del self.restrictionEdges[key]
 
-    def generate_restriction_edges(self, start_node, end_node, adj_edges, M):
+    def generate_restriction_edges(self, start_node, end_node, adj_edges):
         space_source = start_node.id % self.M if start_node.id % self.M != 0 else self.M
         space_destination = end_node.id % self.M if end_node.id % self.M != 0 else self.M
+        time_source = start_node.id // self.M - (1 if start_node.id % self.M == 0 else 0)
+        time_destination = end_node.id // self.M - (1 if end_node.id % self.M == 0 else 0)
         #space_id = (M if node.id % M == 0 else node.id % M)
         key = tuple([space_source, space_destination])
         if(key in self.restrictionEdges):
@@ -49,12 +52,16 @@ class RestrictionController:
                     found = True
                     break
             if(not found):
+                self.restrictionEdges[key].append([start_node.id, end_node.id])
                 if(not start_node.id in adj_edges):
                     adj_edges[start_node.id] = []
-                #target_node = self.TWEdges[space_id][0]
-                #earliness = self.TWEdges[space_id][1]
-                #tardiness = self.TWEdges[space_id][2]
-                i = start_node.id // M - (1 if start_node.id % M == 0 else 0)
-                C = int(int(self.beta) * max(earliness - i, 0, i - tardiness) / int(self.alpha))
-                edge = [node.id, target_node.id, 0, 1, C]
-                adj_edges[node.id].append((target_node.id, node.create_edge(target_node, M, -1, edge)))
+                #newA = set()
+                e4 = (start_node.id, to_aS.end_node.id, 0, 1, 0)
+                #cost = edges_with_cost.get((e[0], e[1]), -1)
+                e5 = (from_aT.start_node.id, end_node.id, 0, 1, time_destination - time_source)
+                #e5 = (aT, e[1], 0, 1, 1)
+                #newA.update({e4, e5})
+                for e in [e4, e5]:
+                    temp = self.graph_processor.find_node(e[0]).create_edge(self.find_node(e[1]), self.M, \
+                                            self.graph_processor.d, e)
+                    adj_edges[e[0]].append(e[1], temp)
