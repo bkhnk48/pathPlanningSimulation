@@ -8,6 +8,7 @@ from model.Edge import ArtificialEdge
 from model.ArtificialNode import ArtificialNode
 from model.TimeWindowNode import TimeWindowNode
 from model.RestrictionNode import RestrictionNode
+from model.RestrictionController import RestrictionController
 from model.Node import Node
 from collections import deque
 from scipy.sparse import lil_matrix
@@ -38,6 +39,7 @@ class GraphProcessor:
         self.targetNodes = []
         self.printOut = True
         self.time_window_controller = None 
+        self.restriction_controller = None
 
         
     def process_input_file(self, filepath):
@@ -334,12 +336,16 @@ class GraphProcessor:
         S = set()
         R = []
         newA = set()
+        if(self.restriction_controller == None):
+            self.restriction_controller = RestrictionController(self.alpha, self.beta, self.gamma, \
+                                                                self.H, self.Ur, self.M, self)
         startBan = self.startBan
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
         
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
+
             for time in range(startBan, endBan + 1):
                 edge = []
                 #point = restriction[0] #, restriction[1]]:
