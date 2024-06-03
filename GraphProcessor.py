@@ -345,7 +345,6 @@ class GraphProcessor:
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
-
             for time in range(startBan, endBan + 1):
                 edge = []
                 #point = restriction[0] #, restriction[1]]:
@@ -355,6 +354,8 @@ class GraphProcessor:
                 timeSpacePoint_1 = (time + Cost)*self.M + restriction[1]
                 edge.append(timeSpacePoint_0)
                 edge.append(timeSpacePoint_1)
+                self.restriction_controller.\
+                    add_nodes_and_ReNode(timeSpacePoint_0, timeSpacePoint_1, restriction)
                 edge.append(Cost)
                 R.append(edge)
                 self.Adj[edge[0], edge[1]] = 0
