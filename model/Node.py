@@ -3,6 +3,7 @@
 #from .RestrictionEdge import RestrictionEdge
 #from .RestrictionNode import RestrictionNode
 #from .TimeWindowNode import TimeWindowNode
+import pdb
 
 class Node:
     def __init__(self, id,label=None):
@@ -12,7 +13,9 @@ class Node:
         self.label=label
         self.edges = []
 
-    def create_edge(self, node, M, d, e):
+    def create_edge(self, node, M, d, e, debug = False):
+        if(debug):
+            pdb.set_trace()
         from .RestrictionNode import RestrictionNode
         from .TimeWindowNode import TimeWindowNode
         from .Edge import HoldingEdge
