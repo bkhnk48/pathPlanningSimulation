@@ -86,7 +86,8 @@ class Event:
 
     def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
-        filename = "TSG_0.txt"
+        filename = "TSG.txt"
+        #filename = "input_dimacs/supply_03_demand_69_edit.txt"
         # Code để lưu đồ thị vào file
         return filename
 
@@ -94,7 +95,7 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
-        from .ForecastingModel import ForecastingModel, read_custom_dimacs, divide_node, sort_all_dicts
+        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
         
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
@@ -109,14 +110,14 @@ class Event:
             if config.solver_choice == 'solver':
                 print("Running ForecastingModel...")
                 # Assuming `filename` is a path to the file with necessary data for the model
-                problem_info, node_descriptors_dict, arc_descriptors_dict, earliness_tardiness_dict = read_custom_dimacs(filename)
-                supply_nodes_dict, demand_nodes_dict, zero_nodes_dict = divide_node(node_descriptors_dict, arc_descriptors_dict)
-                supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict = sort_all_dicts(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict)
-                model = ForecastingModel(supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
+                dimacs_file_reader = DimacsFileReader(filename)
+                dimacs_file_reader.read_custom_dimacs()
+                problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict = dimacs_file_reader.get_all_dicts()
+                model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
                 model.solve()
                 model.output_solution()
-                model.save_solution(filename)
-                self.graph.convert_solver_output_to_traces(solver_output_file='solver_solution.txt', output_file='traces.txt')
+                model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
+                model.create_traces("traces.txt")
                 #self.graph.version += 1
             else:
                 if len(self.pns_path) == 0:
@@ -190,8 +191,9 @@ class Event:
         # with open(filename, "r") as file:
         #    traces = file.read().split()
         # return traces
-        if not self.graph.map:
-            self.graph.setTrace("traces.txt")
+        # if not self.graph.map:
+        #     self.graph.setTrace("traces.txt")
+        self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
