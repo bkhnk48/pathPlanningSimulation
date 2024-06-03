@@ -789,6 +789,16 @@ class GraphProcessor:
         self.Ur = 3
         self.process_restrictions()
 
+    def add_artificial_vertices_edges(self, tasks, earliness, tardiness, alpha, beta):
+        for task in tasks:
+            delivery_node = task['delivery_node']
+            for time, node in self.time_space_graph.items():
+                if delivery_node in node:
+                    if time < earliness[task['id']]:
+                        self.time_space_graph[time].append(f"aT_{time}", alpha * (earliness[task['id']] - time))
+                    elif time > tardiness[task['id']]:
+                        self.time_space_graph[time].append(f"aT_{time}", beta * (time - tardiness[task['id']]))
+    
     def test_menu(self):
         while True:
             print("======================================")
