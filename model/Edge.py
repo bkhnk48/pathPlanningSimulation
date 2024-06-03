@@ -6,12 +6,12 @@ class Edge:
         self.lower = lower
         self.upper = upper
     
-    def __eq__(self, other):
+    """def __eq__(self, other):
         return (self.start_node.id == other.start_node.id) \
                 and (self.end_node.id == other.end_node.id) \
                 and (self.weight == other.weight) \
                 and (self.lower == other.lower) \
-                and (self.upper == other.upper)
+                and (self.upper == other.upper)"""
         
     def __repr__(self):
         return f"Edge({self.start_node}, {self.end_node}, weight={self.weight})"
