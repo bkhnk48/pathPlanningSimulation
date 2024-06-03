@@ -19,7 +19,7 @@ class RestrictionController:
         self.M = M
         self.graph_processor = graph_processor
     
-    def add_nodes_and_ReNode(self, end_at_aS, start_at_aT, restriction):
+    def add_nodes_and_ReNode(self, forward_to_aS, rise_from_aT, restriction):
         #pdb.set_trace()
         #if( isinstance(node, RestrictionNode)):
         key = tuple(restriction)
@@ -27,11 +27,11 @@ class RestrictionController:
             self.restrictionEdges[key] = []
         found = False
         for to_aS, from_aT in self.restrictionEdges[key]:
-            if(to_aS == end_at_aS and from_aT == start_at_aT):
+            if(to_aS == forward_to_aS and from_aT == rise_from_aT):
                 found = True
                 break
         if(not found):
-            self.restrictionEdges[key].append([end_at_aS, start_at_aT])
+            self.restrictionEdges[key].append([forward_to_aS, rise_from_aT])
 
     def remove_restriction_edges(self, key):
         if(key in self.restrictionEdges):
@@ -48,7 +48,7 @@ class RestrictionController:
             #nodes[node.id] = TimeWindowNode(node.id, "TimeWindow")
             found = False
             for to_aS, from_aT in self.restrictionEdges[key]:
-                if(to_aS.start_node.id == start_node.id and from_aT.end_node == end_node.id):
+                if(to_aS == start_node.id and from_aT == end_node.id):
                     found = True
                     break
             if(not found):
@@ -56,12 +56,14 @@ class RestrictionController:
                 if(not start_node.id in adj_edges):
                     adj_edges[start_node.id] = []
                 #newA = set()
-                e4 = (start_node.id, to_aS.end_node.id, 0, 1, 0)
+                e4 = (start_node.id, to_aS, 0, 1, 0)
                 #cost = edges_with_cost.get((e[0], e[1]), -1)
-                e5 = (from_aT.start_node.id, end_node.id, 0, 1, time_destination - time_source)
+                e5 = (from_aT, end_node.id, 0, 1, time_destination - time_source)
                 #e5 = (aT, e[1], 0, 1, 1)
                 #newA.update({e4, e5})
+                pdb.set_trace()
                 for e in [e4, e5]:
-                    temp = self.graph_processor.find_node(e[0]).create_edge(self.find_node(e[1]), self.M, \
-                                            self.graph_processor.d, e)
-                    adj_edges[e[0]].append(e[1], temp)
+                    temp = self.graph_processor.find_node(e[0]).create_edge(self.graph_processor.find_node(e[1]), self.M, \
+                                            self.graph_processor.d, e, True)
+                    print("edge: ", temp)
+                    adj_edges[e[0]].append([e[1], temp])
