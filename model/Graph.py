@@ -410,6 +410,19 @@ class Graph:
     def __str__(self):
         return "\n".join(f"{start} -> {end} (Weight: {weight})" for start in self.adjacency_list for end, weight in self.adjacency_list[start])
     
+    def create_time_space_graph(self, spatial_graph, forecasted_times, min_time, H):
+        time_space_graph = {}
+        for node in spatial_graph:
+            for k in range(H + 1):
+                time_space_graph[f"{node}_{k}"] = []
+        for node, neighbors in spatial_graph.items():
+            for k in range(H + 1):
+                for neighbor in neighbors:
+                    l = k + forecasted_times[node][neighbor][k]
+                    if l <= H:
+                        time_space_graph[f"{node}_{k}"].append(f"{neighbor}_{l}")
+        self.time_space_graph = time_space_graph
+        return time_space_graph
 #graph = Graph()
 
 #def initialize_graph():
