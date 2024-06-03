@@ -15,14 +15,34 @@ import sys
 import pdb
 
 def assert_Nodes(graph, current_time):
+    #pdb.set_trace()
+    #group = []
     M = graph.numberOfNodesInSpaceGraph
     count = 0
+    numOfNodes = max(graph.nodes, key=int) + 1 #because it includes 0
+    descrease = 0
+    for i in range(0, numOfNodes):
+        if not (i in graph.nodes.keys()):
+            #if (i // M - (1 if i % M == 0 else 0)) < current_time:
+            descrease += 1
+    for node in graph.nodes.values():
+        if isinstance(node, (TimeWindowNode, RestrictionNode)):
+            descrease += 1
+    
+    numOfNodes = numOfNodes - descrease
+
     for node in graph.nodes.values():
         if not isinstance(node, (TimeWindowNode, RestrictionNode)):
             time = node.id // M - (1 if node.id % M == 0 else 0)
             count += 1 if time >= current_time else 0
-            #print(node)
-    assert count == 27, "Assertion failed as number of nodes which satisfies time >= current time is {}".format(count)
+            """if time >= current_time:
+                #print(node.id, end = " ")
+                group.append(node.id)
+    group.sort()
+    print(group)"""
+    assert_msg = f"Assertion failed as number of nodes which satisfies time >= {current_time} is {count} while it should be {numOfNodes}"
+    assert count == numOfNodes, assert_msg
+
 
 def assert_Edges(graph, current_time):
     M = graph.numberOfNodesInSpaceGraph

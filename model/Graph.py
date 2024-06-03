@@ -31,10 +31,6 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def ensure_node_capacity(self, node_id):
-        # Ensure the list is large enough to hold the node_id
-        while len(self.nodes) <= node_id:
-            self.nodes.append(None)
     
     def count_edges(self):
         count = 0
@@ -292,9 +288,9 @@ class Graph:
         
         Q = deque()
         Q.append(new_node_id)
-        pdb.set_trace()
+        #pdb.set_trace()
         new_edges = self.graph_processor.insert_from_queue(Q)
-        print(new_edges)
+        #print(new_edges)
         for edge in new_edges:
             arr = self.parse_string(edge)
             source_id = arr[0]
@@ -311,8 +307,14 @@ class Graph:
                     found = True
                     break
             if(not found):
-                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], self.graph_processor.M, self.graph_processor.d, [source_id, dest_id, arr[2], arr[3], arr[4]])
+                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], \
+                        self.graph_processor.M, self.graph_processor.d, [source_id, \
+                        dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
+            
+            #add TimeWindowEdge
+            self.graph_processor.time_window_controller.generate_time_window_edges(\
+                self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
         self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
@@ -347,10 +349,10 @@ class Graph:
         #    for start_node in self.adjacency_list:
         #        for end_node, weight in self.adjacency_list[start_node]:
         #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
-        Max = max(self.nodes, key=int)
+        Max = len(self.nodes)
         num_edges = self.count_edges()
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
-        with open('TSG.txt', 'w') as file:
+        with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
             for start in self.graph_processor.startedNodes:
                 file.write(f"n {start} 1\n")

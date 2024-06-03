@@ -3,6 +3,7 @@
 #from .RestrictionEdge import RestrictionEdge
 #from .RestrictionNode import RestrictionNode
 #from .TimeWindowNode import TimeWindowNode
+import pdb
 
 class Node:
     def __init__(self, id,label=None):
@@ -12,7 +13,9 @@ class Node:
         self.label=label
         self.edges = []
 
-    def create_edge(self, node, M, d, e):
+    def create_edge(self, node, M, d, e, debug = False):
+        if(debug):
+            pdb.set_trace()
         from .RestrictionNode import RestrictionNode
         from .TimeWindowNode import TimeWindowNode
         from .Edge import HoldingEdge
@@ -26,7 +29,7 @@ class Node:
         not isinstance(node, TimeWindowNode):
             return HoldingEdge(self, node, e[2], e[3], d, d)
         elif isinstance(node, RestrictionNode):
-            return RestrictionEdge(self, node, e[4], "Restriction")
+            return RestrictionEdge(self, node, e, "Restriction")
         elif isinstance(node, TimeWindowNode):
             return TimeWindowEdge(self, node, e[4], "TimeWindows")
         elif isinstance(node, Node):

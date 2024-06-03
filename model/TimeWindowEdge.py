@@ -6,7 +6,7 @@ class TimeWindowEdge(Edge):
         self.label = label
 
     def __repr__(self):
-        return f"TimeWindowEdge({self.start_node}, {self.end_node}, weight={self.weight}, time_window={self.time_window})"
+        return f"TimeWindowEdge({self.start_node}, {self.end_node}, weight={self.weight}, label={self.label})"
     
     def make_permanent(self):
         # This method could be used to convert a temporary edge into a permanent one
