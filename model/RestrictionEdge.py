@@ -11,4 +11,4 @@ class RestrictionEdge(Edge):
         print(f"RestrictionEdge from {self.start_node.id} to {self.end_node.id} made permanent.")
 
     def __repr__(self):
-        return f"RestrictionEdge({self.start_node}, {self.end_node}, weight={self.weight}, restrictions={self.restrictions})"
+        return f"RestrictionEdge({self.start_node}, {self.end_node}, weight={self.weight}, restrictions={self.label})"
