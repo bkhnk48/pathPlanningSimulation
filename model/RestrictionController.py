@@ -37,6 +37,30 @@ class RestrictionController:
         if(key in self.restrictionEdges):
             del self.restrictionEdges[key]
 
+    def find_aS_and_aT(self, source_id, target_id):
+        aS = None
+        for end_id, edge in self.graph_processor.adjacency_list[source_id]:
+            if isinstance(self.graph_processor.nodes[end_id], RestrictionNode):
+                aS = self.graph_processor.nodes[end_id]
+                break
+        aT = None
+        is_aT = True
+        for end_id, edge in self.graph_processor.adjacency_list[aS.id]:
+            if (edge.upper == self.H and edge.weight == int(self.gamma/self.alpha)):
+                is_aT = True
+                for node_id, e in self.graph_processor.adjacency_list[end_id]:
+                    if isinstance(e.end_node, RestrictionNode):
+                        is_aT = False
+                        break
+                    elif node_id == target_id:
+                        break
+                if(is_aT):
+                    aT = self.graph_processor.nodes[end_id]
+                    break
+        return [aS, aT]
+
+
+
     def generate_restriction_edges(self, start_node, end_node, adj_edges):
         space_source = start_node.id % self.M if start_node.id % self.M != 0 else self.M
         space_destination = end_node.id % self.M if end_node.id % self.M != 0 else self.M
@@ -56,14 +80,26 @@ class RestrictionController:
                 if(not start_node.id in adj_edges):
                     adj_edges[start_node.id] = []
                 #newA = set()
-                e4 = (start_node.id, to_aS, 0, 1, 0)
+                
+                """e4 = (start_node.id, to_aS, 0, 1, 0)
                 #cost = edges_with_cost.get((e[0], e[1]), -1)
                 e5 = (from_aT, end_node.id, 0, 1, time_destination - time_source)
                 #e5 = (aT, e[1], 0, 1, 1)
                 #newA.update({e4, e5})
                 pdb.set_trace()
                 for e in [e4, e5]:
-                    temp = self.graph_processor.find_node(e[0]).create_edge(self.graph_processor.find_node(e[1]), self.M, \
+                    sourceNode = self.graph_processor.find_node(e[0])
+
+                    destNode = self.graph_processor.find_node(e[1])
+                    temp = sourceNode.create_edge(destNode, self.M, \
                                             self.graph_processor.d, e, True)
                     print("edge: ", temp)
-                    adj_edges[e[0]].append([e[1], temp])
+                    adj_edges[e[0]].append([e[1], temp])"""
+                [aS, aT] = self.find_aS_and_aT(start_node.id, end_node.id)
+                e1 = (start_node.id, aS.id, 0, 1, 0)
+                temp1 = start_node.create_edge(aS, self.M, self.graph_processor.d, e1)
+                print("edge: ", temp1, endl = '')
+                adj_edges[start_node.id].append(aS.id, temp1)
+                e2 = (end_node.id, aT.id, 0, 1, time_destination - time_source)
+                temp2 = aT.create_edge(end_node, self.M, self.graph_processor.d, e2)
+                adj_edges[aT.id].append(end_node.id, temp2)
