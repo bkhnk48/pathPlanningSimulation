@@ -167,8 +167,8 @@ while(count <= 1):
 #processor.add_restrictions()
 processor.gamma = 1
 processor.restriction_count = 1
-processor.startBan = 0
-processor.endBan = 2
+processor.startBan = 2
+processor.endBan = 5
 processor.restrictions = [[2, 3]]
 processor.Ur = 1
 processor.process_restrictions()
