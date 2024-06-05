@@ -6,7 +6,7 @@ class ReachingTarget(Event):
 
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
-        pass
+        self.graph.remove_node_and_origins(self.target_node)
 
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
