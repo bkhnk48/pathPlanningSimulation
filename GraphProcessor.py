@@ -40,6 +40,8 @@ class GraphProcessor:
         self.printOut = True
         self.time_window_controller = None 
         self.restriction_controller = None
+        self.startBan = -1
+        self.endBan = -1
 
         
     def process_input_file(self, filepath):
@@ -337,14 +339,16 @@ class GraphProcessor:
         R = []
         newA = set()
         if(self.restriction_controller == None):
-            self.restriction_controller = RestrictionController(self.alpha, self.beta, self.gamma, \
-                                                                self.H, self.Ur, self.M, self)
+            self.restriction_controller = RestrictionController(self)
         startBan = self.startBan
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
         
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) \
+                           for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        Max = self.getMaxID() + 1
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
+            R = []
             for time in range(startBan, endBan + 1):
                 edge = []
                 #point = restriction[0] #, restriction[1]]:
@@ -354,54 +358,52 @@ class GraphProcessor:
                 timeSpacePoint_1 = (time + Cost)*self.M + restriction[1]
                 edge.append(timeSpacePoint_0)
                 edge.append(timeSpacePoint_1)
-                self.restriction_controller.\
-                    add_nodes_and_ReNode(timeSpacePoint_0, timeSpacePoint_1, restriction)
                 edge.append(Cost)
                 R.append(edge)
                 self.Adj[edge[0], edge[1]] = 0
 
-        # Xử lý các cung cấm
-        #for edge in self.spaceEdges:
-            #ID1, ID2 = int(edge[1]), int(edge[2])
-            #t1, u, v, t2 = ID1 // self.M, ID1 % self.M, ID2 % self.M, ID2 // self.M
-            #if (u in S and v in S):
-                #if ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2) or (t1 <= startBan and endBan <= t2)):
-                    #R.add((ID1, ID2))
-        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-        #self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
-        self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in [r[:2] for r in R]]
-        size1 = len(self.ts_edges)
-        #print(R)
-        #self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id, _] not in R]
-        self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in [r[:2] for r in R]]
-        #self.ts_edges = [e for e in self.ts_edges if any(e.start_node.id != r[0] and e.end_node.id != r[1] for r in R)]
-        size2 = len(self.ts_edges)
-        #assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
-        #self.create_tsg_file()
-        Max = 0
-        # Tạo các cung mới dựa trên các cung cấm
-        if R:
-            Max = self.getMaxID() + 1
-            #Max = max(ID2 for _, ID2 in R) + 1
-            aS, aT, aSubT = Max, Max + 1, Max + 2
-            #pdb.set_trace()
-            self.check_and_add_nodes([aS, aT, aSubT], True, "Restriction")
-            Max += 3
-            e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
-            e2 = (aS, aSubT, 0, self.Ur, 0)
-            e3 = (aSubT, aT, 0, self.H, 0)
-            newA.update({e1, e2, e3})
-            #pdb.set_trace()
+            # Xử lý các cung cấm
+            #for edge in self.spaceEdges:
+                #ID1, ID2 = int(edge[1]), int(edge[2])
+                #t1, u, v, t2 = ID1 // self.M, ID1 % self.M, ID2 % self.M, ID2 // self.M
+                #if (u in S and v in S):
+                    #if ((t1 <= endBan and endBan <= t2) or (t1 <= startBan and startBan <= t2) or (t1 <= startBan and endBan <= t2)):
+                        #R.add((ID1, ID2))
+            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+            #self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in R]
+            self.tsEdges = [e for e in self.tsEdges if [e[0], e[1]] not in [r[:2] for r in R]]
+            size1 = len(self.ts_edges)
             #print(R)
-            for e in R:
-                e4 = (e[0], aS, 0, 1, 0)
-                #cost = edges_with_cost.get((e[0], e[1]), -1)
-                e5 = (aT, e[1], 0, 1, e[2])
-                #e5 = (aT, e[1], 0, 1, 1)
-                newA.update({e4, e5})
-        self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
-        self.create_set_of_edges(newA)
-        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+            #self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id, _] not in R]
+            self.ts_edges = [e for e in self.ts_edges if [e.start_node.id, e.end_node.id] not in [r[:2] for r in R]]
+            #self.ts_edges = [e for e in self.ts_edges if any(e.start_node.id != r[0] and e.end_node.id != r[1] for r in R)]
+            size2 = len(self.ts_edges)
+            #assert (size1 == size2 + len(R)), f"Số lượng self.ts_edges phải bị thay đổi, nhưng size1 = {size1}, size2 = {size2} và {len(R)}"
+            #self.create_tsg_file()
+            # Tạo các cung mới dựa trên các cung cấm
+            if R:
+                #Max = max(ID2 for _, ID2 in R) + 1
+                aS, aT, aSubT = Max, Max + 1, Max + 2
+                #pdb.set_trace()
+                self.check_and_add_nodes([aS, aT, aSubT], True, "Restriction")
+                self.restriction_controller.\
+                    add_nodes_and_ReNode(timeSpacePoint_0, timeSpacePoint_1, restriction, aS, aT)
+                Max += 3
+                e1 = (aS, aT, 0, self.H, int(self.gamma/self.alpha))
+                e2 = (aS, aSubT, 0, self.Ur, 0)
+                e3 = (aSubT, aT, 0, self.H, 0)
+                newA.update({e1, e2, e3})
+                #pdb.set_trace()
+                #print(R)
+                for e in R:
+                    e4 = (e[0], aS, 0, 1, 0)
+                    #cost = edges_with_cost.get((e[0], e[1]), -1)
+                    e5 = (aT, e[1], 0, 1, e[2])
+                    #e5 = (aT, e[1], 0, 1, 1)
+                    newA.update({e4, e5})
+            self.tsEdges.extend(e for e in newA if e not in self.tsEdges)
+            self.create_set_of_edges(newA)
+            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         self.write_to_file(Max)
         
