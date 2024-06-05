@@ -275,6 +275,9 @@ class Graph:
             #add TimeWindowEdge
             self.graph_processor.time_window_controller.generate_time_window_edges(\
                 self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
+            
+            self.graph_processor.restriction_controller.generate_restriction_edges(\
+                self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
         self.write_to_file()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
@@ -357,7 +360,7 @@ class Graph:
     def handle_edge_modifications(self, start_node, end_node, agv):
         # Example logic to adjust the weights of adjacent edges
         print(f"Handling modifications for edges connected to {start_node} and {end_node}.")
-        pdb.set_trace()
+        #pdb.set_trace()
         adjacent_nodes_with_weights = self.adjacency_list.get(end_node, [])
         # Check adjacent nodes and update as necessary
         for adj_node, weight in adjacent_nodes_with_weights:
