@@ -113,7 +113,7 @@ class RestrictionController:
                         print("edge: ", temp)
                         adj_edges[e[0]].append([e[1], temp])"""
                     #[aS, aT] = self.find_aS_and_aT(start_node.id, end_node.id, nodes, adj_edges, True)
-                    #pdb.set_trace()
+                    pdb.set_trace()
                     e1 = (start_node.id, aS, 0, 1, 0)
                     temp1 = start_node.create_edge(self.graph_processor.find_node[aS], self.M, self.graph_processor.d, e1)
                     print("edge: ", temp1, end = '')
