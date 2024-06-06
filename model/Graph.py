@@ -239,7 +239,12 @@ class Graph:
                 if isinstance(edge, TimeWindowEdge):
                     old_time_window_edges.append(edge)"""
         current_time = time1 + C12 # Giá trị của current_time
+        if(current_time > self.graph_processor.H):
+            pdb.set_trace()
+        current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
         new_node_id = current_time*M + (ID2 % M)
+        if(new_node_id == 45):
+            pdb.set_trace()
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
@@ -331,9 +336,11 @@ class Graph:
             #for edge in self.ts_edges:
             for source_id, edges in sorted_edges:
                 for edge in edges:
+                    if isinstance(edge[1], int):
+                        pdb.set_trace()
                     file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
         
-    def update_edge(self, start_node, end_node, new_weight):
+    """def update_edge(self, start_node, end_node, new_weight):
         found = False
         for i, (neighbor, weight) in enumerate(self.adjacency_list[start_node]):
             if neighbor == end_node:
@@ -343,7 +350,7 @@ class Graph:
         if found:
             print(f"Edge from {start_node} to {end_node} updated to new weight {new_weight}.")
         else:
-            print(f"Edge from {start_node} to {end_node} not found to update.")
+            print(f"Edge from {start_node} to {end_node} not found to update.")"""
 
     def remove_node_and_origins(self, node):
         pdb.set_trace()
