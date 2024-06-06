@@ -47,13 +47,18 @@ class Graph:
         if self.nodes[end_id] is None:
             self.nodes[end_id] = {'id': end_id}"""
     def insertEdgesAndNodes(self, start, end, edge):
-        self.adjacency_list[start.id].append((end.id, edge))
+        from .Node import Node
+        start_id = start if isinstance(start, int) else start.id
+        end_id = end if isinstance(end, int) else end.id
+        self.adjacency_list[start_id].append((end_id, edge))
         #self.ensure_node_capacity(start_id)
         #self.ensure_node_capacity(end_id)
-        if self.nodes[start.id] is None:
-            self.nodes[start.id] = start
-        if self.nodes[end.id] is None:
-            self.nodes[end.id] = end
+        start_node = start if isinstance(start, Node) else self.graph_processor.find_node(start)
+        end_node = end if isinstance(end, Node) else self.graph_processor.find_node(end)
+        if self.nodes[start_id] is None:
+            self.nodes[start_id] = start_node
+        if self.nodes[end_id] is None:
+            self.nodes[end_id] = end_node
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
