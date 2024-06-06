@@ -12,8 +12,9 @@ class MovingEvent(Event):
         predicted_time = weight_of_edge if weight_of_edge else None
 
         if actual_time != predicted_time:
-            self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
-            self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
+            self.graph.update_graph(self.start_node, self.end_node, actual_time)
+            #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
+            #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
     def calculateCost(self):
         # Tính chi phí dựa trên thời gian di chuyển thực tế
