@@ -23,7 +23,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
-        pdb.set_trace()
+        #pdb.set_trace()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
         print(
