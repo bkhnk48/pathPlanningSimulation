@@ -8,7 +8,13 @@ class MovingEvent(Event):
 
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
-        weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
+        #if(self.start_node == 10):
+        #    pdb.set_trace()
+        #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
+        M = self.graph.numberOfNodesInSpaceGraph
+        t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
+        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        weight_of_edge = t2 - t1
         predicted_time = weight_of_edge if weight_of_edge else None
 
         if actual_time != predicted_time:
@@ -23,7 +29,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
-        #pdb.set_trace()
+        pdb.set_trace()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
         print(
