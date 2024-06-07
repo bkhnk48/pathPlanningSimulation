@@ -47,7 +47,7 @@ class Event:
             return allAGVs
 
     def process(self):
-        pdb.set_trace()
+        #pdb.set_trace()
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
             print(
@@ -134,7 +134,7 @@ class Event:
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
 
-            pdb.set_trace()
+            #pdb.set_trace()
 
             self.graph.version += 1
             self.setTracesForAllAGVs()
@@ -156,7 +156,7 @@ class Event:
             )
         else:
             deltaT = getReal()
-            pdb.set_trace()
+            #pdb.set_trace()
             new_event = MovingEvent(
                 self.endTime,
                 self.endTime + deltaT,
