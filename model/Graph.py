@@ -95,13 +95,17 @@ class Graph:
                     id3 = int(numbers[2])
                     id2 = id1 % self.numberOfNodesInSpaceGraph
                     id4 = id3 % self.numberOfNodesInSpaceGraph
-                    self.insertEdgesAndNodes(id1, id3, id2)
-                    self.insertEdgesAndNodes(id3, id1, id4)
+                    node1 = self.nodes[id1]
+                    #node2 = self.nodes[id2]
+                    node3 = self.nodes[id3]
+                    #node4 = self.nodes[id4]
+                    #self.insertEdgesAndNodes(node1, node3, node2)
+                    #self.insertEdgesAndNodes(node3, node1, node4)
                     self.neighbour_list[id1] = id2
                     self.neighbour_list[id3] = id4
                     self.list1.append(id1)
-                    id1_id3_tree[id1].append(id3)
-                    id1_id3_tree[id3].append(id1)
+                    id1_id3_tree[id1].append(node3)
+                    id1_id3_tree[id3].append(node1)
         return id1_id3_tree
 
     def dfs(self, tree, start_node):
@@ -110,7 +114,8 @@ class Graph:
             if node not in self.visited:
                 #print(node, end=' ')
                 self.cur.append(node)
-                self.id2_id4_list.append(self.neighbour_list[node])
+                node_id = node if isinstance(node, int) else node.id
+                self.id2_id4_list.append(self.neighbour_list[node_id])
                 self.dfs(tree, node)
 
     def setTrace(self, file_path = 'traces.txt'):
