@@ -47,6 +47,7 @@ class Event:
             return allAGVs
 
     def process(self):
+        pdb.set_trace()
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
             print(
@@ -96,13 +97,14 @@ class Event:
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
         from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
-        
+        #pdb.set_trace()
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
 
         if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
-            next_vertex = self.agv.getNextNode()
+            #pdb.set_trace()
+            next_vertex = self.agv.getNextNode().id
         else:
             self.updateGraph()
             filename = self.saveGraph()
@@ -114,6 +116,8 @@ class Event:
                 dimacs_file_reader.read_custom_dimacs()
                 problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict = dimacs_file_reader.get_all_dicts()
                 model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
+                #if(model == None):
+                #pdb.set_trace()
                 model.solve()
                 model.output_solution()
                 model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
@@ -130,9 +134,11 @@ class Event:
                 command = "python3 filter.py > traces.txt"
                 subprocess.run(command, shell=True)
 
+            pdb.set_trace()
+
             self.graph.version += 1
             self.setTracesForAllAGVs()
-            next_vertex = self.agv.getNextNode()
+            next_vertex = self.agv.getNextNode().id
 
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (
@@ -150,6 +156,7 @@ class Event:
             )
         else:
             deltaT = getReal()
+            pdb.set_trace()
             new_event = MovingEvent(
                 self.endTime,
                 self.endTime + deltaT,
