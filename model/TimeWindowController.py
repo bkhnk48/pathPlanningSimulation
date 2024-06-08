@@ -16,7 +16,7 @@ class TimeWindowController:
         self.gamma = gamma
     
     def add_source_and_TWNode(self, source_id, node, earliness, tardiness):
-        pdb.set_trace()
+        #pdb.set_trace()
         if( isinstance(node, TimeWindowNode)):
             if(not source_id in self.TWEdges):
                 self.TWEdges[source_id] = []

@@ -8,12 +8,19 @@ class MovingEvent(Event):
 
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
-        weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
+        #if(self.start_node == 10):
+        #    pdb.set_trace()
+        #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
+        M = self.graph.numberOfNodesInSpaceGraph
+        t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
+        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        weight_of_edge = t2 - t1
         predicted_time = weight_of_edge if weight_of_edge else None
 
         if actual_time != predicted_time:
-            self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
-            self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
+            self.graph.update_graph(self.start_node, self.end_node, actual_time)
+            #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
+            #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
     def calculateCost(self):
         # Tính chi phí dựa trên thời gian di chuyển thực tế
