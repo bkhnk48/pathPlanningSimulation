@@ -244,12 +244,12 @@ class Graph:
                 if isinstance(edge, TimeWindowEdge):
                     old_time_window_edges.append(edge)"""
         current_time = time1 + C12 # Giá trị của current_time
-        if(current_time > self.graph_processor.H):
-            pdb.set_trace()
+        #if(current_time > self.graph_processor.H):
+        #    pdb.set_trace()
         current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
         new_node_id = current_time*M + (ID2 % M)
-        if(new_node_id == 45):
-            pdb.set_trace()
+        #if(new_node_id == 45):
+        #    pdb.set_trace()
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
@@ -357,13 +357,15 @@ class Graph:
         else:
             print(f"Edge from {start_node} to {end_node} not found to update.")"""
 
-    def remove_node_and_origins(self, node):
-        pdb.set_trace()
+    def remove_node_and_origins(self, node_id):
+        #pdb.set_trace()
+        from .Node import Node
+        node = node_id if isinstance(node_id, Node) else self.nodes[node_id]
         R = [node]  # Khởi tạo danh sách R với nút cần xóa
         while R:  # Tiếp tục cho đến khi R rỗng
             current_node = R.pop()  # Lấy ra nút cuối cùng từ R
-            if current_node in self.nodes:  # Kiểm tra xem nút có tồn tại trong đồ thị hay không
-                del self.nodes[current_node]  # Nếu có, xóa nút khỏi danh sách các nút
+            if current_node.id in self.nodes:  # Kiểm tra xem nút có tồn tại trong đồ thị hay không
+                del self.nodes[current_node.id]  # Nếu có, xóa nút khỏi danh sách các nút
             for id in self.adjacency_list:
                 edges = []
                 found = False
