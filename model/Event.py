@@ -208,11 +208,10 @@ class Event:
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
-            if a.id != self.agv.id:
-                if a.versionOfGraph < self.graph.version:
-                    a.traces = self.graph.getTrace(a.id)
-                    a.versionOfGraph = self.graph.version
-                    a.target_node = a.traces[len(a.traces) - 1]
+            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                a.traces = self.graph.getTrace(a.id)
+                a.versionOfGraph = self.graph.version
+                a.target_node = a.traces[len(a.traces) - 1]
 
 
 def get_largest_id_from_map(filename):
