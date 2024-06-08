@@ -59,11 +59,11 @@ class Event:
     def __repr__(self):
         return f"{self.type}(time={self.time}, agv_id={self.agv.id})"
 
-    def getWait(self, waittime):
+    def getWait(self, wait_time):
         obj = utility()
         graph = Graph(self.x)
-        self.pos = self.pos + waittime * obj.M
-        self.time = self.time + waittime
+        self.pos = self.pos + wait_time * obj.M
+        self.time = self.time + wait_time
         graph.writefile(self.pos, 1)
 
     def getReal(self, currentpos, nextpos, realtime):
@@ -141,8 +141,8 @@ class Event:
             next_vertex = self.agv.getNextNode().id
 
         # Xác định kiểu sự kiện tiếp theo
-        deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (
-            self.agv.current_node / numberOfNodesInSpaceGraph
+        deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
+            self.agv.current_node // numberOfNodesInSpaceGraph - (1 if self.agv.current_node % numberOfNodesInSpaceGraph == 0 else 0)
         )
         if (next_vertex % numberOfNodesInSpaceGraph) == (
             self.agv.current_node % numberOfNodesInSpaceGraph
@@ -150,7 +150,7 @@ class Event:
             new_event = HoldingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
-        elif next_vertex is self.agv.target_node:
+        elif self.graph.nodes[next_vertex] is self.agv.target_node:
             new_event = ReachingTarget(
                 self.endTime, self.endTime, self.agv, self.graph, next_vertex
             )
