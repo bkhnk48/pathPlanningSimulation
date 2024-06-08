@@ -36,7 +36,7 @@ class DimacsFileReader:
                 # split with delimiter ' '
                 line = line.strip().split(' ')
 
-                print(line)
+                #print(line)
 
                 if line[0] == 'c':
                     # store comment line
@@ -248,24 +248,24 @@ class ForecastingModel:
         For each zero node, the sum of all arcs into the zero node must be equal to the sum of all arcs out of the zero node
         """
         for zero_node in self.zero_nodes_dict:
-            print(f"\nAdding Constraint for zero node {zero_node}")
+            #print(f"\nAdding Constraint for zero node {zero_node}")
             for supply_node in self.supply_nodes_dict:
                 arc_in = []
                 arc_out = []
                 for (i, j), (low, cap, cost) in self.arc_descriptors_dict.items():
                     if j == zero_node:
                         arc_in.append(f"x{supply_node}_{i}_{j}")
-                        print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_in")
+                        #print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_in")
                     if i == zero_node:
                         arc_out.append(f"x{supply_node}_{i}_{j}")
-                        print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_out")
+                        #print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_out")
                 self.model.addCons(quicksum(self.all_vars_dict[var] for var in arc_in) == quicksum(
                     self.all_vars_dict[var] for var in arc_out))
-                print(f"Add constraint for zero node {zero_node} and supply node {supply_node}")
+                #print(f"Add constraint for zero node {zero_node} and supply node {supply_node}")
 
         # Constraint 5: supply node traffic flow
         for supply_node in self.supply_nodes_dict:
-            print(f"\nAdding Constraint for supply node {supply_node}")
+            #print(f"\nAdding Constraint for supply node {supply_node}")
             arc_in = {}
             arc_out = {}
             arc_in.setdefault(supply_node, [])
@@ -274,18 +274,18 @@ class ForecastingModel:
                 for vehicle_node in self.supply_nodes_dict:
                     if i == supply_node:
                         arc_out[supply_node].append(f"x{vehicle_node}_{i}_{j}")
-                        print(f"Append {f'x{vehicle_node}_{i}_{j}'} to arc_out")
+                        #print(f"Append {f'x{vehicle_node}_{i}_{j}'} to arc_out")
                     if j == supply_node:
                         arc_in[supply_node].append(f"x{vehicle_node}_{i}_{j}")
-                        print(f"Append {f'x{vehicle_node}_{i}_{j}'} to arc_in")
+                        #print(f"Append {f'x{vehicle_node}_{i}_{j}'} to arc_in")
 
             self.model.addCons(1 + quicksum(self.all_vars_dict[var] for var in arc_in[supply_node]) == quicksum(
                 self.all_vars_dict[var] for var in arc_out[supply_node]))
-            print(f"Add constraint for supply node {supply_node}")
+            #print(f"Add constraint for supply node {supply_node}")
 
         # Constraint 6: for demand node traffic flow
         for demand_node in self.demand_nodes_dict:
-            print(f"\nAdding Constraint for demand node {demand_node}")
+            #print(f"\nAdding Constraint for demand node {demand_node}")
             arc_in = {}
             arc_out = {}
             arc_in.setdefault(demand_node, [])
@@ -294,14 +294,14 @@ class ForecastingModel:
                 for supply_node in self.supply_nodes_dict:
                     if i == demand_node:
                         arc_out[demand_node].append(f"x{supply_node}_{i}_{j}")
-                        print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_out")
+                        #print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_out")
                     if j == demand_node:
                         arc_in[demand_node].append(f"x{supply_node}_{i}_{j}")
-                        print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_in")
+                        #print(f"Append {f'x{supply_node}_{i}_{j}'} to arc_in")
 
             self.model.addCons(quicksum(self.all_vars_dict[var] for var in arc_in[demand_node]) == 1 + quicksum(
                 self.all_vars_dict[var] for var in arc_out[demand_node]))
-            print(f"Add constraint for demand node {demand_node}")
+            #print(f"Add constraint for demand node {demand_node}")
 
         # Constraint 7:
         if self.earliness_tardiness_dict != {}:
@@ -316,7 +316,7 @@ class ForecastingModel:
                 z_vars_src_dst = {}
                 for var in self.all_vars:
                     parts = var.name.split("_")
-                    print(parts)
+                    #print(parts)
                     if (f"x{supply_node}_" in var.name) and (parts[-1] == str(demand_node)):
                         z_vars_src_dst[var.name] = var
                 earliness, tardiness = self.earliness_tardiness_dict[demand_node]
@@ -409,19 +409,19 @@ class ForecastingModel:
                     parts = var.name.split("_")
                     print(parts)
                     agvID = parts[0]
-                    print(agvID)
+                    #print(agvID)
                     i = int(parts[1])
-                    print(i)
+                    #print(i)
                     j = int(parts[2])
-                    print(j)
+                    #print(j)
                     cost = int(self.cost_dict[var.name])
-                    print(cost)
+                    #print(cost)
                     tmp_traces.setdefault(agvID, [])
                     tmp_traces[agvID].append((i, j, cost))
 
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
-            print(tmp_traces)
+            #print(tmp_traces)
 
             # sort from smallest to largest i
             for agvID in tmp_traces:
@@ -441,7 +441,7 @@ class ForecastingModel:
                             traces[agvID].append(arc)
                             break
 
-            print(traces)
+            #print(traces)
 
 
 
@@ -451,7 +451,7 @@ class ForecastingModel:
             with open(filepath, "w") as file:
                 # empty file
                 for agvID in traces:
-                    print(traces[agvID])
+                    #print(traces[agvID])
                     for trace in traces[agvID]:
                         file.write(f"a {trace[0]} {trace[1]}    {cost}  +  {trace[2]}  =  {cost + trace[2]}\n")
                         cost += trace[2]
