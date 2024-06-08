@@ -344,6 +344,7 @@ class ForecastingModel:
                 self.arc_descriptors_dict[(i, j)][2] * self.all_vars_dict[f"x{supply_node}_{i}_{j}"] for supply_node in
                 self.supply_nodes_dict for (i, j) in self.arc_descriptors_dict), "minimize")
 
+        self.model.hideOutput()
         self.model.optimize()
         self.solve_time = self.model.getSolvingTime()
         self.total_time = self.model.getTotalTime()

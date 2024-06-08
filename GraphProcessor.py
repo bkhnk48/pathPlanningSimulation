@@ -131,7 +131,7 @@ class GraphProcessor:
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         while Q:
             ID = Q.popleft()
-            print(Q)
+            #print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in self.tsEdges)):
                     Q.append(j)
