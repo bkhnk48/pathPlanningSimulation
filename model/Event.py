@@ -151,8 +151,10 @@ class Event:
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
         elif self.graph.nodes[next_vertex] is self.agv.target_node:
+            #pdb.set_trace()
+            deltaT = getReal()
             new_event = ReachingTarget(
-                self.endTime, self.endTime, self.agv, self.graph, next_vertex
+                self.endTime, self.endTime + deltaT, self.agv, self.graph, next_vertex
             )
         else:
             deltaT = getReal()
@@ -206,11 +208,10 @@ class Event:
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
-            if a.id != self.agv.id:
-                if a.versionOfGraph < self.graph.version:
-                    a.traces = self.graph.getTrace(a.id)
-                    a.versionOfGraph = self.graph.version
-                    a.target_node = a.traces[len(a.traces) - 1]
+            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                a.traces = self.graph.getTrace(a.id)
+                a.versionOfGraph = self.graph.version
+                a.target_node = a.traces[len(a.traces) - 1]
 
 
 def get_largest_id_from_map(filename):
