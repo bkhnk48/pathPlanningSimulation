@@ -151,8 +151,10 @@ class Event:
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
         elif self.graph.nodes[next_vertex] is self.agv.target_node:
+            #pdb.set_trace()
+            deltaT = getReal()
             new_event = ReachingTarget(
-                self.endTime, self.endTime, self.agv, self.graph, next_vertex
+                self.endTime, self.endTime + deltaT, self.agv, self.graph, next_vertex
             )
         else:
             deltaT = getReal()
