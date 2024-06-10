@@ -106,7 +106,7 @@ class Event:
             self.graph.version != self.agv.versionOfGraph
             or self.graph.version == -1
         ):
-            self._extracted_from_getNext_(DimacsFileReader, ForecastingModel)
+            self.useSolver(DimacsFileReader, ForecastingModel)
         #pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
@@ -143,12 +143,12 @@ class Event:
         simulator.schedule(new_event.endTime, new_event.process)
 
     # TODO Rename this here and in `getNext`
-    def _extracted_from_getNext_(self, DimacsFileReader, ForecastingModel):
+    def useSolver(self, DimacsFileReader, ForecastingModel):
         self.updateGraph()
         filename = self.saveGraph()
 
         if config.solver_choice == 'solver':
-            self._extracted_from_getNext_(DimacsFileReader, filename, ForecastingModel)
+            self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
                     #self.graph.version += 1
         elif len(self.pns_path) == 0:
             self.pns_path = input("Enter the path for pns-seq: ")
@@ -166,7 +166,7 @@ class Event:
         self.setTracesForAllAGVs()
 
     # TODO Rename this here and in `getNext`
-    def _extracted_from_getNext_(self, DimacsFileReader, filename, ForecastingModel):
+    def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
         print("Running ForecastingModel...")
         # Assuming `filename` is a path to the file with necessary data for the model
         dimacs_file_reader = DimacsFileReader(filename)
@@ -209,6 +209,7 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
+        pdb.set_trace()
         self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version
