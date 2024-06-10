@@ -666,42 +666,35 @@ class GraphProcessor:
                 print("File không tồn tại.")
 
     def remove_descendant_edges(self):
-      source_id = int(input("Nhập ID của điểm gốc: "))
-      try:
-        with open('TSG.txt', 'r') as file:
-            lines = file.readlines()
-      except FileNotFoundError:
-        print("File TSG.txt không tồn tại.")
-        return
+        source_id = int(input("Nhập ID của điểm gốc: "))
+        try:
+          with open('TSG.txt', 'r') as file:
+              lines = file.readlines()
+        except FileNotFoundError:
+          print("File TSG.txt không tồn tại.")
+          return
 
-      # Tạo một danh sách chứa các cung cần giữ lại sau khi gỡ bỏ
-      new_lines = []
+        # Tạo một hàng đợi để duyệt qua các cung
+        queue = deque([source_id])
 
-      # Tạo một hàng đợi để duyệt qua các cung
-      queue = deque([source_id])
+        # Dùng set để lưu trữ ID của các cung cần loại bỏ
+        to_remove = set()
 
-      # Dùng set để lưu trữ ID của các cung cần loại bỏ
-      to_remove = set()
+        while queue:
+          current_id = queue.popleft()
+          for line in lines:
+              parts = line.strip().split()
+              if len(parts) == 6 and parts[0] == 'a' and int(parts[1]) == current_id:
+                  destination_id = int(parts[2])
+                  to_remove.add(line.strip())
+                  queue.append(destination_id)
 
-      while queue:
-        current_id = queue.popleft()
-        for line in lines:
-            parts = line.strip().split()
-            if len(parts) == 6 and parts[0] == 'a' and int(parts[1]) == current_id:
-                destination_id = int(parts[2])
-                to_remove.add(line.strip())
-                queue.append(destination_id)
+        new_lines = [line for line in lines if line.strip() not in to_remove]
+        # Ghi lại các cung còn lại vào file TSG.txt
+        with open('TSG.txt', 'w') as file:
+          file.writelines(new_lines)
 
-      # Xóa các cung con cháu xuất phát từ điểm gốc khỏi danh sách cung ban đầu
-      for line in lines:
-        if line.strip() not in to_remove:
-            new_lines.append(line)
-
-      # Ghi lại các cung còn lại vào file TSG.txt
-      with open('TSG.txt', 'w') as file:
-        file.writelines(new_lines)
-
-      print("Đã gỡ bỏ các cung con cháu xuất phát từ điểm gốc trong đồ thị TSG.")
+        print("Đã gỡ bỏ các cung con cháu xuất phát từ điểm gốc trong đồ thị TSG.")
     
     def process_tsg(self):
         AGV = set()
