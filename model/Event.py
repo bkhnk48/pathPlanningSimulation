@@ -107,7 +107,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.useSolver(DimacsFileReader, ForecastingModel)
-        #pdb.set_trace()
+        pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
@@ -119,11 +119,12 @@ class Event:
             new_event = HoldingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
-        elif self.graph.nodes[next_vertex] is self.agv.target_node:
-            #pdb.set_trace()
+        elif next_vertex == self.agv.target_node.id:
+            pdb.set_trace()
+            print(f"Target {self.agv.target_node.id}")
             deltaT = getReal()
             new_event = ReachingTarget(
-                self.endTime, self.endTime + deltaT, self.agv, self.graph, next_vertex
+                self.endTime, self.endTime, self.agv, self.graph, next_vertex
             )
         else:
             deltaT = getReal()
@@ -209,7 +210,7 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        pdb.set_trace()
+        #pdb.set_trace()
         self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version
