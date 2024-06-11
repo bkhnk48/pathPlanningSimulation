@@ -131,7 +131,7 @@ class GraphProcessor:
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         while Q:
             ID = Q.popleft()
-            #print(Q)
+            print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in self.tsEdges)):
                     Q.append(j)
@@ -756,7 +756,7 @@ class GraphProcessor:
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
-        self.startedNodes = [1, 10]
+        self.startedNodes = [1]#[1, 10]
         self.process_input_file(filepath)
         self.H = 10
         self.generate_hm_matrix()
@@ -764,7 +764,7 @@ class GraphProcessor:
         self.generate_adj_matrix()
         self.create_tsg_file()
         count = 0
-        while(count <= 1):
+        while(count <= 0):
             self.ID = 3
             self.earliness = 4 if count == 0 else 7
             self.tardiness = 6 if count == 0 else 9
