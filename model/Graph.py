@@ -131,7 +131,7 @@ class Graph:
         self.map = {}
         #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
-        unique_numbers = self.find_unique_nodes()
+        #unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
         #id1_id3_tree = self.create_trees()
         id1_id3_tree = self.build_path_tree()
