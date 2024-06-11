@@ -102,44 +102,13 @@ class Event:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
 
-        if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
-            #pdb.set_trace()
-            next_vertex = self.agv.getNextNode().id
-        else:
-            self.updateGraph()
-            filename = self.saveGraph()
-
-            if config.solver_choice == 'solver':
-                print("Running ForecastingModel...")
-                # Assuming `filename` is a path to the file with necessary data for the model
-                dimacs_file_reader = DimacsFileReader(filename)
-                dimacs_file_reader.read_custom_dimacs()
-                problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict = dimacs_file_reader.get_all_dicts()
-                model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
-                #if(model == None):
-                #pdb.set_trace()
-                model.solve()
-                model.output_solution()
-                model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
-                model.create_traces("traces.txt")
-                #self.graph.version += 1
-            else:
-                if len(self.pns_path) == 0:
-                    self.pns_path = input("Enter the path for pns-seq: ")
-                    command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-                    print("Running network-simplex:", command)
-                    subprocess.run(command, shell=True)
-
-            if config.solver_choice != 'solver':
-                command = "python3 filter.py > traces.txt"
-                subprocess.run(command, shell=True)
-
-            #pdb.set_trace()
-
-            self.graph.version += 1
-            self.setTracesForAllAGVs()
-            next_vertex = self.agv.getNextNode().id
-
+        if (
+            self.graph.version != self.agv.versionOfGraph
+            or self.graph.version == -1
+        ):
+            self.useSolver(DimacsFileReader, ForecastingModel)
+        pdb.set_trace()
+        next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
             self.agv.current_node // numberOfNodesInSpaceGraph - (1 if self.agv.current_node % numberOfNodesInSpaceGraph == 0 else 0)
@@ -150,11 +119,12 @@ class Event:
             new_event = HoldingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
-        elif self.graph.nodes[next_vertex] is self.agv.target_node:
-            #pdb.set_trace()
+        elif next_vertex == self.agv.target_node.id:
+            pdb.set_trace()
+            print(f"Target {self.agv.target_node.id}")
             deltaT = getReal()
             new_event = ReachingTarget(
-                self.endTime, self.endTime + deltaT, self.agv, self.graph, next_vertex
+                self.endTime, self.endTime, self.agv, self.graph, next_vertex
             )
         else:
             deltaT = getReal()
@@ -172,6 +142,44 @@ class Event:
         # new_event.setValue("allAGVs", self.allAGVs)
         # simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
         simulator.schedule(new_event.endTime, new_event.process)
+
+    # TODO Rename this here and in `getNext`
+    def useSolver(self, DimacsFileReader, ForecastingModel):
+        self.updateGraph()
+        filename = self.saveGraph()
+
+        if config.solver_choice == 'solver':
+            self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
+                    #self.graph.version += 1
+        elif len(self.pns_path) == 0:
+            self.pns_path = input("Enter the path for pns-seq: ")
+            command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+            print("Running network-simplex:", command)
+            subprocess.run(command, shell=True)
+
+        if config.solver_choice != 'solver':
+            command = "python3 filter.py > traces.txt"
+            subprocess.run(command, shell=True)
+
+        #pdb.set_trace()
+
+        self.graph.version += 1
+        self.setTracesForAllAGVs()
+
+    # TODO Rename this here and in `getNext`
+    def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
+        print("Running ForecastingModel...")
+        # Assuming `filename` is a path to the file with necessary data for the model
+        dimacs_file_reader = DimacsFileReader(filename)
+        dimacs_file_reader.read_custom_dimacs()
+        problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict = dimacs_file_reader.get_all_dicts()
+        model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
+        #if(model == None):
+        #pdb.set_trace()
+        model.solve()
+        model.output_solution()
+        model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
+        model.create_traces("traces.txt")
 
     def updateGraph(self):
         pass
@@ -202,6 +210,7 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
+        #pdb.set_trace()
         self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version

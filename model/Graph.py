@@ -103,7 +103,10 @@ class Graph:
                     #self.insertEdgesAndNodes(node3, node1, node4)
                     self.neighbour_list[id1] = id2
                     self.neighbour_list[id3] = id4
-                    self.list1.append(id1)
+                    #print(self.graph_processor.startedNodes)
+                    #pdb.set_trace()
+                    if(id1 in self.graph_processor.startedNodes):
+                        self.list1.append(id1)
                     id1_id3_tree[id1].append(node3)
                     id1_id3_tree[id3].append(node1)
         return id1_id3_tree
@@ -111,14 +114,15 @@ class Graph:
     def dfs(self, tree, start_node):
         self.visited.add(start_node)
         for node in tree[start_node]:
-            if node not in self.visited:
+            node_id = node if isinstance(node, int) else node.id
+            if node_id not in self.visited:
                 #print(node, end=' ')
                 self.cur.append(node)
-                node_id = node if isinstance(node, int) else node.id
                 self.id2_id4_list.append(self.neighbour_list[node_id])
-                self.dfs(tree, node)
+                self.dfs(tree, node_id)
 
     def setTrace(self, file_path = 'traces.txt'):
+        #pdb.set_trace()
         self.file_path = file_path #'traces.txt'
         self.list1 = []
         self.neighbour_list = {}
@@ -132,7 +136,7 @@ class Graph:
         #id1_id3_tree = self.create_trees()
         id1_id3_tree = self.build_path_tree()
         for number in self.list1:
-            if not number in self.visited:
+            if number not in self.visited:
                 #print(number, end=' ')
                 self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
