@@ -36,9 +36,10 @@ class AGV:
             return None
     
     def move_to(self):
-        if self.next_node is not None:
+        if len(self.traces) >= 1:
             self.previous_node = self.current_node
-            self.current_node = self.next_node
+            self.current_node = self.traces[0].id
+            self.traces.pop(0)
             self.state = 'moving'
             print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
             self.state = 'idle'
