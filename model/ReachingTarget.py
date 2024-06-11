@@ -1,8 +1,12 @@
 from .Event import Event
+import pdb
 class ReachingTarget(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
+        self.last_cost = self.graph.get_edge(self.agv.current_node, self.target_node)
+        pdb.set_trace()
+        print(f"Last cost: {self.last_cost}")
 
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
@@ -11,7 +15,8 @@ class ReachingTarget(Event):
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
         if self.agv.previous_node is not None and self.target_node is not None:
-            last_edge_weight = self.graph.get_edge(self.agv.previous_node, self.target_node)
+            #last_edge_weight = self.graph.get_edge(self.agv.current_node, self.target_node)
+            last_edge_weight = self.last_cost
             if last_edge_weight is not None:
                 # Calculate cost based on the weight of the last edge
                 cost_increase = last_edge_weight
@@ -29,5 +34,7 @@ class ReachingTarget(Event):
         print(
             f"AGV {self.agv.id} has reached the target node {self.target_node} at time {self.endTime}"
         )
+        pdb.set_trace()
         self.calculateCost()  # Calculate and update the cost of reaching the target
+        print("DSFFDdsfsdDF")
         self.updateGraph()  # Optional: update the graph if necessary
