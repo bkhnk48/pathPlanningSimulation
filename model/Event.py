@@ -13,8 +13,10 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
-def getReal():
-    return 3
+def getReal(start_id, next_id, M):
+    startTime = start_id // M - (1 if start_id % M == 0 else 0)
+    endTime = next_id // M - (1 if next_id % M == 0 else 0)
+    return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -108,7 +110,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        #pdb.set_trace()
+        pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
@@ -118,7 +120,9 @@ class Event:
         if (next_vertex % numberOfNodesInSpaceGraph) == (
             self.agv.current_node % numberOfNodesInSpaceGraph
         ):
-            self.agv.move_to()
+            from .StartEvent import StartEvent
+            if(not isinstance(self, StartEvent)):
+                self.agv.move_to()
             new_event = HoldingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
@@ -130,9 +134,12 @@ class Event:
                 self.endTime, self.endTime, self.agv, self.graph, next_vertex
             )
         else:
-            deltaT = getReal()
-            self.agv.move_to()
+            
+            from .StartEvent import StartEvent
+            if(not isinstance(self, StartEvent)):
+                self.agv.move_to()
             next_vertex = self.agv.traces[0].id
+            deltaT= getReal(self.agv.current_node, next_vertex, numberOfNodesInSpaceGraph)
             if(self.endTime + deltaT >= self.graph.graph_processor.H):
                 if(self.graph.graph_processor.printOut):
                     print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
