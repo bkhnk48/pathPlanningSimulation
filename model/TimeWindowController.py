@@ -18,8 +18,11 @@ class TimeWindowController:
     def add_source_and_TWNode(self, source_id, node, earliness, tardiness):
         #pdb.set_trace()
         if( isinstance(node, TimeWindowNode)):
+            node.set_time_window(earliness, tardiness)
             if(not source_id in self.TWEdges):
                 self.TWEdges[source_id] = []
+            #if(source_id == 18):
+            #    pdb.set_trace()
             found = False
             for old_node, _, _ in self.TWEdges[source_id]:
                 if(old_node.id == node.id):
