@@ -11,7 +11,7 @@ class ReachingTarget(Event):
             - (1 if self.agv.current_node % M == 0 else 0)
         earliness = node.earliness
         tardiness = node.tardiness
-        self.last_cost = self.graph.graph_processor.beta*(max([earliness - time, 0, time - tardiness]))
+        self.last_cost = self.graph.graph_processor.beta*(max([earliness - time, 0, time - tardiness]))/self.graph.graph_processor.alpha
         #self.last_cost = self.graph.get_edge(self.agv.current_node, self.target_node)
         """for node, earliness, tardiness in \
             self.graph.graph_processor.time_window_controller.TWEdges[self.agv.current_node]:
