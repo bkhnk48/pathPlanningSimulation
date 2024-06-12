@@ -262,6 +262,8 @@ class Graph:
             time = source_id // M - (1 if source_id % M == 0 else 0)
             # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
             if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
+                #if(source_id == 18):
+                #    pdb.set_trace()
                 del self.adjacency_list[source_id]
                 del self.nodes[source_id]
         
