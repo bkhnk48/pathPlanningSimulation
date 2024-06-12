@@ -108,7 +108,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        pdb.set_trace()
+        #pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
@@ -123,7 +123,7 @@ class Event:
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
         elif next_vertex == self.agv.target_node.id:
-            pdb.set_trace()
+            #pdb.set_trace()
             print(f"Target {self.agv.target_node.id}")
             #deltaT = getReal()
             new_event = ReachingTarget(
@@ -134,7 +134,8 @@ class Event:
             self.agv.move_to()
             next_vertex = self.agv.traces[0].id
             if(self.endTime + deltaT >= self.graph.graph_processor.H):
-                print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
+                if(self.graph.graph_processor.printOut):
+                    print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
                 new_event = HaltingEvent(
                     self.endTime,
                     self.graph.graph_processor.H,
