@@ -270,7 +270,7 @@ class Graph:
         Q = deque()
         Q.append(new_node_id)
         #pdb.set_trace()
-        new_edges = self.graph_processor.insert_from_queue(Q)
+        new_edges = self.graph_processor.insert_from_queue(Q, self.adjacency_list)
         #print(new_edges)
         for edge in new_edges:
             arr = self.parse_string(edge)
