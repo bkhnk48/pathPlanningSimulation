@@ -126,14 +126,18 @@ class GraphProcessor:
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
 
-    def insert_from_queue(self, Q):
+    def insert_from_queue(self, Q, checking_list = None):
+        pdb.set_trace()
         output_lines = []
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        tsEdges = self.tsEdges if checking_list == None else \
+            [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
+        #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
         while Q:
             ID = Q.popleft()
-            print(Q)
+            #print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
-                if(not any(edge[0] == ID and edge[1] == j for edge in self.tsEdges)):
+                if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
                     Q.append(j)
                     u, v = ID % self.M, j % self.M
                     u = u if u != 0 or ID == 0 else self.M
@@ -147,7 +151,8 @@ class GraphProcessor:
                     if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
                         c = edges_with_cost[(u, v)]
                         output_lines.append(f"a {ID} {j} 0 1 {c}")
-                        self.tsEdges.append((ID, j, 0, 1, c))
+                        if(checking_list == None):
+                            self.tsEdges.append((ID, j, 0, 1, c))
                         self.check_and_add_nodes([ID, j])
                         #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
                         #if(ID == 1 and j == 8):
@@ -156,13 +161,16 @@ class GraphProcessor:
                         temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
                     elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                         output_lines.append(f"a {ID} {j} 0 1 {self.d}")
-                        self.tsEdges.append((ID, j, 0, 1, self.d))
+                        if(checking_list == None):
+                            self.tsEdges.append((ID, j, 0, 1, self.d))
                         self.check_and_add_nodes([ID, j])
                         #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
                         temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
                     if(temp != None):
-                        self.ts_edges.append(temp)
-        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+                        if(checking_list == None):
+                            self.ts_edges.append(temp)
+        if(checking_list == None):
+            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         return output_lines
 
     def create_tsg_file(self):          
@@ -756,7 +764,7 @@ class GraphProcessor:
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
-        self.startedNodes = [1]#[1, 10]
+        self.startedNodes = [1] #[1, 10]
         self.process_input_file(filepath)
         self.H = 10
         self.generate_hm_matrix()
@@ -764,7 +772,7 @@ class GraphProcessor:
         self.generate_adj_matrix()
         self.create_tsg_file()
         count = 0
-        while(count <= 0):
+        while(count <= len(self.startedNodes) - 1):
             self.ID = 3
             self.earliness = 4 if count == 0 else 7
             self.tardiness = 6 if count == 0 else 9
