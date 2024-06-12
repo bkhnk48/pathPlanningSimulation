@@ -20,6 +20,7 @@ y = {}
 
 graph_processor = GraphProcessor()
 graph_processor.use_in_main()
+graph_processor.printOut = False
 
 graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
 
