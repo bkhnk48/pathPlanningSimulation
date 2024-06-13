@@ -127,7 +127,7 @@ class GraphProcessor:
         #    self.ts_nodes.append(Node(ID2))
 
     def insert_from_queue(self, Q, checking_list = None):
-        pdb.set_trace()
+        #pdb.set_trace()
         output_lines = []
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
         tsEdges = self.tsEdges if checking_list == None else \
