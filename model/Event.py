@@ -169,7 +169,7 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def find_path(self, DimacsFileReader, ForecastingModel):
-        if(self.graph.version == -1 and -1 == self.agv.versionOfGraph):
+        if self.graph.versions == -1 == self.agv.versionOfGraph:
             pdb.set_trace()
             self.updateGraph()
         filename = self.saveGraph()
@@ -188,7 +188,7 @@ class Event:
             subprocess.run(command, shell=True)
 
         #pdb.set_trace()
-        if(self.graph.version == -1 and -1 == self.agv.versionOfGraph):
+        if self.graph.version == -1 == self.agv.versionOfGraph:
             self.graph.version += 1
         self.setTracesForAllAGVs()
 
@@ -229,9 +229,6 @@ class Event:
         command = "python3 filter.py > traces.txt"
         subprocess.run(command, shell=True)
 
-    def getAllAGVs(self):
-        return allAGVs
-    
     def setTracesForAllAGVs(self):
         # Đọc và xử lý file traces để lấy các đỉnh tiếp theo
         # with open(filename, "r") as file:
