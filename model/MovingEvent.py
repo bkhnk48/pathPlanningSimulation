@@ -3,7 +3,7 @@ import pdb
 class MovingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
         super().__init__(startTime, endTime, agv, graph)
-        #pdb.set_trace()
+        pdb.set_trace()
         self.start_node = start_node
         self.end_node = end_node
 
@@ -19,6 +19,7 @@ class MovingEvent(Event):
         predicted_time = weight_of_edge if weight_of_edge else None
 
         if actual_time != predicted_time:
+            allAGVs = self.getAllAGVs()
             self.graph.update_graph(self.start_node, self.end_node, actual_time)
             #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
@@ -31,7 +32,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
-        #pdb.set_trace()
+        pdb.set_trace()
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
