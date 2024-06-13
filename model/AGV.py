@@ -16,7 +16,8 @@ class AGV:
         
     def update_cost(self, amount):
         self.cost += amount
-        print(f"Cost updated for AGV {self.id}: {self.cost}.")
+        if(self.graph.graph_processor.printOut):
+            print(f"Cost updated for AGV {self.id}: {self.cost}.")
 
     def getNextNode(self, endedEvent = False):
         #stack = inspect.stack()
@@ -29,21 +30,25 @@ class AGV:
             print(f"{self.path}")
             
             next_node = self.traces[0]
-            print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
+            if(self.graph.graph_processor.printOut):
+                print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
         else:
             print(f"AGV {self.id} has no more nodes in the trace. Remaining at node: {self.current_node}.")
             return None
     
     def move_to(self):
-        if self.next_node is not None:
+        if len(self.traces) >= 1:
             self.previous_node = self.current_node
-            self.current_node = self.next_node
+            self.current_node = self.traces[0].id
+            self.traces.pop(0)
             self.state = 'moving'
-            print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
+            if(self.graph.graph_processor.printOut):
+                print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
             self.state = 'idle'
         else:
-            print(f"AGV {self.id} has no further destinations to move to.")
+            if(self.graph.graph_processor.printOut):
+                print(f"AGV {self.id} has no further destinations to move to.")
 
     def wait(self, duration):
         print(f"AGV {self.id} is waiting at node {self.current_node} for {duration} seconds.")

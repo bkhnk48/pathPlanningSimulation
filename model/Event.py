@@ -13,8 +13,10 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
-def getReal():
-    return 15
+def getReal(start_id, next_id, M):
+    startTime = start_id // M - (1 if start_id % M == 0 else 0)
+    endTime = next_id // M - (1 if next_id % M == 0 else 0)
+    return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -66,7 +68,7 @@ class Event:
         self.time = self.time + wait_time
         graph.writefile(self.pos, 1)
 
-    def getReal(self, currentpos, nextpos, realtime):
+    """def getReal(self, currentpos, nextpos, realtime):
         obj = utility()
         graph = Graph(self.x)
         nextpos = obj.M * (
@@ -76,7 +78,7 @@ class Event:
         self.x = graph.matrix
         self.time = self.time + realtime
         self.pos = obj.M * (int(self.pos / obj.M) + realtime) + obj.getid(nextpos)
-        graph.writefile(self.pos, 1)
+        graph.writefile(self.pos, 1)"""
 
     def getForecast(self, nextpos, forecastime):
         obj = utility()
@@ -96,6 +98,7 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
+        from .HaltingEvent import HaltingEvent
         from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
         #pdb.set_trace()
         if self.graph.numberOfNodesInSpaceGraph == -1:
@@ -106,37 +109,58 @@ class Event:
             self.graph.version != self.agv.versionOfGraph
             or self.graph.version == -1
         ):
-            self.useSolver(DimacsFileReader, ForecastingModel)
+            self.find_path(DimacsFileReader, ForecastingModel)
         pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
             self.agv.current_node // numberOfNodesInSpaceGraph - (1 if self.agv.current_node % numberOfNodesInSpaceGraph == 0 else 0)
         )
+        
         if (next_vertex % numberOfNodesInSpaceGraph) == (
             self.agv.current_node % numberOfNodesInSpaceGraph
         ):
+            from .StartEvent import StartEvent
+            if(not isinstance(self, StartEvent)):
+                self.agv.move_to()
             new_event = HoldingEvent(
                 self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
             )
         elif next_vertex == self.agv.target_node.id:
-            pdb.set_trace()
+            #pdb.set_trace()
             print(f"Target {self.agv.target_node.id}")
-            deltaT = getReal()
+            #deltaT = getReal()
             new_event = ReachingTarget(
                 self.endTime, self.endTime, self.agv, self.graph, next_vertex
             )
         else:
-            deltaT = getReal()
-            #pdb.set_trace()
-            new_event = MovingEvent(
-                self.endTime,
-                self.endTime + deltaT,
-                self.agv,
-                self.graph,
-                self.agv.current_node,
-                next_vertex,
-            )
+            
+            from .StartEvent import StartEvent
+            if(not isinstance(self, StartEvent)):
+                self.agv.move_to()
+            next_vertex = self.agv.traces[0].id
+            deltaT= getReal(self.agv.current_node, next_vertex, numberOfNodesInSpaceGraph)
+            if(self.endTime + deltaT >= self.graph.graph_processor.H):
+                if(self.graph.graph_processor.printOut):
+                    print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
+                new_event = HaltingEvent(
+                    self.endTime,
+                    self.graph.graph_processor.H,
+                    self.agv,
+                    self.graph,
+                    self.agv.current_node,
+                    next_vertex
+                    )
+            else:
+                #pdb.set_trace()
+                new_event = MovingEvent(
+                    self.endTime,
+                    self.endTime + deltaT,
+                    self.agv,
+                    self.graph,
+                    self.agv.current_node,
+                    next_vertex
+                )
 
         # Lên lịch cho sự kiện mới
         # new_event.setValue("allAGVs", self.allAGVs)
@@ -144,7 +168,7 @@ class Event:
         simulator.schedule(new_event.endTime, new_event.process)
 
     # TODO Rename this here and in `getNext`
-    def useSolver(self, DimacsFileReader, ForecastingModel):
+    def find_path(self, DimacsFileReader, ForecastingModel):
         self.updateGraph()
         filename = self.saveGraph()
 

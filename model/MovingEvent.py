@@ -3,6 +3,7 @@ import pdb
 class MovingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
         super().__init__(startTime, endTime, agv, graph)
+        #pdb.set_trace()
         self.start_node = start_node
         self.end_node = end_node
 
@@ -23,16 +24,19 @@ class MovingEvent(Event):
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
     def calculateCost(self):
+        #pdb.set_trace()
         # Tính chi phí dựa trên thời gian di chuyển thực tế
-        cost_increase = self.endTime - self.startTime
+        cost_increase = self.graph.graph_processor.alpha*(self.endTime - self.startTime)
         self.agv.cost += cost_increase  # Cập nhật chi phí của AGV
         return cost_increase
 
     def process(self):
         #pdb.set_trace()
+        self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
-        print(
-            f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
-        )
+        if(self.graph.graph_processor.printOut):
+            print(
+                f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
+                )
         self.getNext()

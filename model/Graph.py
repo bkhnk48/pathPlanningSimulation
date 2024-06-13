@@ -131,7 +131,7 @@ class Graph:
         self.map = {}
         #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
-        unique_numbers = self.find_unique_nodes()
+        #unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
         #id1_id3_tree = self.create_trees()
         id1_id3_tree = self.build_path_tree()
@@ -262,13 +262,15 @@ class Graph:
             time = source_id // M - (1 if source_id % M == 0 else 0)
             # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
             if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
+                #if(source_id == 18):
+                #    pdb.set_trace()
                 del self.adjacency_list[source_id]
                 del self.nodes[source_id]
         
         Q = deque()
         Q.append(new_node_id)
         #pdb.set_trace()
-        new_edges = self.graph_processor.insert_from_queue(Q)
+        new_edges = self.graph_processor.insert_from_queue(Q, self.adjacency_list)
         #print(new_edges)
         for edge in new_edges:
             arr = self.parse_string(edge)
