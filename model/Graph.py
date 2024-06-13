@@ -227,7 +227,7 @@ class Graph:
                     path.append((node, neighbor, weight))
         return path
     
-    def update_graph(self, id1 = -1, id2 = -1, c12 = -1):
+    def update_graph(self, id1 = -1, id2 = -1, c12 = -1, allAGVs = None):
     #ý nghĩa của các tham số: id1 - id của nút nguồn X trong đồ thị TSG
     #                         id2 - id cuả nút đích dự kiến Y trong đồ thị TSG
     #                         c12 - thời gian thực tế mà AGV di chuyển từ nút X đến Y
@@ -263,7 +263,7 @@ class Graph:
             # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
             if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
                 #if(source_id == 18):
-                #    pdb.set_trace()
+                #    pdb.set_trace()allAGVs
                 del self.adjacency_list[source_id]
                 del self.nodes[source_id]
         
@@ -292,6 +292,7 @@ class Graph:
                         self.graph_processor.M, self.graph_processor.d, [source_id, \
                         dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
+                self.version = self.version + 1
             
             #add TimeWindowEdge
             self.graph_processor.time_window_controller.generate_time_window_edges(\
@@ -299,7 +300,7 @@ class Graph:
             
             self.graph_processor.restriction_controller.generate_restriction_edges(\
                 self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
-        self.write_to_file()
+        self.write_to_file(new_node_id)
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
@@ -323,9 +324,16 @@ class Graph:
             return [ID1, ID2, L, U, C]
         except ValueError:
             return None  # Không thể chuyển thành số nguyên
-
+    
+    def get_current_node(self, allAGVs, start):
+        if(allAGVs == None):
+            return start
+        for agv in allAGVs:
+            if(agv.id == 'AGV' + str(start)):
+                return agv.current_node
+        return start
         
-    def write_to_file(self, filename="TSG.txt"):
+    def write_to_file(self, allAGVs = None, filename="TSG.txt"):
         #with open(filename, "w") as file:
         #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
         #    for node in self.nodes:
@@ -339,6 +347,8 @@ class Graph:
         with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
             for start in self.graph_processor.startedNodes:
+                pdb.set_trace()
+                start_node = self.get_current_node(allAGVs, start)
                 file.write(f"n {start} 1\n")
             for target in self.graph_processor.targetNodes:
                 target_id = target.id
