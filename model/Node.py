@@ -12,6 +12,7 @@ class Node:
         self.id = id
         self.label=label
         self.edges = []
+        self.agv = None
 
     def create_edge(self, node, M, d, e, debug = False):
         if(debug):
