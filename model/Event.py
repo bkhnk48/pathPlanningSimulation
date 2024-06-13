@@ -110,7 +110,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        pdb.set_trace()
+        #pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
@@ -169,7 +169,9 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def find_path(self, DimacsFileReader, ForecastingModel):
-        self.updateGraph()
+        if(self.graph.version == -1 and -1 == self.agv.versionOfGraph):
+            pdb.set_trace()
+            self.updateGraph()
         filename = self.saveGraph()
 
         if config.solver_choice == 'solver':
@@ -186,8 +188,8 @@ class Event:
             subprocess.run(command, shell=True)
 
         #pdb.set_trace()
-
-        self.graph.version += 1
+        if(self.graph.version == -1 and -1 == self.agv.versionOfGraph):
+            self.graph.version += 1
         self.setTracesForAllAGVs()
 
     # TODO Rename this here and in `getNext`
@@ -227,6 +229,9 @@ class Event:
         command = "python3 filter.py > traces.txt"
         subprocess.run(command, shell=True)
 
+    def getAllAGVs(self):
+        return allAGVs
+    
     def setTracesForAllAGVs(self):
         # Đọc và xử lý file traces để lấy các đỉnh tiếp theo
         # with open(filename, "r") as file:
