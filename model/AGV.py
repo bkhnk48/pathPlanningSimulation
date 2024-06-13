@@ -13,6 +13,7 @@ class AGV:
         self.traces = [] #các đỉnh sắp đi qua
         self.path = SortedSet([]) #các đỉnh đã đi qua 
         self.graph = graph
+        self.graph.nodes[current_node].agv = self
         
     def update_cost(self, amount):
         self.cost += amount
