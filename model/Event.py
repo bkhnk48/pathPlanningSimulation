@@ -59,7 +59,7 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
-        return f"{self.type}(time={self.time}, agv_id={self.agv.id})"
+        return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
 
     def getWait(self, wait_time):
         obj = utility()
