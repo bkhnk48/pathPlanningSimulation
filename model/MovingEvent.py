@@ -15,6 +15,14 @@ class MovingEvent(Event):
         M = self.graph.numberOfNodesInSpaceGraph
         t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
         t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        real_end_node = actual_time*M + (M if self.end_node % M == 0 else self.end_node % M)
+        
+        #pdb.set_trace()
+        self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv\
+            if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
+        self.graph.nodes[self.start_node].agv = None
+        self.graph.nodes[self.end_node].agv = None
+        
         weight_of_edge = t2 - t1
         predicted_time = weight_of_edge or None
 
@@ -31,6 +39,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
+        #pdb.set_trace()
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
@@ -38,5 +47,5 @@ class MovingEvent(Event):
             print(
                 f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
                 )
-        pdb.set_trace()
+        #pdb.set_trace()
         self.getNext()
