@@ -188,6 +188,7 @@ class Event:
             subprocess.run(command, shell=True)
 
         #pdb.set_trace()
+        print(f"{self} {self.startTime} {self.endTime}")
         if self.graph.version == -1 == self.agv.versionOfGraph:
             self.graph.version += 1
         self.setTracesForAllAGVs()
