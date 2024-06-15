@@ -25,6 +25,6 @@ class HaltingEvent(Event):
         print(
             f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} but time outs!!!!"
         )
-        cost = self.calculateCost()
-        print(f"The total cost of {self.agv.id} is {cost}")
+        self.calculateCost()
+        print(f"The total cost of {self.agv.id} is {self.agv.cost}")
         #self.getNext()
