@@ -105,7 +105,10 @@ class Graph:
                     self.neighbour_list[id3] = id4
                     #print(self.graph_processor.startedNodes)
                     #pdb.set_trace()
-                    if(id1 in self.graph_processor.startedNodes):
+                    if(id1 in self.graph_processor.startedNodes or\
+                        self.nodes[id1].agv is not None
+                        ):
+                        #pdb.set_trace()
                         self.list1.append(id1)
                     id1_id3_tree[id1].append(node3)
                     id1_id3_tree[id3].append(node1)
@@ -251,7 +254,7 @@ class Graph:
         #if(current_time > self.graph_processor.H):
         #    pdb.set_trace()
         current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
-        new_node_id = current_time*M + (ID2 % M)
+        new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
         #if(new_node_id == 45):
         #    pdb.set_trace()
             
@@ -329,6 +332,7 @@ class Graph:
         if(agv_id_and_new_start is None):
             return start
         if agv_id_and_new_start[0] == f'AGV{str(start)}':
+            print(agv_id_and_new_start[1])
             return agv_id_and_new_start[1]
         return start
         
@@ -346,9 +350,9 @@ class Graph:
         with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
             for start in self.graph_processor.startedNodes:
-                pdb.set_trace()
+                #pdb.set_trace()
                 start_node = self.get_current_node(agv_id_and_new_start, start)
-                file.write(f"n {start} 1\n")
+                file.write(f"n {start_node} 1\n")
             for target in self.graph_processor.targetNodes:
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
