@@ -764,6 +764,8 @@ class GraphProcessor:
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        if filepath == '':
+            filepath = 'simplest.txt'
         self.startedNodes = [1] #[1, 10]
         self.process_input_file(filepath)
         self.H = 10
