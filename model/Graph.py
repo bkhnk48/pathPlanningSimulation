@@ -295,7 +295,6 @@ class Graph:
                         self.graph_processor.M, self.graph_processor.d, [source_id, \
                         dest_id, arr[2], arr[3], arr[4]])
                 self.adjacency_list[source_id].append([dest_id, anEdge])
-                self.version = self.version + 1
             
             #add TimeWindowEdge
             self.graph_processor.time_window_controller.generate_time_window_edges(\
@@ -303,6 +302,11 @@ class Graph:
             
             self.graph_processor.restriction_controller.generate_restriction_edges(\
                 self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
+        if(time2 != current_time):
+            #Kể cả không có thêm cạnh mới
+            #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
+            pdb.set_trace()
+            self.version = self.version + 1
         self.write_to_file([agv_id, new_node_id])
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
