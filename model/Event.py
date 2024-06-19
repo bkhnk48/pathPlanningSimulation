@@ -13,9 +13,14 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
-def getReal(start_id, next_id, M):
+def getReal(start_id, next_id, graph):
+    pdb.set_trace()
+    from .TimeWindowNode import TimeWindowNode
+    M = graph.numberOfNodesInSpaceGraph
     startTime = start_id // M - (1 if start_id % M == 0 else 0)
     endTime = next_id // M - (1 if next_id % M == 0 else 0)
+    if isinstance(graph.nodes[next_id], TimeWindowNode):
+        return (endTime - startTime)
     return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
 
 class Event:
@@ -110,7 +115,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        #pdb.set_trace()
+        pdb.set_trace()
         next_vertex = self.agv.getNextNode().id
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
@@ -137,9 +142,10 @@ class Event:
             
             from .StartEvent import StartEvent
             if(not isinstance(self, StartEvent)):
+                pdb.set_trace()
                 self.agv.move_to()
             next_vertex = self.agv.traces[0].id
-            deltaT= getReal(self.agv.current_node, next_vertex, numberOfNodesInSpaceGraph)
+            deltaT= getReal(self.agv.current_node, next_vertex, self.graph)
             if(self.endTime + deltaT >= self.graph.graph_processor.H):
                 if(self.graph.graph_processor.printOut):
                     print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
@@ -237,15 +243,15 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        #pdb.set_trace()
+        pdb.set_trace()
         self.graph.setTrace("traces.txt")
-        self.agv.traces = self.graph.getTrace(self.agv.id)
+        self.agv.traces = self.graph.getTrace(self.agv)
         self.agv.versionOfGraph = self.graph.version
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
             if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                a.traces = self.graph.getTrace(a.id)
+                a.traces = self.graph.getTrace(a)
                 a.versionOfGraph = self.graph.version
                 a.target_node = a.traces[len(a.traces) - 1]
 
