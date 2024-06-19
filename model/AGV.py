@@ -28,7 +28,7 @@ class AGV:
             if(endedEvent):
                 self.current_node = self.traces.pop(0)
             self.path.add(self.current_node)
-            print(f"{self.path}")
+            #print(f"{self.path}")
             
             next_node = self.traces[0]
             if(self.graph.graph_processor.printOut):
