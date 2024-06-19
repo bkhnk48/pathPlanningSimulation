@@ -31,7 +31,15 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    
+    def getReal(self, start_id, next_id):
+        pdb.set_trace()
+        from .TimeWindowNode import TimeWindowNode
+        M = self.numberOfNodesInSpaceGraph
+        startTime = start_id // M - (1 if start_id % M == 0 else 0)
+        endTime = next_id // M - (1 if next_id % M == 0 else 0)
+        if isinstance(self.nodes[next_id], TimeWindowNode):
+            return (endTime - startTime)
+        return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
     def count_edges(self):
         count = 0
         for node in self.adjacency_list:
@@ -149,12 +157,12 @@ class Graph:
                 #print(' '.join(map(str, id2_id4_list)))
                 self.id2_id4_list = []
     
-    def getTrace(self, idOfAGV):
+    def getTrace(self, agv):
         #pdb.set_trace()
-        idOfAGV = int(idOfAGV[3:])
-        for key, value in self.map.items():
-            print(f"Key: {key}, Value: {value}")
-        return self.map[idOfAGV]     
+        idOfAGV = int(agv.id[3:])
+        #for key, value in self.map.items():
+        #    print(f"Key: {key}, Value: {value}")
+        return self.map[idOfAGV] if idOfAGV in self.map else self.map[agv.traces[0].id]
     
     def has_initial_movement(self, node):
         # Check if there are any outgoing edges from 'node'
