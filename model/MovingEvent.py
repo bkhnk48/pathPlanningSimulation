@@ -16,6 +16,7 @@ class MovingEvent(Event):
         t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
         t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
         real_end_node = actual_time*M + (M if self.end_node % M == 0 else self.end_node % M)
+        self.agv.path.add(real_end_node)
         
         self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv\
             if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
@@ -24,7 +25,7 @@ class MovingEvent(Event):
         
         weight_of_edge = t2 - t1
         predicted_time = weight_of_edge or None
-        pdb.set_trace()
+        #pdb.set_trace()
 
         if actual_time != predicted_time:
             self.agv.traces = [self.graph.nodes[real_end_node]]
