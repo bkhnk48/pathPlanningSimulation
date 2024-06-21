@@ -105,7 +105,7 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        pdb.set_trace()
+        #pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         new_event = next_vertex.getEventForReaching(self)
 
@@ -153,7 +153,7 @@ class Event:
         model.solve()
         model.output_solution()
         model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
-        model.create_traces("traces.txt")
+        model.create_traces("traces.txt", self.graph.version)
 
     def updateGraph(self):
         pass
