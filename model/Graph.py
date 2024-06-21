@@ -93,23 +93,23 @@ class Graph:
 
         return list(unique_ids)
     
-    def find_unpredicted_node(self, id, forceFinding = False):
+    def find_unpredicted_node(self, id, forceFinding = False, isTargetNode = False):
         node = None
-        M = self.numberOfNodesInSpaceGraph
         idIsAvailable = id in self.nodes
         if idIsAvailable and not forceFinding:
             node = self.nodes[id]
         else:
             #if start == -1:
             found = False
+            M = self.numberOfNodesInSpaceGraph
             for x in self.nodes:
-                if(x % M == id % M and self.nodes[x].agv is not None):
+                if(x % M == id % M and (self.nodes[x].agv is not None or isTargetNode)):
                     if(idIsAvailable):
                         if(type(self.nodes[x]) == type(self.nodes[id])):
                             found = True
                     elif(isinstance(self.nodes[x], Node)\
-                            and not isinstance(self.nodes[x], TimeWindowNode)\
-                                and not isinstance(self.nodes[x], RestrictionNode)):
+                                and not isinstance(self.nodes[x], TimeWindowNode)\
+                                    and not isinstance(self.nodes[x], RestrictionNode)):
                         found = True
                     if(found):
                         node = self.nodes[x]
@@ -131,7 +131,9 @@ class Graph:
                     id4 = id3 % M
                     node1 = self.find_unpredicted_node(id1) 
                     if (node1 is not None):
-                        node3 = self.find_unpredicted_node(id3, node1.id != id1)
+                        pdb.set_trace()
+                        isTargetNode = True
+                        node3 = self.find_unpredicted_node(id3, node1.id != id1, isTargetNode)
                         #node2 = self.nodes[id2]
                         if(node3 is None):
                             print(f"{node1.id}/{id1} {id3}")
