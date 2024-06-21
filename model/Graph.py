@@ -21,7 +21,7 @@ class Graph:
         self.list1 = []
         self.neighbour_list = {}
         self.visited = set()
-        self.id2_id4_list = []
+        #self.id2_id4_list = []
         self.version = -1
         self.file_path = None
         self.cur = []
@@ -157,7 +157,7 @@ class Graph:
             if node_id not in self.visited:
                 #print(node, end=' ')
                 self.cur.append(node)
-                self.id2_id4_list.append(self.neighbour_list[node_id])
+                #self.id2_id4_list.append(self.neighbour_list[node_id])
                 self.dfs(tree, node_id)
 
     def setTrace(self, file_path = 'traces.txt'):
@@ -166,7 +166,7 @@ class Graph:
         self.list1 = []
         self.neighbour_list = {}
         self.visited = set()
-        self.id2_id4_list = []
+        #self.id2_id4_list = []
         self.map = {}
         #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
@@ -177,13 +177,13 @@ class Graph:
         for number in self.list1:
             if number not in self.visited:
                 #print(number, end=' ')
-                self.id2_id4_list.append(self.neighbour_list[number])
+                #self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
                 self.dfs(id1_id3_tree, number)
                 self.map[number] = self.cur
                 #print('#', end=' ')
                 #print(' '.join(map(str, id2_id4_list)))
-                self.id2_id4_list = []
+                #self.id2_id4_list = []
     
     def getTrace(self, agv):
         #pdb.set_trace()
