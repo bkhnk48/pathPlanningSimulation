@@ -32,7 +32,7 @@ class Graph:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
     def getReal(self, start_id, next_id):
-        pdb.set_trace()
+        #pdb.set_trace()
         from .TimeWindowNode import TimeWindowNode
         M = self.numberOfNodesInSpaceGraph
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
@@ -92,34 +92,56 @@ class Graph:
 
         return list(unique_ids)
     
+    def find_unpredicted_node(self, id, forceFinding = False):
+        node = None
+        idIsAvailable = id in self.nodes
+        if idIsAvailable and not forceFinding:
+            node = self.nodes[id]
+        else:
+            #if start == -1:
+            found = False
+            for x in self.nodes:
+                if(x % M == id % M and self.nodes[x].agv is not None):
+                    if(idIsAvailable):
+                        if(type(self.nodes[x]) == type(self.nodes[id])):
+                            found = True
+                    elif(isinstance(self.nodes[x], Node)\
+                            and not isinstance(self.nodes[x], TimeWindowNode)\
+                                and not isinstance(self.nodes[x], RestrictionNode)):
+                        found = True
+                    if(found):
+                        node = self.nodes[x]
+                        break
+        return node
+        
     def build_path_tree(self, file_path = 'traces.txt'):
         """ Build a tree from edges listed in a file for path finding. """
         id1_id3_tree = defaultdict(list)
+        M = self.numberOfNodesInSpaceGraph
+        #start = -1
         with open(file_path, 'r', encoding='utf-8') as file:
             for line in file:
                 if line.startswith('a'):
                     numbers = line.split()
                     id1 = int(numbers[1])
                     id3 = int(numbers[2])
-                    id2 = id1 % self.numberOfNodesInSpaceGraph
-                    id4 = id3 % self.numberOfNodesInSpaceGraph
-                    node1 = self.nodes[id1]
-                    #node2 = self.nodes[id2]
-                    node3 = self.nodes[id3]
-                    #node4 = self.nodes[id4]
-                    #self.insertEdgesAndNodes(node1, node3, node2)
-                    #self.insertEdgesAndNodes(node3, node1, node4)
-                    self.neighbour_list[id1] = id2
-                    self.neighbour_list[id3] = id4
-                    #print(self.graph_processor.startedNodes)
-                    #pdb.set_trace()
-                    if(id1 in self.graph_processor.startedNodes or\
-                        self.nodes[id1].agv is not None
-                        ):
+                    id2 = id1 % M
+                    id4 = id3 % M
+                    node1 = self.find_unpredicted_node(id1) 
+                    if (node1 is not None):
+                        node3 = self.find_unpredicted_node(id3, node1.id != id1)
+                        #node2 = self.nodes[id2]
+                        id3 = node3.id
+                        self.neighbour_list[id1] = id2
+                        self.neighbour_list[id3] = id4
+                        #print(self.graph_processor.startedNodes)
                         #pdb.set_trace()
-                        self.list1.append(id1)
-                    id1_id3_tree[id1].append(node3)
-                    id1_id3_tree[id3].append(node1)
+                        if(node1.id in self.graph_processor.startedNodes or\
+                            node1.agv is not None):
+                            #pdb.set_trace()
+                            self.list1.append(node1.id)
+                        id1_id3_tree[node1.id].append(node3)
+                        id1_id3_tree[id3].append(node1)
         return id1_id3_tree
 
     def dfs(self, tree, start_node):
@@ -313,7 +335,7 @@ class Graph:
         if(time2 != current_time):
             #Kể cả không có thêm cạnh mới
             #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
-            pdb.set_trace()
+            #pdb.set_trace()
             self.version = self.version + 1
         self.write_to_file([agv_id, new_node_id])
         """for node in self.graph_processor.ts_nodes:
