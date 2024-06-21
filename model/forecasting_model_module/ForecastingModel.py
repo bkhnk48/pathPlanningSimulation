@@ -4,6 +4,7 @@ from pyscipopt import Model, quicksum
 import time
 import datetime
 import os
+import pdb
 
 time_start = time.time()
 
@@ -17,6 +18,7 @@ class DimacsFileReader:
         self.zero_nodes_dict = {}
         self.arc_descriptors_dict = {}
         self.earliness_tardiness_dict = {}
+        #self.graph_version = graph_version
 
     def read_dimacs_file(self, file_path):
         # DIMACS format: p <problem_type> <num_nodes> <num_arcs>
@@ -398,8 +400,12 @@ class ForecastingModel:
             else:
                 f.write("No solution found")
 
-    def create_traces(self, filepath):
+    def create_traces(self, filepath, graph_version):  # sourcery skip: low-code-quality
+        import time
+        milliseconds = int(round(time.time() * 1000))
+        print(milliseconds)
         if self.model.getStatus() == "optimal":
+            #pdb.set_trace()
             vars = self.model.getVars()
 
             # parse both var.name and arc_descriptors_dict to get the traces
@@ -422,8 +428,9 @@ class ForecastingModel:
 
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
-            #print(tmp_traces)
+            print(f"====> {tmp_traces}")
 
+            #pdb.set_trace()
             # sort from smallest to largest i
             for agvID in tmp_traces:
                 tmp_traces[agvID].sort(key=lambda x: x[0])
@@ -443,10 +450,6 @@ class ForecastingModel:
                             break
 
             #print(traces)
-
-
-
-
             # write the traces to file
             cost = 0
             with open(filepath, "w") as file:
@@ -457,8 +460,9 @@ class ForecastingModel:
                         file.write(f"a {trace[0]} {trace[1]}    {cost}  +  {trace[2]}  =  {cost + trace[2]}\n")
                         cost += trace[2]
         else:
+            pdb.set_trace()
             print("No solution found")
-
+        print(f"version of graph : {graph_version}")
 
 
     def get_problem_info(self):
