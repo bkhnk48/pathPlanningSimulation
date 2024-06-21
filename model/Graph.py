@@ -5,6 +5,7 @@ from .utility import utility
 import inspect
 from .RestrictionNode import RestrictionNode
 from .TimeWindowNode import TimeWindowNode
+from .Node import Node
 
 class Graph:
     def __init__(self, graph_processor):
@@ -94,6 +95,7 @@ class Graph:
     
     def find_unpredicted_node(self, id, forceFinding = False):
         node = None
+        M = self.numberOfNodesInSpaceGraph
         idIsAvailable = id in self.nodes
         if idIsAvailable and not forceFinding:
             node = self.nodes[id]
@@ -131,6 +133,8 @@ class Graph:
                     if (node1 is not None):
                         node3 = self.find_unpredicted_node(id3, node1.id != id1)
                         #node2 = self.nodes[id2]
+                        if(node3 is None):
+                            print(f"{node1.id}/{id1} {id3}")
                         id3 = node3.id
                         self.neighbour_list[id1] = id2
                         self.neighbour_list[id3] = id4
