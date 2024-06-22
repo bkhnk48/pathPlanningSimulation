@@ -131,7 +131,7 @@ class Graph:
                     id4 = id3 % M
                     node1 = self.find_unpredicted_node(id1) 
                     if (node1 is not None):
-                        pdb.set_trace()
+                        #pdb.set_trace()
                         isTargetNode = True
                         node3 = self.find_unpredicted_node(id3, node1.id != id1, isTargetNode)
                         #node2 = self.nodes[id2]
@@ -173,7 +173,7 @@ class Graph:
         #unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
         #id1_id3_tree = self.create_trees()
-        id1_id3_tree = self.build_path_tree()
+        id1_id3_tree = self.build_path_tree()#self.list1 sẽ được thay đổi ở đâyđây
         for number in self.list1:
             if number not in self.visited:
                 #print(number, end=' ')
@@ -190,6 +190,9 @@ class Graph:
         idOfAGV = int(agv.id[3:])
         #for key, value in self.map.items():
         #    print(f"Key: {key}, Value: {value}")
+        if(len(agv.traces) > 0):
+            if(agv.traces[0].id == 27):
+                pdb.set_trace()
         return self.map[idOfAGV] if idOfAGV in self.map else self.map[agv.traces[0].id]
     
     def has_initial_movement(self, node):
