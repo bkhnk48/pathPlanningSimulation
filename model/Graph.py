@@ -168,7 +168,7 @@ class Graph:
         self.visited = set()
         #self.id2_id4_list = []
         self.map = {}
-        #pdb.set_trace()
+        pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
         #unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
@@ -395,6 +395,8 @@ class Graph:
             for start in self.graph_processor.startedNodes:
                 #pdb.set_trace()
                 start_node = self.get_current_node(agv_id_and_new_start, start)
+                if(start_node == 24):
+                    pdb.set_trace()
                 file.write(f"n {start_node} 1\n")
             for target in self.graph_processor.targetNodes:
                 target_id = target.id

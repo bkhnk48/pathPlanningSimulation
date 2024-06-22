@@ -112,4 +112,4 @@ class Node:
         )
     
     def __repr__(self):
-        return f"Node(id={self.id}, label='{self.label}')"   
+        return f"Node(id={self.id}, label='{self.label}', agv='{self.agv}')"   
