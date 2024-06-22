@@ -460,7 +460,7 @@ class ForecastingModel:
                         file.write(f"a {trace[0]} {trace[1]}    {cost}  +  {trace[2]}  =  {cost + trace[2]}\n")
                         cost += trace[2]
         else:
-            pdb.set_trace()
+            #pdb.set_trace()
             print("No solution found")
         print(f"version of graph : {graph_version}")
 
