@@ -13,10 +13,6 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
-def getReal(start_id, next_id, M):
-    startTime = start_id // M - (1 if start_id % M == 0 else 0)
-    endTime = next_id // M - (1 if next_id % M == 0 else 0)
-    return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -96,7 +92,6 @@ class Event:
 
     def getNext(self):
         from .HoldingEvent import HoldingEvent
-        from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
         from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
@@ -111,56 +106,8 @@ class Event:
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
         #pdb.set_trace()
-        next_vertex = self.agv.getNextNode().id
-        # Xác định kiểu sự kiện tiếp theo
-        deltaT = (next_vertex // numberOfNodesInSpaceGraph - (1 if next_vertex % numberOfNodesInSpaceGraph == 0 else 0)) - (
-            self.agv.current_node // numberOfNodesInSpaceGraph - (1 if self.agv.current_node % numberOfNodesInSpaceGraph == 0 else 0)
-        )
-        
-        if (next_vertex % numberOfNodesInSpaceGraph) == (
-            self.agv.current_node % numberOfNodesInSpaceGraph
-        ):
-            from .StartEvent import StartEvent
-            if(not isinstance(self, StartEvent)):
-                self.agv.move_to()
-            new_event = HoldingEvent(
-                self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
-            )
-        elif next_vertex == self.agv.target_node.id:
-            #pdb.set_trace()
-            print(f"Target {self.agv.target_node.id}")
-            #deltaT = getReal()
-            new_event = ReachingTarget(
-                self.endTime, self.endTime, self.agv, self.graph, next_vertex
-            )
-        else:
-            
-            from .StartEvent import StartEvent
-            if(not isinstance(self, StartEvent)):
-                self.agv.move_to()
-            next_vertex = self.agv.traces[0].id
-            deltaT= getReal(self.agv.current_node, next_vertex, numberOfNodesInSpaceGraph)
-            if(self.endTime + deltaT >= self.graph.graph_processor.H):
-                if(self.graph.graph_processor.printOut):
-                    print(f"H = {self.graph.graph_processor.H} and {self.endTime} + {deltaT}")
-                new_event = HaltingEvent(
-                    self.endTime,
-                    self.graph.graph_processor.H,
-                    self.agv,
-                    self.graph,
-                    self.agv.current_node,
-                    next_vertex
-                    )
-            else:
-                #pdb.set_trace()
-                new_event = MovingEvent(
-                    self.endTime,
-                    self.endTime + deltaT,
-                    self.agv,
-                    self.graph,
-                    self.agv.current_node,
-                    next_vertex
-                )
+        next_vertex = self.agv.getNextNode()
+        new_event = next_vertex.getEventForReaching(self)
 
         # Lên lịch cho sự kiện mới
         # new_event.setValue("allAGVs", self.allAGVs)
@@ -206,7 +153,7 @@ class Event:
         model.solve()
         model.output_solution()
         model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
-        model.create_traces("traces.txt")
+        model.create_traces("traces.txt", self.graph.version)
 
     def updateGraph(self):
         pass
@@ -239,13 +186,13 @@ class Event:
         #     self.graph.setTrace("traces.txt")
         #pdb.set_trace()
         self.graph.setTrace("traces.txt")
-        self.agv.traces = self.graph.getTrace(self.agv.id)
+        self.agv.traces = self.graph.getTrace(self.agv)
         self.agv.versionOfGraph = self.graph.version
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
             if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                a.traces = self.graph.getTrace(a.id)
+                a.traces = self.graph.getTrace(a)
                 a.versionOfGraph = self.graph.version
                 a.target_node = a.traces[len(a.traces) - 1]
 

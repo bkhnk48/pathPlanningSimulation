@@ -1,6 +1,6 @@
 from .Event import Event
 import pdb
-class ReachingTarget(Event):
+class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
@@ -57,6 +57,7 @@ class ReachingTarget(Event):
                 f"AGV {self.agv.id} has reached the target node {self.target_node} at time {self.endTime}"
                 )
         #pdb.set_trace()
+        print(self.agv.path)
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
