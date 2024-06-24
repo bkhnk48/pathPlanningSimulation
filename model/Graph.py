@@ -307,6 +307,14 @@ class Graph:
                 #if(source_id == 18):
                 #    pdb.set_trace()allAGVs
                 del self.adjacency_list[source_id]
+                if(self.nodes[source_id].agv is not None):
+                    space_id = M if (source_id % M == 0) else source_id % M
+                    new_source_id = current_time*M + space_id
+                    try:
+                        index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
+                        self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
+                    except ValueError:
+                        print("Phần tử x không tồn tại trong danh sách.")
                 del self.nodes[source_id]
         
         Q = deque()
