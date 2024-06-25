@@ -168,7 +168,7 @@ class Graph:
         self.visited = set()
         #self.id2_id4_list = []
         self.map = {}
-        pdb.set_trace()
+        #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
         #unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
@@ -308,8 +308,10 @@ class Graph:
                 #    pdb.set_trace()allAGVs
                 del self.adjacency_list[source_id]
                 if(self.nodes[source_id].agv is not None):
+                    pdb.set_trace()
                     space_id = M if (source_id % M == 0) else source_id % M
                     new_source_id = current_time*M + space_id
+                    self.nodes[new_source_id].agv = self.nodes[source_id].agv
                     try:
                         index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
                         self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
@@ -403,8 +405,8 @@ class Graph:
             for start in self.graph_processor.startedNodes:
                 #pdb.set_trace()
                 start_node = self.get_current_node(agv_id_and_new_start, start)
-                if(start_node == 24):
-                    pdb.set_trace()
+                #if(start_node == 24):
+                #    pdb.set_trace()
                 file.write(f"n {start_node} 1\n")
             for target in self.graph_processor.targetNodes:
                 target_id = target.id
