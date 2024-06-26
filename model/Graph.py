@@ -190,10 +190,16 @@ class Graph:
         idOfAGV = int(agv.id[3:])
         #for key, value in self.map.items():
         #    print(f"Key: {key}, Value: {value}")
-        if(len(agv.traces) > 0):
+        """if(len(agv.traces) > 0):
             if(agv.traces[0].id == 27):
-                pdb.set_trace()
-        return self.map[idOfAGV] if idOfAGV in self.map else self.map[agv.traces[0].id]
+                pdb.set_trace()"""
+        if idOfAGV in self.map:
+            return self.map[idOfAGV]  
+        else:
+            for id in self.nodes:
+                if self.nodes[id].agv == agv:
+                    return self.map[id]
+        return None
     
     def has_initial_movement(self, node):
         # Check if there are any outgoing edges from 'node'
@@ -308,7 +314,7 @@ class Graph:
                 #    pdb.set_trace()allAGVs
                 del self.adjacency_list[source_id]
                 if(self.nodes[source_id].agv is not None):
-                    pdb.set_trace()
+                    #pdb.set_trace()
                     space_id = M if (source_id % M == 0) else source_id % M
                     new_source_id = current_time*M + space_id
                     self.nodes[new_source_id].agv = self.nodes[source_id].agv
