@@ -14,7 +14,7 @@ class HaltingEvent(Event):
 
     def calculateCost(self):
         # Tính chi phí dựa trên thời gian di chuyển thực tế
-        cost_increase = self.endTime - self.startTime
+        cost_increase = float('inf') if(self.end_node != self.agv.target_node.id) else self.endTime - self.startTime
         self.agv.cost += cost_increase  # Cập nhật chi phí của AGV
         return cost_increase
 
