@@ -5,6 +5,8 @@ from model.StartEvent import StartEvent
 import config
 from discrevpy import simulator
 from GraphProcessor import GraphProcessor
+from collections import deque
+from model.ReachingTargetEvent import ReachingTargetEvent
 import subprocess
 import sys
 import pdb
@@ -44,6 +46,19 @@ graph_processor.init_nodes_n_edges(graph)
 events = sorted(events, key=lambda x: x.startTime)
 Event.setValue("allAGVs", allAGVs)
 
+def new_schedule_events(events):
+
+    Q = deque()
+    for event in events:
+        Q.append(event)
+        #simulator.schedule(event.startTime, event.process)
+    while Q:
+        event = Q.popleft()
+        simulator.schedule(event.startTime, event.process)
+        if not isinstance(event,ReachingTargetEvent):
+            Q.append(event.getNext())
+
+
 
 def schedule_events(events):
     for event in events:
@@ -66,5 +81,5 @@ if __name__ == "__main__":
     simulator.ready()
     #events = parse_tsg_file('TSG_0.txt')
     choose_solver()
-    schedule_events(events)
+    new_schedule_events(events)
     simulator.run()

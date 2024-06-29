@@ -19,7 +19,6 @@ class Event:
         self.startTime = int(startTime)
         self.endTime = int(endTime)
         self.agv = agv
-        self.agv.event = self
         self.graph = graph
         self.pns_path = ""
 
@@ -109,11 +108,12 @@ class Event:
         #pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         new_event = next_vertex.getEventForReaching(self)
-
         # Lên lịch cho sự kiện mới
         # new_event.setValue("allAGVs", self.allAGVs)
         # simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
-        simulator.schedule(new_event.endTime, new_event.process)
+        #simulator.schedule(new_event.endTime, new_event.process)
+        return new_event
+
 
     # TODO Rename this here and in `getNext`
     def find_path(self, DimacsFileReader, ForecastingModel):

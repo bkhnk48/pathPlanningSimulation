@@ -86,7 +86,7 @@ class Node:
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
         if(not isinstance(event, StartEvent)):
-            pdb.set_trace()
+            #pdb.set_trace()
             event.agv.move_to()
         next_vertex = event.agv.traces[0].id
         deltaT= event.graph.getReal(event.agv.current_node, next_vertex)

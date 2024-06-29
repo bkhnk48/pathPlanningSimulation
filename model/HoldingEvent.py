@@ -31,4 +31,4 @@ class HoldingEvent(Event):
         print(f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving from node ID {self.agv.current_node} to node ID {next_node}")
         #self.agv.current_node = next_node  # Update the AGV's current node
         self.updateGraph()  # Optional, if there's a need to update the graph based on this event
-        self.getNext()
+        #self.getNext()

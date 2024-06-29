@@ -1,0 +1,13 @@
+4nodetest.txt:
+Thiếu đường đi từ các cung gốc ví dụ như 2 
+Thiếu 1 số cạnh lúc khởi tạo đồ thị 
+Thiếu 1 số cạnh restriction do trước đó chưa tạo ra đúng được đường đi 
+
+
+5nodetest.txt:
+Thiếu đường đi từ các cung gốc ví dụ như 2 3 4 
+Thiếu 1 số cạnh lúc khởi tạo đồ thị 
+Thiếu 1 số cạnh restriction do trước đó chưa tạo ra đúng được đường đi 
+
+
+Đề xuất: dùng giải thuật khác để khởi tạo đồ thị 

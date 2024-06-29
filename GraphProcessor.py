@@ -14,6 +14,7 @@ from collections import deque
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
 import pdb
+import newunit
 """
 Mô tả yêu cầu của code:
 https://docs.google.com/document/d/13S_Ycg-aB4GjEm8xe6tAoUHzhS-Z1iFnM4jX_bWFddo/edit?usp=sharing
@@ -770,8 +771,9 @@ class GraphProcessor:
         self.process_input_file(filepath)
         self.H = 10
         self.generate_hm_matrix()
-        self.d = 1
+        self.d = 2
         self.generate_adj_matrix()
+        #newunit.assert_Nodes_and_Edges(self)
         self.create_tsg_file()
         count = 0
         while(count <= len(self.startedNodes) - 1):
@@ -876,4 +878,6 @@ class GraphProcessor:
 
 if __name__ == "__main__":
     gp = GraphProcessor()
-    gp.main_menu()
+    #gp.main_menu()
+    gp.use_in_main()
+

@@ -51,4 +51,4 @@ class MovingEvent(Event):
                 f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
                 )
         #pdb.set_trace()
-        self.getNext()
+        #self.getNext()
