@@ -7,8 +7,8 @@ from model.Edge import Edge
 from model.Node import Node
 
 class SimulationEngine:
-    def __init__(self, graph):
-        self.graph = graph # Assuming Graph class is already implemented
+    def __init__(self):
+        self.graph = Graph()  # Assuming Graph class is already implemented
         self.agvs = []  # List to store all AGVs
         self.simulator = Simulator()  # discrevpy Simulator instance
         self.current_time = 0.0
@@ -55,6 +55,3 @@ class SimulationEngine:
             event.agv.wait(event.duration)
         # Add logic for processing other types of events
         print(f"Processed event: {event}")
-        
-    def update_graph(self, start_node, end_node, weight):
-        self.graph.update_graph(start_node, end_node, weight)

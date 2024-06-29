@@ -13,13 +13,14 @@ numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
 
+def getReal():
+    return 15
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
         self.startTime = int(startTime)
         self.endTime = int(endTime)
         self.agv = agv
-        self.agv.event = self
         self.graph = graph
         self.pns_path = ""
 
@@ -46,7 +47,6 @@ class Event:
             return allAGVs
 
     def process(self):
-        #pdb.set_trace()
         edge = self.graph.get_edge(self.start_node, self.end_node)
         if edge is not None:
             print(
@@ -56,16 +56,16 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
-        return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
+        return f"{self.type}(time={self.time}, agv_id={self.agv.id})"
 
-    def getWait(self, wait_time):
+    def getWait(self, waittime):
         obj = utility()
         graph = Graph(self.x)
-        self.pos = self.pos + wait_time * obj.M
-        self.time = self.time + wait_time
+        self.pos = self.pos + waittime * obj.M
+        self.time = self.time + waittime
         graph.writefile(self.pos, 1)
 
-    """def getReal(self, currentpos, nextpos, realtime):
+    def getReal(self, currentpos, nextpos, realtime):
         obj = utility()
         graph = Graph(self.x)
         nextpos = obj.M * (
@@ -75,7 +75,7 @@ class Event:
         self.x = graph.matrix
         self.time = self.time + realtime
         self.pos = obj.M * (int(self.pos / obj.M) + realtime) + obj.getid(nextpos)
-        graph.writefile(self.pos, 1)"""
+        graph.writefile(self.pos, 1)
 
     def getForecast(self, nextpos, forecastime):
         obj = utility()
@@ -86,75 +86,73 @@ class Event:
 
     def saveGraph(self):
         # Lưu đồ thị vào file DIMACS và trả về tên file
-        filename = "TSG.txt"
-        #filename = "input_dimacs/supply_03_demand_69_edit.txt"
+        filename = "TSG_0.txt"
         # Code để lưu đồ thị vào file
         return filename
 
     def getNext(self):
         from .HoldingEvent import HoldingEvent
+        from .ReachingTarget import ReachingTarget
         from .MovingEvent import MovingEvent
-        from .HaltingEvent import HaltingEvent
-        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
-        #pdb.set_trace()
+
         if self.graph.numberOfNodesInSpaceGraph == -1:
             global numberOfNodesInSpaceGraph
             self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
 
-        if (
-            self.graph.version != self.agv.versionOfGraph
-            or self.graph.version == -1
+        if self.graph.version == self.agv.versionOfGraph and self.graph.version != -1:
+            next_vertex = self.agv.getNextNode()
+        else:
+            self.updateGraph()
+            filename = self.saveGraph()
+
+            if config.solver_choice == 'solver':
+                command = f"python3 B_solver.py {filename} > solver_output.txt"
+                print("Running solver:", command)
+            else:
+                if len(self.pns_path) == 0:
+                    self.pns_path = input("Enter the path for pns-seq: ")
+                command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
+                print("Running network-simplex:", command)
+
+            subprocess.run(command, shell=True)
+
+            if config.solver_choice != 'solver':
+                command = "python3 filter.py > traces.txt"
+                subprocess.run(command, shell=True)
+
+            self.graph.version += 1
+            self.setTracesForAllAGVs()
+            next_vertex = self.agv.getNextNode()
+
+        # Xác định kiểu sự kiện tiếp theo
+        deltaT = (next_vertex / numberOfNodesInSpaceGraph) - (
+            self.agv.current_node / numberOfNodesInSpaceGraph
+        )
+        if (next_vertex % numberOfNodesInSpaceGraph) == (
+            self.agv.current_node % numberOfNodesInSpaceGraph
         ):
-            self.find_path(DimacsFileReader, ForecastingModel)
-        #pdb.set_trace()
-        next_vertex = self.agv.getNextNode()
-        new_event = next_vertex.getEventForReaching(self)
+            new_event = HoldingEvent(
+                self.endTime, self.endTime + deltaT, self.agv, self.graph, deltaT
+            )
+        elif next_vertex is self.agv.target_node:
+            new_event = ReachingTarget(
+                self.endTime, self.endTime, self.agv, self.graph, next_vertex
+            )
+        else:
+            deltaT = getReal()
+            new_event = MovingEvent(
+                self.endTime,
+                self.endTime + deltaT,
+                self.agv,
+                self.graph,
+                self.agv.current_node,
+                next_vertex,
+            )
 
         # Lên lịch cho sự kiện mới
         # new_event.setValue("allAGVs", self.allAGVs)
         # simulator.schedule(new_event.endTime, new_event.getNext, self.graph)
         simulator.schedule(new_event.endTime, new_event.process)
-
-    # TODO Rename this here and in `getNext`
-    def find_path(self, DimacsFileReader, ForecastingModel):
-        if self.graph.version == -1 == self.agv.versionOfGraph:
-            #pdb.set_trace()
-            self.updateGraph()
-        filename = self.saveGraph()
-
-        if config.solver_choice == 'solver':
-            self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
-                    #self.graph.version += 1
-        elif len(self.pns_path) == 0:
-            self.pns_path = input("Enter the path for pns-seq: ")
-            command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
-            print("Running network-simplex:", command)
-            subprocess.run(command, shell=True)
-
-        if config.solver_choice != 'solver':
-            command = "python3 filter.py > traces.txt"
-            subprocess.run(command, shell=True)
-
-        #pdb.set_trace()
-        print(f"{self} {self.startTime} {self.endTime}")
-        if self.graph.version == -1 == self.agv.versionOfGraph:
-            self.graph.version += 1
-        self.setTracesForAllAGVs()
-
-    # TODO Rename this here and in `getNext`
-    def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
-        print("Running ForecastingModel...")
-        # Assuming `filename` is a path to the file with necessary data for the model
-        dimacs_file_reader = DimacsFileReader(filename)
-        dimacs_file_reader.read_custom_dimacs()
-        problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict = dimacs_file_reader.get_all_dicts()
-        model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
-        #if(model == None):
-        #pdb.set_trace()
-        model.solve()
-        model.output_solution()
-        model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
-        model.create_traces("traces.txt", self.graph.version)
 
     def updateGraph(self):
         pass
@@ -183,19 +181,18 @@ class Event:
         # with open(filename, "r") as file:
         #    traces = file.read().split()
         # return traces
-        # if not self.graph.map:
-        #     self.graph.setTrace("traces.txt")
-        #pdb.set_trace()
-        self.graph.setTrace("traces.txt")
-        self.agv.traces = self.graph.getTrace(self.agv)
+        if not self.graph.map:
+            self.graph.setTrace("traces.txt")
+        self.agv.traces = self.graph.getTrace(self.agv.id)
         self.agv.versionOfGraph = self.graph.version
         self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
         global allAGVs
         for a in allAGVs:
-            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                a.traces = self.graph.getTrace(a)
-                a.versionOfGraph = self.graph.version
-                a.target_node = a.traces[len(a.traces) - 1]
+            if a.id != self.agv.id:
+                if a.versionOfGraph < self.graph.version:
+                    a.traces = self.graph.getTrace(a.id)
+                    a.versionOfGraph = self.graph.version
+                    a.target_node = a.traces[len(a.traces) - 1]
 
 
 def get_largest_id_from_map(filename):

@@ -1,31 +1,14 @@
 from .Node import Node
+from .Edge import TimeWindowEdge
 
 class TimeWindowNode(Node):
-    def __init__(self, ID, time_window):
-        super().__init__(ID)
-        self.time_window = time_window  # Time window in which the node can be accessed
-        self.earliness = float('-inf')
-        self.tardiness = float('inf')
-
-    def set_time_window(self, earliness, tardiness):
+    def __init__(self, id, label=None, earliness=None, tardiness=None):
+        super().__init__(id, label)
         self.earliness = earliness
         self.tardiness = tardiness
-        
+
     def create_edge(self, node, M, d, e):
-        # Does nothing and returns None, effectively preventing the creation of any edge.
-        return None
-    
-    def getEventForReaching(self, event):
-        #next_vertex = event.agv.getNextNode().id
-        from .ReachingTargetEvent import ReachingTargetEvent
-        if self.id == event.agv.target_node.id:
-            #pdb.set_trace()
-            print(f"Target {event.agv.target_node.id}")
-            #deltaT = getReal()
-            return ReachingTargetEvent(
-                event.endTime, event.endTime, event.agv, event.graph, self.id
-            )
-        return None
-    
-    def __repr__(self):
-        return f"TimeWindowNode(ID={self.id}, time_window={self.time_window})"
+        if isinstance(node, TimeWindowNode):
+            return TimeWindowEdge(self, node, e[4], "TimeWindows")
+        else:
+            return None

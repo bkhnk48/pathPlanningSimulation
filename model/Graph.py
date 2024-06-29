@@ -3,71 +3,33 @@ import pdb
 from collections import deque, defaultdict
 from .utility import utility
 import inspect
-from .RestrictionNode import RestrictionNode
-from .TimeWindowNode import TimeWindowNode
-from .Node import Node
 
 class Graph:
-    def __init__(self, graph_processor):
-        self.graph_processor = graph_processor 
+    def __init__(self):
         self.adjacency_list = defaultdict(list)
-        self.nodes = {node.id: node for node in graph_processor.ts_nodes}
-        self.adjacency_list = {node.id: [] for node in graph_processor.ts_nodes}
-        #self.nodes = self.graph_processor.ts_nodes
+        self.nodes = {}
         #self.lastChangedByAGV = -1
-        #self.edges = self.graph_processor.ts_edges
-        #self.nodes = {}
-        #self.adjacency_list = {}
-        self.list1 = []
+        self.edges = {}
+        self.list1 = [ ]
         self.neighbour_list = {}
         self.visited = set()
-        #self.id2_id4_list = []
+        self.id2_id4_list = []
         self.version = -1
         self.file_path = None
         self.cur = []
         self.map = {}
-        self.numberOfNodesInSpaceGraph = -1 if graph_processor is None else graph_processor.M
-        #print("Initialized a new graph.")
-        #stack = inspect.stack()
-        #for frame in stack[1:]:
-        #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
+        self.numberOfNodesInSpaceGraph = -1
+        print("Initialized a new graph.")
+        stack = inspect.stack()
+        for frame in stack[1:]:
+            print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def getReal(self, start_id, next_id):
-        #pdb.set_trace()
-        from .TimeWindowNode import TimeWindowNode
-        M = self.numberOfNodesInSpaceGraph
-        startTime = start_id // M - (1 if start_id % M == 0 else 0)
-        endTime = next_id // M - (1 if next_id % M == 0 else 0)
-        if isinstance(self.nodes[next_id], TimeWindowNode):
-            return (endTime - startTime)
-        return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
-    def count_edges(self):
-        count = 0
-        for node in self.adjacency_list:
-            count = count + len(self.adjacency_list[node])
-        return count
-            
-    """def insertEdgesAndNodes(self, start_id, end_id, edge):
-        self.adjacency_list[start_id].append((end_id, edge))
-        #self.ensure_node_capacity(start_id)
-        #self.ensure_node_capacity(end_id)
-        if self.nodes[start_id] is None:
-            self.nodes[start_id] = {'id': start_id}
-        if self.nodes[end_id] is None:
-            self.nodes[end_id] = {'id': end_id}"""
-    def insertEdgesAndNodes(self, start, end, edge):
-        from .Node import Node
-        start_id = start if isinstance(start, int) else start.id
-        end_id = end if isinstance(end, int) else end.id
-        self.adjacency_list[start_id].append((end_id, edge))
-        #self.ensure_node_capacity(start_id)
-        #self.ensure_node_capacity(end_id)
-        start_node = start if isinstance(start, Node) else self.graph_processor.find_node(start)
-        end_node = end if isinstance(end, Node) else self.graph_processor.find_node(end)
-        if self.nodes[start_id] is None:
-            self.nodes[start_id] = start_node
-        if self.nodes[end_id] is None:
-            self.nodes[end_id] = end_node
+    def insertEdgesAndNodes(self, start, end, weight):
+        self.adjacency_list[start].append((end, weight))
+        if start not in self.nodes:
+            self.nodes[start] = {'id': start}
+        if end not in self.nodes:
+            self.nodes[end] = {'id': end}
     
     def find_unique_nodes(self, file_path = 'traces.txt'):
         """ Find nodes that are only listed as starting nodes in edges. """
@@ -76,14 +38,14 @@ class Graph:
             return []
         
         target_ids = set()
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith('a'):
                     parts = line.split()
                     target_ids.add(int(parts[3]))
 
         unique_ids = set()
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith('a'):
                     parts = line.split()
@@ -93,113 +55,65 @@ class Graph:
 
         return list(unique_ids)
     
-    def find_unpredicted_node(self, id, forceFinding = False, isTargetNode = False):
-        node = None
-        idIsAvailable = id in self.nodes
-        if idIsAvailable and not forceFinding:
-            node = self.nodes[id]
-        else:
-            #if start == -1:
-            found = False
-            M = self.numberOfNodesInSpaceGraph
-            for x in self.nodes:
-                if(x % M == id % M and (self.nodes[x].agv is not None or isTargetNode)):
-                    if(idIsAvailable):
-                        if(type(self.nodes[x]) == type(self.nodes[id])):
-                            found = True
-                    elif(isinstance(self.nodes[x], Node)\
-                                and not isinstance(self.nodes[x], TimeWindowNode)\
-                                    and not isinstance(self.nodes[x], RestrictionNode)):
-                        found = True
-                    if(found):
-                        node = self.nodes[x]
-                        break
-        return node
-        
     def build_path_tree(self, file_path = 'traces.txt'):
         """ Build a tree from edges listed in a file for path finding. """
         id1_id3_tree = defaultdict(list)
-        M = self.numberOfNodesInSpaceGraph
-        #start = -1
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r') as file:
             for line in file:
                 if line.startswith('a'):
                     numbers = line.split()
                     id1 = int(numbers[1])
                     id3 = int(numbers[2])
-                    id2 = id1 % M
-                    id4 = id3 % M
-                    node1 = self.find_unpredicted_node(id1) 
-                    if (node1 is not None):
-                        #pdb.set_trace()
-                        isTargetNode = True
-                        node3 = self.find_unpredicted_node(id3, node1.id != id1, isTargetNode)
-                        #node2 = self.nodes[id2]
-                        if(node3 is None):
-                            print(f"{node1.id}/{id1} {id3}")
-                        id3 = node3.id
-                        self.neighbour_list[id1] = id2
-                        self.neighbour_list[id3] = id4
-                        #print(self.graph_processor.startedNodes)
-                        #pdb.set_trace()
-                        if(node1.id in self.graph_processor.startedNodes or\
-                            node1.agv is not None):
-                            #pdb.set_trace()
-                            self.list1.append(node1.id)
-                        id1_id3_tree[node1.id].append(node3)
-                        id1_id3_tree[id3].append(node1)
+                    id2 = id1 % self.numberOfNodesInSpaceGraph
+                    id4 = id3 % self.numberOfNodesInSpaceGraph
+                    self.insertEdgesAndNodes(id1, id3, id2)
+                    self.insertEdgesAndNodes(id3, id1, id4)
+                    self.neighbour_list[id1] = id2
+                    self.neighbour_list[id3] = id4
+                    self.list1.append(id1)
+                    id1_id3_tree[id1].append(id3)
+                    id1_id3_tree[id3].append(id1)
         return id1_id3_tree
 
     def dfs(self, tree, start_node):
         self.visited.add(start_node)
         for node in tree[start_node]:
-            node_id = node if isinstance(node, int) else node.id
-            if node_id not in self.visited:
+            if node not in self.visited:
                 #print(node, end=' ')
                 self.cur.append(node)
-                #self.id2_id4_list.append(self.neighbour_list[node_id])
-                self.dfs(tree, node_id)
+                self.id2_id4_list.append(self.neighbour_list[node])
+                self.dfs(tree, node)
 
     def setTrace(self, file_path = 'traces.txt'):
-        #pdb.set_trace()
         self.file_path = file_path #'traces.txt'
         self.list1 = []
         self.neighbour_list = {}
         self.visited = set()
-        #self.id2_id4_list = []
+        self.id2_id4_list = []
         self.map = {}
         #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
-        #unique_numbers = self.find_unique_nodes()
+        unique_numbers = self.find_unique_nodes()
         #print(unique_numbers)
         #id1_id3_tree = self.create_trees()
-        id1_id3_tree = self.build_path_tree()#self.list1 sẽ được thay đổi ở đâyđây
+        id1_id3_tree = self.build_path_tree()
         for number in self.list1:
-            if number not in self.visited:
+            if not number in self.visited:
                 #print(number, end=' ')
-                #self.id2_id4_list.append(self.neighbour_list[number])
+                self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
                 self.dfs(id1_id3_tree, number)
                 self.map[number] = self.cur
                 #print('#', end=' ')
                 #print(' '.join(map(str, id2_id4_list)))
-                #self.id2_id4_list = []
+                self.id2_id4_list = []
     
-    def getTrace(self, agv):
+    def getTrace(self, idOfAGV):
         #pdb.set_trace()
-        idOfAGV = int(agv.id[3:])
+        idOfAGV = int(idOfAGV[3:])
         #for key, value in self.map.items():
         #    print(f"Key: {key}, Value: {value}")
-        """if(len(agv.traces) > 0):
-            if(agv.traces[0].id == 27):
-                pdb.set_trace()"""
-        if idOfAGV in self.map:
-            return self.map[idOfAGV]  
-        else:
-            for id in self.nodes:
-                if self.nodes[id].agv == agv:
-                    return self.map[id]
-        return None
+        return self.map[idOfAGV]     
     
     def has_initial_movement(self, node):
         # Check if there are any outgoing edges from 'node'
@@ -275,157 +189,25 @@ class Graph:
                     path.append((node, neighbor, weight))
         return path
     
-    def update_graph(self, id1 = -1, id2 = -1, c12 = -1, agv_id = None):
-    #ý nghĩa của các tham số: id1 - id của nút nguồn X trong đồ thị TSG
-    #                         id2 - id cuả nút đích dự kiến Y trong đồ thị TSG
-    #                         c12 - thời gian thực tế mà AGV di chuyển từ nút X đến Y
+    def update_graph(self, currentpos, nextpos, realtime):
         # Update the graph with new edge information
-        #self.add_edge(currentpos, nextpos, realtime)
-        ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
-        ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
-        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
-        M = self.numberOfNodesInSpaceGraph
-        time1, time2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
-        #if i2 - i1 != C12:
-        #    print('Status: i2 - i1 != C12')
-        #    ID2 = ID1 + M * C12
-        #existing_edges = set()
-        """old_time_window_edges = []
-        for source_id, edges in self.adjacency_list.items():
-            for destination_id, edge in edges:
-                if isinstance(edge, TimeWindowEdge):
-                    old_time_window_edges.append(edge)"""
-        current_time = time1 + C12 # Giá trị của current_time
-        #if(current_time > self.graph_processor.H):
-        #    pdb.set_trace()
-        current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
-        new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
-        #if(new_node_id == 45):
-        #    pdb.set_trace()
-            
-        # Duyệt qua từng phần tử của adjacency_list
-        for source_id, edges in list(self.adjacency_list.items()):
-            # Tính giá trị time
-            node = self.nodes[source_id]
-            time = source_id // M - (1 if source_id % M == 0 else 0)
-            # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
-            if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
-                #if(source_id == 18):
-                #    pdb.set_trace()allAGVs
-                del self.adjacency_list[source_id]
-                if(self.nodes[source_id].agv is not None):
-                    #pdb.set_trace()
-                    space_id = M if (source_id % M == 0) else source_id % M
-                    new_source_id = current_time*M + space_id
-                    self.nodes[new_source_id].agv = self.nodes[source_id].agv
-                    try:
-                        index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
-                        self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
-                    except ValueError:
-                        print("Phần tử x không tồn tại trong danh sách.")
-                del self.nodes[source_id]
-        
-        Q = deque()
-        Q.append(new_node_id)
-        #pdb.set_trace()
-        new_edges = self.graph_processor.insert_from_queue(Q, self.adjacency_list)
-        #print(new_edges)
-        for edge in new_edges:
-            arr = self.parse_string(edge)
-            source_id = arr[0]
-            dest_id = arr[1]
-            if source_id not in self.nodes:
-                self.nodes[source_id] = self.graph_processor.find_node(source_id)
-            if dest_id not in self.nodes:
-                self.nodes[dest_id] = self.graph_processor.find_node(dest_id)
-            if source_id not in self.adjacency_list:
-                self.adjacency_list[source_id] = []
-            found = False
-            for end_id, e in self.adjacency_list[source_id]:
-                if(end_id == dest_id):
-                    found = True
-                    break
-            if(not found):
-                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], \
-                        self.graph_processor.M, self.graph_processor.d, [source_id, \
-                        dest_id, arr[2], arr[3], arr[4]])
-                self.adjacency_list[source_id].append([dest_id, anEdge])
-            
-            #add TimeWindowEdge
-            self.graph_processor.time_window_controller.generate_time_window_edges(\
-                self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
-            
-            self.graph_processor.restriction_controller.generate_restriction_edges(\
-                self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
-        if(time2 != current_time):
-            #Kể cả không có thêm cạnh mới
-            #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
-            #pdb.set_trace()
-            self.version = self.version + 1
-        self.write_to_file([agv_id, new_node_id])
-        """for node in self.graph_processor.ts_nodes:
-            if node.id not in self.nodes:
-                self.nodes[node.id] = node
-        
-        for edge in self.graph_processor.ts_edges:
-            source_id = edge.start_node.id
-            end_id = edge.end_node.id
-            if source_id not in self.adjacency_list or [end_id, edge] not in self.adjacency_list[source_id]:
-                if source_id not in self.adjacency_list:
-                    self.adjacency_list[source_id] = []
-                self.adjacency_list[source_id].append([end_id, edge])
-        
-        self.write_to_file()"""
+        self.add_edge(currentpos, nextpos, realtime)
+    def count_edges(self):
+        totaledges = 0
+        for start_node in self.adjacency_list:
+            totaledges += len(self.adjacency_list[start_node])
+        return totaledges
 
-    def parse_string(self, input_string):
-        parts = input_string.split()
-        if len(parts) != 6 or parts[0] != "a":
-            return None  # Chuỗi không đúng định dạng
-        try:
-            ID1, ID2, L, U, C = map(int, parts[1:])
-            return [ID1, ID2, L, U, C]
-        except ValueError:
-            return None  # Không thể chuyển thành số nguyên
-    
-    def get_current_node(self, agv_id_and_new_start, start):
-        if(agv_id_and_new_start is None):
-            return start
-        if agv_id_and_new_start[0] == f'AGV{str(start)}':
-            print(agv_id_and_new_start[1])
-            return agv_id_and_new_start[1]
-        return start
-        
-    def write_to_file(self, agv_id_and_new_start = None, filename="TSG.txt"):
-        #with open(filename, "w") as file:
-        #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
-        #    for node in self.nodes:
-        #        file.write(f"n {node} 1\n")
-        #    for start_node in self.adjacency_list:
-        #        for end_node, weight in self.adjacency_list[start_node]:
-        #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
-        Max = len(self.nodes)
-        num_edges = self.count_edges()
-        sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
-        with open(filename, 'w') as file:
-            file.write(f"p min {Max} {num_edges}\n")
-            for start in self.graph_processor.startedNodes:
-                #pdb.set_trace()
-                start_node = self.get_current_node(agv_id_and_new_start, start)
-                #if(start_node == 24):
-                #    pdb.set_trace()
-                file.write(f"n {start_node} 1\n")
-            for target in self.graph_processor.targetNodes:
-                target_id = target.id
-                file.write(f"n {target_id} -1\n")
-            #for edge in self.tsEdges:
-            #for edge in self.ts_edges:
-            for source_id, edges in sorted_edges:
-                for edge in edges:
-                    if isinstance(edge[1], int):
-                        pdb.set_trace()
-                    file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
-        
-    """def update_edge(self, start_node, end_node, new_weight):
+    def write_to_file(self, filename="TSG.txt"):
+        with open(filename, "w") as file:
+            file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
+            for node in self.nodes:
+                file.write(f"n {node} 1\n")
+            for start_node in self.adjacency_list:
+                for end_node, weight in self.adjacency_list[start_node]:
+                    file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
+                    
+    def update_edge(self, start_node, end_node, new_weight):
         found = False
         for i, (neighbor, weight) in enumerate(self.adjacency_list[start_node]):
             if neighbor == end_node:
@@ -435,33 +217,19 @@ class Graph:
         if found:
             print(f"Edge from {start_node} to {end_node} updated to new weight {new_weight}.")
         else:
-            print(f"Edge from {start_node} to {end_node} not found to update.")"""
+            print(f"Edge from {start_node} to {end_node} not found to update.")
 
-    def remove_node_and_origins(self, node_id):
-        #pdb.set_trace()
-        from .Node import Node
-        node = node_id if isinstance(node_id, Node) else self.nodes[node_id]
+    def remove_node(self, node):
         R = [node]  # Khởi tạo danh sách R với nút cần xóa
         while R:  # Tiếp tục cho đến khi R rỗng
             current_node = R.pop()  # Lấy ra nút cuối cùng từ R
-            if current_node.id in self.nodes:  # Kiểm tra xem nút có tồn tại trong đồ thị hay không
-                del self.nodes[current_node.id]  # Nếu có, xóa nút khỏi danh sách các nút
-            for id in self.adjacency_list:
-                edges = []
-                found = False
-                for end_id, edge in self.adjacency_list[id]:
-                    if(end_id == node.id):
-                        #del self.adjacency_list
-                        found = True
-                    else:
-                        edges.append([end_id, edge])
-                if(found):
-                    self.adjacency_list[id] = edges
-            #self.edges.pop(current_node, None)  # Xóa tất cả các cạnh liên kết với nút này
-            #for edge_list in self.edges.values():  # Duyệt qua tất cả các cạnh còn lại trong đồ thị
-            #    edge_list[:] = [(n, w) for n, w in edge_list if n != current_node]  # Loại bỏ nút khỏi danh sách các nút kết nối với mỗi cạnh
+            if current_node in self.nodes:  # Kiểm tra xem nút có tồn tại trong đồ thị hay không
+                del self.nodes[current_node]  # Nếu có, xóa nút khỏi danh sách các nút
+            self.edges.pop(current_node, None)  # Xóa tất cả các cạnh liên kết với nút này
+            for edge_list in self.edges.values():  # Duyệt qua tất cả các cạnh còn lại trong đồ thị
+                edge_list[:] = [(n, w) for n, w in edge_list if n != current_node]  # Loại bỏ nút khỏi danh sách các nút kết nối với mỗi cạnh
             # Thêm các nút chỉ được dẫn đến bởi nút hiện tại vào R
-            #R.extend([n for n in self.edges if all(edge[0] == current_node for edge in self.edges[n])])
+            R.extend([n for n in self.edges if all(edge[0] == current_node for edge in self.edges[n])])
 
     def remove_edge(self, start_node, end_node, agv_id):
         if (start_node, end_node) in self.edges:
@@ -471,7 +239,7 @@ class Graph:
     def handle_edge_modifications(self, start_node, end_node, agv):
         # Example logic to adjust the weights of adjacent edges
         print(f"Handling modifications for edges connected to {start_node} and {end_node}.")
-        #pdb.set_trace()
+        pdb.set_trace()
         adjacent_nodes_with_weights = self.adjacency_list.get(end_node, [])
         # Check adjacent nodes and update as necessary
         for adj_node, weight in adjacent_nodes_with_weights:

@@ -42,4 +42,4 @@ def filter_lines(seq_file_path, input_file_path, H):
 
 # Thay 'seq-f.txt' và 'input1.txt' bằng đường dẫn tới file của bạn
 removeZeroLines('seq-f.txt')
-filter_lines('filtered.txt', 'TSG.txt', 23)
+filter_lines('filtered.txt', 'TSG_0.txt', 23)

@@ -2,24 +2,21 @@ from model.utility import get_largest_id_from_map
 import inspect
 from sortedcontainers import SortedSet
 
+
 class AGV:
-    def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
+    def __init__(self, id, current_node, cost = 0, versionOfGraph = -1):
         self.id = id
         self.current_node = current_node
         self.previous_node = None
         self.state = 'idle'
         self.cost = cost
-        self.versionOfGraph = versionOfGraph
+        self.versionOfGraph = -1
         self.traces = [] #các đỉnh sắp đi qua
         self.path = SortedSet([]) #các đỉnh đã đi qua 
-        self.graph = graph
-        self.graph.nodes[current_node].agv = self
-        self.event = None
         
     def update_cost(self, amount):
         self.cost += amount
-        if(self.graph.graph_processor.printOut):
-            print(f"Cost updated for AGV {self.id}: {self.cost}.")
+        print(f"Cost updated for AGV {self.id}: {self.cost}.")
 
     def getNextNode(self, endedEvent = False):
         #stack = inspect.stack()
@@ -29,28 +26,24 @@ class AGV:
             if(endedEvent):
                 self.current_node = self.traces.pop(0)
             self.path.add(self.current_node)
-            #print(f"{self.path}")
+            print(f"{self.path}")
             
             next_node = self.traces[0]
-            if(self.graph.graph_processor.printOut):
-                print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
+            print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
         else:
             print(f"AGV {self.id} has no more nodes in the trace. Remaining at node: {self.current_node}.")
             return None
     
-    def move_to(self):
-        if len(self.traces) >= 1:
+    def move_to(self, graph, target_node):
+        if self.next_node is not None:
             self.previous_node = self.current_node
-            self.current_node = self.traces[0].id
-            self.traces.pop(0)
+            self.current_node = self.next_node
             self.state = 'moving'
-            if(self.graph.graph_processor.printOut):
-                print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
+            print(f"AGV {self.id} moved from {self.previous_node} to {self.current_node}. State updated to 'idle'.")
             self.state = 'idle'
         else:
-            if(self.graph.graph_processor.printOut):
-                print(f"AGV {self.id} has no further destinations to move to.")
+            print(f"AGV {self.id} has no further destinations to move to.")
 
     def wait(self, duration):
         print(f"AGV {self.id} is waiting at node {self.current_node} for {duration} seconds.")
