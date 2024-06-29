@@ -14,6 +14,7 @@ class AGV:
         self.path = SortedSet([]) #các đỉnh đã đi qua 
         self.graph = graph
         self.graph.nodes[current_node].agv = self
+        self.event = None
         
     def update_cost(self, amount):
         self.cost += amount

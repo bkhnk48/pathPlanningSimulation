@@ -15,5 +15,17 @@ class TimeWindowNode(Node):
         # Does nothing and returns None, effectively preventing the creation of any edge.
         return None
     
+    def getEventForReaching(self, event):
+        #next_vertex = event.agv.getNextNode().id
+        from .ReachingTargetEvent import ReachingTargetEvent
+        if self.id == event.agv.target_node.id:
+            #pdb.set_trace()
+            print(f"Target {event.agv.target_node.id}")
+            #deltaT = getReal()
+            return ReachingTargetEvent(
+                event.endTime, event.endTime, event.agv, event.graph, self.id
+            )
+        return None
+    
     def __repr__(self):
         return f"TimeWindowNode(ID={self.id}, time_window={self.time_window})"
