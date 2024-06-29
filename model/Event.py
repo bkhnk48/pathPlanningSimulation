@@ -19,6 +19,7 @@ class Event:
         self.startTime = int(startTime)
         self.endTime = int(endTime)
         self.agv = agv
+        self.agv.event = self
         self.graph = graph
         self.pns_path = ""
 
