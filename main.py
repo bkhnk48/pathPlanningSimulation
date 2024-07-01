@@ -4,8 +4,8 @@ from model.Event import Event, debug
 from model.StartEvent import StartEvent
 import config
 from discrevpy import simulator
-from GraphProcessor import GraphProcessor
 from collections import deque
+from GraphProcessor import GraphProcessor
 from model.ReachingTargetEvent import ReachingTargetEvent
 import subprocess
 import sys

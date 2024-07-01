@@ -14,7 +14,6 @@ from collections import deque,defaultdict
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
 import pdb
-import newunit
 """
 Mô tả yêu cầu của code:
 https://docs.google.com/document/d/13S_Ycg-aB4GjEm8xe6tAoUHzhS-Z1iFnM4jX_bWFddo/edit?usp=sharing
@@ -312,8 +311,13 @@ class GraphProcessor:
         startBan = self.startBan
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
         
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) \
-                           for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        #edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) \
+                           #for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        edges_with_cost = {}
+        for edgeid in self.spaceEdges:
+            for edge in self.spaceEdges[edgeid]:
+                edges_with_cost[(int(edgeid),int(edge[0]))] = edge[1]
+        
         Max = self.getMaxID() + 1
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
@@ -329,8 +333,7 @@ class GraphProcessor:
                 edge.append(timeSpacePoint_1)
                 edge.append(Cost)
                 R.append(edge)
-                self.Adj[edge[0], edge[1]] = 0
-
+                #self.Adj[edge[0], edge[1]] = 0
             # Xử lý các cung cấm
             #for edge in self.spaceEdges:
                 #ID1, ID2 = int(edge[1]), int(edge[2])
@@ -740,17 +743,15 @@ class GraphProcessor:
             self.add_time_windows_constraints()
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1
-        for node in self.ts_nodes:
-            print(node)
         #self.update_tsg_with_T()
-        self.add_restrictions()
-        #self.gamma = 1
-        #self.restriction_count = 1
-        #self.startBan = 0
-        #self.endBan = 2
-        #self.restrictions = [[1, 2]]
-        #self.Ur = 3
-        #self.process_restrictions()
+        #self.add_restrictions()
+        self.gamma = 1
+        self.restriction_count = 1
+        self.startBan = 0
+        self.endBan = 2
+        self.restrictions = [[1, 2]]
+        self.Ur = 3
+        self.process_restrictions()
 
     def test_menu(self):
         while True:
