@@ -400,14 +400,9 @@ class GraphProcessor:
 
     def getMaxID(self):
       max_val = 0
-      try:
-        with open('TSG.txt', 'r') as file:
-            for line in file:
-                parts = line.strip().split()
-                if parts[0] == 'a':
-                    max_val = max(max_val, int(parts[2]))
-      except FileNotFoundError:
-        pass
+      for node in self.ts_nodes:
+          if max_val < node.id:
+              max_val = node.id
       return max_val
       
     def add_time_windows_constraints(self):
@@ -746,9 +741,9 @@ class GraphProcessor:
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1
         for node in self.ts_nodes:
-            print(nodee)
+            print(node)
         #self.update_tsg_with_T()
-        #self.add_restrictions()
+        self.add_restrictions()
         #self.gamma = 1
         #self.restriction_count = 1
         #self.startBan = 0
