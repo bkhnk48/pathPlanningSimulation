@@ -10,7 +10,7 @@ from model.TimeWindowNode import TimeWindowNode
 from model.RestrictionNode import RestrictionNode
 from model.RestrictionController import RestrictionController
 from model.Node import Node
-from collections import deque
+from collections import deque,defaultdict
 from scipy.sparse import lil_matrix
 #from ortools.linear_solver import pywraplp
 import pdb
@@ -19,6 +19,12 @@ import newunit
 Mô tả yêu cầu của code:
 https://docs.google.com/document/d/13S_Ycg-aB4GjEm8xe6tAoUHzhS-Z1iFnM4jX_bWFddo/edit?usp=sharing
 """
+
+def get_space_id(id, max):
+    if id % max != 0:
+        return id % max
+    else:
+        return max
 
 class GraphProcessor:
     def __init__(self):
@@ -32,7 +38,7 @@ class GraphProcessor:
         self.ID = 0
         self.earliness = 0
         self.tardiness = 0
-        self.spaceEdges = []
+        self.spaceEdges = defaultdict(list)
         self.tsEdges = []
         self.ts_nodes = []
         self.ts_edges = []
@@ -46,15 +52,14 @@ class GraphProcessor:
 
         
     def process_input_file(self, filepath):
-        self.spaceEdges = []
         try:
             with open(filepath, 'r') as file:
                 self.M = 0
                 for line in file:
-                    parts = line.strip().split()
+                    parts = line.split()
                     if parts[0] == 'a' and len(parts) == 6:
-                        id1, id2 = int(parts[1]), int(parts[2])
-                        self.spaceEdges.append(parts)
+                        id1,id2,weight = int(parts[1]),int(parts[2]),int(parts[5])
+                        self.spaceEdges[id1].append((id2,weight))
                         self.M = max(self.M, id1, id2)
             if(self.printOut):
                 print("Doc file hoan tat, M =", self.M)
@@ -73,44 +78,14 @@ class GraphProcessor:
         self.ts_nodes.append(new_node)
         return new_node
 	
-    def generate_hm_matrix(self):
-        self.matrix = [[j + 1 + self.M * i for j in range(self.M)] for i in range(self.H)]
-        if(self.printOut):
-            print("Hoan tat khoi tao matrix HM!")
-        # for row in self.matrix:
-        #     print(' '.join(map(str, row)))
-
-    def generate_adj_matrix(self):
-        size = (self.H + 1) * self.M + 1
-        self.Adj = lil_matrix((size, size), dtype=int)
-
-        for edge in self.spaceEdges:
-            if len(edge) >= 6 and edge[3] == '0' and edge[4] == '1':
-                u, v, c = int(edge[1]), int(edge[2]), int(edge[5])
-                for i in range(self.H + 1):
-                    source_idx = i * self.M + u
-                    target_idx = (i + c) * self.M + v
-                    if(self.printOut):
-                        print(f"i = {i} {source_idx} {target_idx} = 1")
-
-                    if source_idx < size and target_idx < size:
-                        self.Adj[source_idx, target_idx] = 1
-
-        for i in range(size):
-            j = i + self.M * self.d
-            if j < size and (i % self.M == j % self.M):
-                self.Adj[i, j] = 1
-
-        if(self.printOut):
-            print("Hoan tat khoi tao Adjacency matrix!")
-
-        rows, cols = self.Adj.nonzero()
-        with open('adj_matrix.txt', 'w') as file:
-            for i, j in zip(rows, cols):
-                file.write(f"({i}, {j})\n")
-        if(self.printOut):
-            print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
-
+    def insertEdges(self, start, end, weight,lower=0,upper=1):
+        edgeids = [ (edge[0],edge[1]) for edge in self.tsEdges]
+        if (start,end) not in edgeids:
+            self.tsEdges.append((start,end,lower,upper,weight))
+       
+                
+     
+    
     def check_and_add_nodes(self, args, isArtificialNode = False, label = ""):
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
@@ -129,49 +104,33 @@ class GraphProcessor:
 
     def insert_from_queue(self, Q, checking_list = None):
         #pdb.set_trace()
+        space_nodes = []
+        for node_id in self.spaceEdges:
+            if node_id not in space_nodes:
+                space_nodes.append(node_id)
+            for endnodeid, weight in self.spaceEdges[node_id]:
+                if endnodeid not in space_nodes:
+                    space_nodes.append(endnodeid)
         output_lines = []
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
-        tsEdges = self.tsEdges if checking_list == None else \
-            [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
-        #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
+
         while Q:
-            ID = Q.popleft()
-            #print(Q)
-            for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
-                if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
-                    Q.append(j)
-                    u, v = ID % self.M, j % self.M
-                    u = u if u != 0 or ID == 0 else self.M
-                    #if(v == 0):
-                    #if (ID == 1 and j == 11):
-                        #pdb.set_trace()
-                    v = v if v != 0 or ID == 0 else self.M
-                    temp = None
-                    #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
-                    #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
-                    if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
-                        c = edges_with_cost[(u, v)]
-                        output_lines.append(f"a {ID} {j} 0 1 {c}")
-                        if(checking_list == None):
-                            self.tsEdges.append((ID, j, 0, 1, c))
-                        self.check_and_add_nodes([ID, j])
-                        #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
-                        #if(ID == 1 and j == 8):
-                        #    pdb.set_trace()
-                            #print()
-                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
-                    elif ID + self.M * self.d == j and ID % self.M == j % self.M:
-                        output_lines.append(f"a {ID} {j} 0 1 {self.d}")
-                        if(checking_list == None):
-                            self.tsEdges.append((ID, j, 0, 1, self.d))
-                        self.check_and_add_nodes([ID, j])
-                        #self.ts_edges.append(HoldingEdge(self.find_node(ID), self.find_node(j), self.d, self.d))
-                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, self.d])
-                    if(temp != None):
-                        if(checking_list == None):
-                            self.ts_edges.append(temp)
-        if(checking_list == None):
-            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+            start_node = Q.popleft()
+            for space_end_node,weight in self.spaceEdges[get_space_id(start_node,self.M)]:
+                moving_node = (start_node//self.M - (1 if start_node % self.M == 0 else 0) + weight) *self.M + space_end_node
+                if moving_node <=self.M*(self.H+1):
+                    self.insertEdges(start_node,moving_node,weight)
+                    self.check_and_add_nodes([start_node,moving_node])
+                    Q.append(moving_node)
+            holding_node = start_node + self.M*self.d
+            if holding_node<=self.M*(self.H+1):
+                self.insertEdges(start_node,holding_node,self.d)
+                self.check_and_add_nodes([start_node,holding_node])
+                Q.append(holding_node)
+        for edge in self.tsEdges:
+            output_lines.append(f"{edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}")
+            newEdge = self.find_node(edge[0]).create_edge(self.find_node(edge[1]),self.M,self.d,edge)
+            self.ts_edges.append(newEdge)
+        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         return output_lines
 
     def create_tsg_file(self):          
@@ -182,6 +141,7 @@ class GraphProcessor:
 
         #pdb.set_trace()
         output_lines = self.insert_from_queue(Q)
+
         with open('TSG.txt', 'w') as file:
             for line in output_lines:
                 file.write(line + "\n")
@@ -770,9 +730,9 @@ class GraphProcessor:
         self.startedNodes = [1, 10]
         self.process_input_file(filepath)
         self.H = 10
-        self.generate_hm_matrix()
+        #self.generate_hm_matrix()
         self.d = 2
-        self.generate_adj_matrix()
+        #self.generate_adj_matrix()
         #newunit.assert_Nodes_and_Edges(self)
         self.create_tsg_file()
         count = 0
@@ -785,15 +745,17 @@ class GraphProcessor:
             self.add_time_windows_constraints()
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1
+        for node in self.ts_nodes:
+            print(nodee)
         #self.update_tsg_with_T()
         #self.add_restrictions()
-        self.gamma = 1
-        self.restriction_count = 1
-        self.startBan = 0
-        self.endBan = 2
-        self.restrictions = [[1, 2]]
-        self.Ur = 3
-        self.process_restrictions()
+        #self.gamma = 1
+        #self.restriction_count = 1
+        #self.startBan = 0
+        #self.endBan = 2
+        #self.restrictions = [[1, 2]]
+        #self.Ur = 3
+        #self.process_restrictions()
 
     def test_menu(self):
         while True:
@@ -836,10 +798,10 @@ class GraphProcessor:
                 self.process_input_file(filepath)
             elif choice == 'b':
                 self.H = int(input("Nhap vao gia tri H: "))
-                self.generate_hm_matrix()
+                #self.generate_hm_matrix()
             elif choice == 'c':
                 self.d = int(input("Nhap vao gia tri d: "))
-                self.generate_adj_matrix()
+                #self.generate_adj_matrix()
             elif choice == 'd':
                 self.create_tsg_file()
             elif choice == 'e':
