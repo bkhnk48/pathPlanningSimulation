@@ -737,39 +737,93 @@ class GraphProcessor:
         else:
             print('The problem does not have an optimal solution.')
 
-
-    def use_in_main(self, printOutput = False):
-        self.printOut = printOutput
+    def add_condition(self):
+        numagv = 0
+        start_location_set = False
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         if filepath == '':
             filepath = 'simplest.txt'
-        self.startedNodes = [1, 10]
         self.process_input_file(filepath)
         self.H = 10
-        #self.generate_hm_matrix()
         self.d = 2
+        while True:
+            
+            print("======================================")
+            print("1.số lượng AGV hoạt động")
+            print("2.Địa điểm xuất phát và thời điểm xuất phát của AGV")
+            print("3.Các đích đến của các AGV")
+            print("4.Khung thời gian của các đích đến")
+            print("5.Thêm các restrictions")
+            print("6.Thoat")
+            choice = input("Nhap lua chon cua ban: ")
+            try:
+                choice = int(choice)
+            except ValueError:
+                print("Lựa chọn không hợp lệ. Vui lòng nhập một số từ 1 đến 9.")
+                continue
+            if choice  == 1:
+                numagv = input("Nhap so AGV: ")
+            if choice == 2:
+                enter_node = input("Nhap dịa điểm xuất phát của AGV : ").split()
+                for x in enter_node:
+                    self.startedNodes.append(int(x))
+                self.create_tsg_file()
+            if choice == 3:
+                target_node = input("Nhap dích của AGV : ")
+                self.ID = int(target_node)
+                start_location_set = True
+            if choice == 4:
+                while not start_location_set:
+                    target_node = input("Nhap dích của AGV : ")
+                    self.ID = int(target_node)
+                    start_location_set = True    
+                
+                time_frames = input("Nhập khung thời gian của các đích đến : ").split()
+                self.earliness = time_frames[0]
+                self.tardiness = time_frames[1]
+                self.add_time_windows_constraints()
+                start_location_set = False
+
+            if choice == 5:
+                self.add_restrictions()
+                self.process_restrictions()
+            if choice == 6:
+                break
+
+
+    def use_in_main(self, printOutput = False):
+        self.add_condition()
+        #self.printOut = printOutput
+        #filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        #if filepath == '':
+            #filepath = 'simplest.txt'
+        #self.startedNodes = [1, 10]
+        #self.process_input_file(filepath)
+        #self.H = 10
+        #self.generate_hm_matrix()
+        #self.d = 2
         #self.generate_adj_matrix()
         #newunit.assert_Nodes_and_Edges(self)
-        self.create_tsg_file()
-        count = 0
-        while(count <= len(self.startedNodes) - 1):
-            self.ID = 3
-            self.earliness = 4 if count == 0 else 7
-            self.tardiness = 6 if count == 0 else 9
-            self.alpha = 1
-            self.beta = 1
-            self.add_time_windows_constraints()
-            assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
-            count += 1
+        #self.create_tsg_file()
+        #count = 0
+        #while(count <= len(self.startedNodes) - 1):
+            #self.ID = 3
+            #self.earliness = 4 if count == 0 else 7
+            #self.tardiness = 6 if count == 0 else 9
+            #self.alpha = 1
+            #self.beta = 1
+            #self.add_time_windows_constraints()
+            #assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+            #count += 1
         #self.update_tsg_with_T()
         #self.add_restrictions()
-        self.gamma = 1
-        self.restriction_count = 1
-        self.startBan = 0
-        self.endBan = 2
-        self.restrictions = [[1, 2]]
-        self.Ur = 3
-        self.process_restrictions()
+        #self.gamma = 1
+        #self.restriction_count = 1
+        #self.startBan = 0
+        #self.endBan = 2
+        #self.restrictions = [[1, 2]]
+        #self.Ur = 3
+        #self.process_restrictions()
     def test_menu(self):
         while True:
             print("======================================")
@@ -854,5 +908,6 @@ class GraphProcessor:
 if __name__ == "__main__":
     gp = GraphProcessor()
     #gp.main_menu()
-    gp.use_in_main()
+    gp.add_condition()
+    #gp.use_in_main()
 
