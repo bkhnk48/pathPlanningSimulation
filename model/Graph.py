@@ -286,24 +286,24 @@ class Graph:
         C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
         M = self.numberOfNodesInSpaceGraph
         time1, time2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
-        #if i2 - i1 != C12:
-        #    print('Status: i2 - i1 != C12')
-        #    ID2 = ID1 + M * C12
-        #existing_edges = set()
+        current_time = time1 + C12 # Giá trị của current_time
+        current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
+        new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
+        self.graph_processor.update_file(ID1,ID2,C12)
         """old_time_window_edges = []
         for source_id, edges in self.adjacency_list.items():
             for destination_id, edge in edges:
                 if isinstance(edge, TimeWindowEdge):
                     old_time_window_edges.append(edge)"""
-        current_time = time1 + C12 # Giá trị của current_time
-        #if(current_time > self.graph_processor.H):
-        #    pdb.set_trace()
-        current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
-        new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
-        #if(new_node_id == 45):
+      
         #    pdb.set_trace()
             
         # Duyệt qua từng phần tử của adjacency_list
+        self.adjacency_list.clear()
+        self.nodes ={node.id: node for node in self.graph_processor.ts_nodes}
+        self.adjacency_list = {node.id: [] for node in self.graph_processor.ts_nodes}
+        for edge in self.graph_processor.ts_edges:
+            self.insertEdgesAndNodes(edge.start_node,edge.end_node,edge)
         for source_id, edges in list(self.adjacency_list.items()):
             # Tính giá trị time
             node = self.nodes[source_id]
@@ -324,58 +324,45 @@ class Graph:
                     except ValueError:
                         print("Phần tử x không tồn tại trong danh sách.")
                 del self.nodes[source_id]
-        
-        Q = deque()
-        Q.append(new_node_id)
+           
         #pdb.set_trace()
-        new_edges = self.graph_processor.insert_from_queue(Q, self.adjacency_list)
-        #print(new_edges)
-        for edge in new_edges:
-            arr = self.parse_string(edge)
-            source_id = arr[0]
-            dest_id = arr[1]
-            if source_id not in self.nodes:
-                self.nodes[source_id] = self.graph_processor.find_node(source_id)
-            if dest_id not in self.nodes:
-                self.nodes[dest_id] = self.graph_processor.find_node(dest_id)
-            if source_id not in self.adjacency_list:
-                self.adjacency_list[source_id] = []
-            found = False
-            for end_id, e in self.adjacency_list[source_id]:
-                if(end_id == dest_id):
-                    found = True
-                    break
-            if(not found):
-                anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], \
-                        self.graph_processor.M, self.graph_processor.d, [source_id, \
-                        dest_id, arr[2], arr[3], arr[4]])
-                self.adjacency_list[source_id].append([dest_id, anEdge])
+                #self.graph_processor.restriction_controller.generate_restriction_edges(\
+                    #self.nodes[source_id], self.nodes[end_id], self.nodes, self.adjacency_list)
+        #for edge in new_edges:
+            #arr = self.parse_string(edge)
+            #source_id = arr[0]
+            #dest_id = arr[1]
+            #if source_id not in self.nodes:
+                #self.nodes[source_id] = self.graph_processor.find_node(source_id)
+            #if dest_id not in self.nodes:
+                #self.nodes[dest_id] = self.graph_processor.find_node(dest_id)
+            #if source_id not in self.adjacency_list:
+                #self.adjacency_list[source_id] = []
+            #found = False
+            #for end_id, e in self.adjacency_list[source_id]:
+                #if(end_id == dest_id):
+                    #found = True
+                    #break
+            #if(not found):
+                #anEdge = self.nodes[source_id].create_edge(self.nodes[dest_id], \
+                        #self.graph_processor.M, self.graph_processor.d, [source_id, \
+                        #dest_id, arr[2], arr[3], arr[4]])
+                #self.adjacency_list[source_id].append([dest_id, anEdge])
             
             #add TimeWindowEdge
-            self.graph_processor.time_window_controller.generate_time_window_edges(\
-                self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
+            #self.graph_processor.time_window_controller.generate_time_window_edges(\
+                #self.nodes[source_id], self.adjacency_list, self.numberOfNodesInSpaceGraph)
             
-            self.graph_processor.restriction_controller.generate_restriction_edges(\
-                self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
-        if(time2 != current_time):
+            #self.graph_processor.restriction_controller.generate_restriction_edges(\
+                #self.nodes[source_id], self.nodes[dest_id], self.nodes, self.adjacency_list)
+        
             #Kể cả không có thêm cạnh mới
             #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
             #pdb.set_trace()
+        if(time2 != current_time):
             self.version = self.version + 1
         self.write_to_file([agv_id, new_node_id])
-        """for node in self.graph_processor.ts_nodes:
-            if node.id not in self.nodes:
-                self.nodes[node.id] = node
-        
-        for edge in self.graph_processor.ts_edges:
-            source_id = edge.start_node.id
-            end_id = edge.end_node.id
-            if source_id not in self.adjacency_list or [end_id, edge] not in self.adjacency_list[source_id]:
-                if source_id not in self.adjacency_list:
-                    self.adjacency_list[source_id] = []
-                self.adjacency_list[source_id].append([end_id, edge])
-        
-        self.write_to_file()"""
+       
 
     def parse_string(self, input_string):
         parts = input_string.split()

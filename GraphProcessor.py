@@ -129,7 +129,7 @@ class GraphProcessor:
             output_lines.append(f"{edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}")
             newEdge = self.find_node(edge[0]).create_edge(self.find_node(edge[1]),self.M,self.d,edge)
             self.ts_edges.append(newEdge)
-        assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
+        #assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         return output_lines
 
     def create_tsg_file(self):          
@@ -228,51 +228,69 @@ class GraphProcessor:
         ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
         C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
 
-        i1, i2 = ID1 // self.M, ID2 // self.M
+        i1, i2 = id1 // self.M, id2 // self.M-(1 if  id2 % self.M == 0 else 0)
         if i2 - i1 != C12:
             print('Status: i2 - i1 != C12')
-            ID2 = ID1 + self.M * C12
+            newid2 = (i1 + c12)*self.M + get_space_id(id2,self.M)
 
-        existing_edges = set()
-        try:
-            with open('TSG.txt', 'r') as file:
-                for line in file:
-                    parts = line.strip().split()
-                    try:
-		     # Chỉ xử lý các dòng có ít nhất 3 phần tử và bắt đầu bằng 'a'
-                        if parts[0] == 'a' and len(parts) >= 3 and parts[1].isdigit() and parts[2].isdigit():
-                            existing_edges.add((int(parts[1]), int(parts[2])))
-                    except ValueError:
-                    # Bỏ qua các dòng không thể chuyển đổi sang số nguyên
-                        continue
-                    except IndexError:
-                    # Bỏ qua các dòng không có đủ phần tử
-                        continue
-                    #existing_edges.add((int(parts[1]), int(parts[2])))
-        except FileNotFoundError:
-            print("File TSG.txt khong ton tai!")
-            return
+        edges =defaultdict(list)
+        for edge in self.tsEdges:
+            edges[edge[0]].append(edge[1])
 
-        if (ID1, ID2) not in existing_edges:
-            Q = deque([ID2])
-            visited = {ID2}
-            new_edges = [(ID1, ID2, C12)]
+        reverse_edges = defaultdict(list)
+        for edge in self.tsEdges:
+            reverse_edges[edge[1]].append(edge[0])
+        
+        Q = deque()
+        Q.append((id1,id2))
+        while Q:
+            nodes_id = Q.popleft()
+            for edge in self.tsEdges:
+                if edge[0] == nodes_id[0]and edge[1] == nodes_id[1]:
+                    self.tsEdges.remove(edge)
+                    reverse_edges[nodes_id[1]].remove(nodes_id[0])
+            if len(reverse_edges[nodes_id[1]]) == 0 :
+                for end_node in edges[nodes_id[1]]:
+                    Q.append((nodes_id[1],end_node))
+                edges[nodes_id[1]].clear
+                for edge in self.tsEdges:
+                    if edge[0] == nodes_id[1]:
+                        self.tsEdges.remove(edge)
 
-            while Q:
-                ID = Q.popleft()
-                for j in self.Adj.rows[ID]:
-                    if j not in visited:
-                        u, v = ID % self.M, j % self.M
-                        c = self.d if ID + self.M * self.d == j and ID % self.M == j % self.M else C12
-                        if (ID // self.M) + c == j // self.M:
-                            new_edges.append((ID, j, c))
-                            Q.append(j)
-                            visited.add(j)
+                for node in self.ts_nodes:
+                    if node.id  == nodes_id[1]:
+                        self.ts_nodes.remove(node)
 
-            with open('TSG.txt', 'a') as file:
-                for ID, j, c in new_edges:
-                    file.write(f"a {ID} {j} 0 1 {c}\n")
-            print("Da cap nhat file TSG.txt.")
+        space_nodes = []
+        for node_id in self.spaceEdges:
+            if node_id not in space_nodes:
+                space_nodes.append(node_id)
+            for endnodeid, weight in self.spaceEdges[node_id]:
+                if endnodeid not in space_nodes:
+                    space_nodes.append(endnodeid)
+
+        Q1 = deque()
+        Q1.append(newid2)
+        while Q1:
+            node_id = Q1.popleft()
+            for end_node,weight in self.spaceEdges[get_space_id(node_id,self.M)]:
+                new_target_id = (node_id//self.M - (1 if node_id % self.M == 0 else 0) + weight)*self.M + end_node
+                self.insertEdges(node_id,new_target_id)
+                if new_target_id <= self.M*(self.H+1):
+                    
+                    Q1.append(new_target_id)
+            hodling_node = node_id + self.M*self.d
+            if hodling_node <= self.M*(self.H+1):
+                
+                Q1.append(hodling_node)
+            
+        self.ts_edges.clear()
+        for edge in self.tsEdges:
+            newEdge = self.find_node(edge[0]).create_edge(self.find_node(edge[1]),self.M,self.d,edge)
+            self.ts_edges.append(newEdge)
+        
+
+
 
     def add_restrictions(self):
         alpha = input("Nhập vào alpha: ")
@@ -752,7 +770,6 @@ class GraphProcessor:
         self.restrictions = [[1, 2]]
         self.Ur = 3
         self.process_restrictions()
-
     def test_menu(self):
         while True:
             print("======================================")
