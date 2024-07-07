@@ -128,9 +128,9 @@ class Event:
         elif len(self.pns_path) == 0:
             self.pns_path = input("Enter the path for pns-seq: ")
             # editting the TSG.txt file to be compatible with the pns-seq
-            # file_reader = DimacsFileReader(filename)
-            # file_reader.read_custom_dimacs()
-            # file_reader.pns_compat_edit(filename)
+            file_reader = DimacsFileReader(filename)
+            file_reader.read_custom_dimacs()
+            file_reader.pns_compat_edit(filename)
             inter = input("Do you want to run the network-simplex? (y/n): ")
             command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
             print("Running network-simplex:", command)

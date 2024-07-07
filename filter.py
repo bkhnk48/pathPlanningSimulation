@@ -34,7 +34,7 @@ def filter_lines(seq_file_path, input_file_path, H):
 			new_element = "a " + element + " " #"(" + real + ")"
 			if new_element in line:
 				inc = int(line.strip().split()[-1]);
-				count += inc # Tăng count
+				count += (inc-1) # Tăng count
 				print(new_element," ", (count - inc), " + ", inc, " = ", count)
 
 	# Bước (4): In ra count

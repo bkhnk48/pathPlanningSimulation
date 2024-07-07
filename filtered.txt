@@ -3,15 +3,17 @@ c # nodes             : 39
 c # arcs              : 59
 c # arcs in a block   : 16
 c Init Time           : 0 ms
-c # iterations        : 19
+c # iterations        : 16
 c Time                : 0 ms
-c - find entering arc : 0 ms (0.179376)
-c - find join node    : 0 ms (0.0738996)
-c - find leaving arc  : 0 ms (0.104667)
-c - change flows      : 0 ms (0.00662447)
-c - change states     : 0 ms (0.0465185)
-c - update tree       : 0 ms (0.180627)
-c - update pots       : 0 ms (0.0507876)
+c - find entering arc : 0 ms (0.177034)
+c - find join node    : 0 ms (0.062667)
+c - find leaving arc  : 0 ms (0.0926182)
+c - change flows      : 0 ms (0.00829417)
+c - change states     : 0 ms (0.0500415)
+c - update tree       : 0 ms (0.173532)
+c - update pots       : 0 ms (0.056216)
 f 1 18 1
 f 10 27 1
-s 10
+f 18 34 1
+f 27 35 1
+s 14
