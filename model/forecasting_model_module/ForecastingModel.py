@@ -133,6 +133,23 @@ class DimacsFileReader:
         self.supply_nodes_dict, self.demand_nodes_dict, self.zero_nodes_dict, self.arc_descriptors_dict = self.sort_all_dicts(
             self.supply_nodes_dict, self.demand_nodes_dict, self.zero_nodes_dict, arc_descriptors_dict)
 
+    def pns_compat_edit(self, filename): # edit the cost to make sure that all cost are > 0
+        for (i, j), (low, cap, cost) in self.arc_descriptors_dict.items():
+            # increase all cost by 1
+            self.arc_descriptors_dict[(i, j)] = (low, cap, cost + 1)
+
+        # write to file (overwrite the old file)
+        with open(filename, 'w') as file:
+            file.write(f"p {self.problem_info['type']} {self.problem_info['num_nodes']} {self.problem_info['num_arcs']}\n")
+            for node, flow in self.supply_nodes_dict.items():
+                file.write(f"n {node} {flow}\n")
+            for node, flow in self.demand_nodes_dict.items():
+                file.write(f"n {node} {flow}\n")
+            for (i, j), (low, cap, cost) in self.arc_descriptors_dict.items():
+                file.write(f"a {i} {j} {low} {cap} {cost}\n")
+            for node, (earliness, tardiness) in self.earliness_tardiness_dict.items():
+                file.write(f"c tw {node} {earliness} {tardiness}\n")
+
     def get_all_dicts(self):
         return self.problem_info, self.supply_nodes_dict, self.demand_nodes_dict, self.zero_nodes_dict, self.arc_descriptors_dict, self.earliness_tardiness_dict
 
