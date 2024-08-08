@@ -16,6 +16,11 @@ class AGV:
         self.graph.nodes[current_node].agv = self
         self.event = None
         
+    def updateInfo(width, length, speed):
+        self.width = width
+        self.length = length
+        self.speed = speed
+        
     def update_cost(self, amount):
         self.cost += amount
         if(self.graph.graph_processor.printOut):
