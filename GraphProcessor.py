@@ -51,7 +51,7 @@ class GraphProcessor:
                 self.M = 0
                 for line in file:
                     parts = line.strip().split()
-                    if parts[0] == 'a' and len(parts) == 6:
+                    if parts[0] == 'a' and len(parts) >= 6:
                         id1, id2 = int(parts[1]), int(parts[2])
                         self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
