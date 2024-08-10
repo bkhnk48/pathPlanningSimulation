@@ -176,6 +176,7 @@ class GraphProcessor:
     def create_tsg_file(self):          
         
         #Q = deque(range((self.H + 1)* self.M + 1))
+        pdb.set_trace()
         Q = deque()
         Q.extend(self.startedNodes)
 
@@ -230,7 +231,8 @@ class GraphProcessor:
 
     def init_nodes_n_edges(self, graph):
         for edge in self.ts_edges:
-            graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
+            if edge is not None:
+                graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
     
     def check_file_conditions(self):
         try:
@@ -413,6 +415,7 @@ class GraphProcessor:
             self.create_set_of_edges(newA)
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
+        pdb.set_trace()
         self.write_to_file(Max)
         
     def write_to_file(self, Max, filename = "TSG.txt"):
@@ -425,7 +428,11 @@ class GraphProcessor:
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
             for edge in self.ts_edges:
-                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
+                """if not hasattr(edge, 'start_node'):
+                    pdb.set_trace()
+                    print(edge)"""
+                if edge is not None:
+                    file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
         
@@ -791,6 +798,7 @@ class GraphProcessor:
         self.endBan = 2
         self.restrictions = [[1, 2]]
         self.Ur = 3
+        pdb.set_trace()
         self.process_restrictions()
 
     def test_menu(self):
@@ -876,4 +884,5 @@ class GraphProcessor:
 
 if __name__ == "__main__":
     gp = GraphProcessor()
-    gp.main_menu()
+    #gp.main_menu()
+    gp.use_in_main()
