@@ -8,6 +8,8 @@ from GraphProcessor import GraphProcessor
 import subprocess
 import sys
 import pdb
+import time
+
 
 def getForecast():
     return 17
@@ -19,7 +21,13 @@ x = {}
 y = {}
 
 graph_processor = GraphProcessor()
+start_time = time.time()
 graph_processor.use_in_main()
+end_time = time.time()
+# Tính thời gian thực thi
+execution_time = end_time - start_time
+if(execution_time >= 5):
+    print(f"Thời gian thực thi: {execution_time} giây")
 graph_processor.printOut = False
 
 graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
@@ -33,7 +41,6 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
-
 graph_processor.init_AGVs_n_events(allAGVs, events, graph)
 graph_processor.init_TASKs(TASKS)
 graph_processor.init_nodes_n_edges(graph)
@@ -47,6 +54,7 @@ Event.setValue("allAGVs", allAGVs)
 
 def schedule_events(events):
     for event in events:
+        #pdb.set_trace()
         simulator.schedule(event.startTime, event.process)
 
 def choose_solver():
