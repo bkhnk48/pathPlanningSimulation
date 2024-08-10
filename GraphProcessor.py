@@ -174,7 +174,6 @@ class GraphProcessor:
         return output_lines
 
     def create_tsg_file(self):          
-        
         #Q = deque(range((self.H + 1)* self.M + 1))
         #pdb.set_trace()
         Q = deque()
@@ -457,6 +456,7 @@ class GraphProcessor:
       return max_val
       
     def add_time_windows_constraints(self):
+        #pdb.set_trace()
         from model.TimeWindowController import TimeWindowController
         # Tìm giá trị lớn nhất trong TSG.txt
         max_val = self.getMaxID()
@@ -772,12 +772,23 @@ class GraphProcessor:
         self.printOut = printOutput
         filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         if filepath == '':
-            filepath = 'simplest.txt'
+            #filepath = 'simplest.txt'
+            filepath = '3x3Wards.txt'
         self.startedNodes = [1, 10]
         self.process_input_file(filepath)
-        self.H = 10
+        #pdb.set_trace()
+        self.H = input("Nhap thoi gian can gia lap (default: 10): ")
+        if(self.H == ''):
+            self.H = 10
+        else:
+            self.H = int(self.H)
         self.generate_hm_matrix()
-        self.d = 1
+        self.d = input("Nhap time unit (default: 1): ")
+        if(self.d == ''):
+            self.d = 1
+        else:
+            self.d = int(self.d)
+        
         self.generate_adj_matrix()
         self.create_tsg_file()
         count = 0
@@ -798,7 +809,7 @@ class GraphProcessor:
         self.endBan = 2
         self.restrictions = [[1, 2]]
         self.Ur = 3
-        pdb.set_trace()
+        #pdb.set_trace()
         self.process_restrictions()
 
     def test_menu(self):
