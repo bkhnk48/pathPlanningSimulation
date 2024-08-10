@@ -176,7 +176,7 @@ class GraphProcessor:
     def create_tsg_file(self):          
         
         #Q = deque(range((self.H + 1)* self.M + 1))
-        pdb.set_trace()
+        #pdb.set_trace()
         Q = deque()
         Q.extend(self.startedNodes)
 
@@ -415,7 +415,7 @@ class GraphProcessor:
             self.create_set_of_edges(newA)
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
-        pdb.set_trace()
+        #pdb.set_trace()
         self.write_to_file(Max)
         
     def write_to_file(self, Max, filename = "TSG.txt"):
