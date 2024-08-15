@@ -10,7 +10,18 @@ import sys
 import pdb
 import time
 
-
+def choose_solver():
+    print("Choose the method for solving:")
+    print("1 - Use LINK II solver")
+    print("2 - Use network-simplex")
+    choice = input("Enter your choice (1 or 2): ")
+    if choice == '1':
+        config.solver_choice = 'solver'
+    elif choice == '2':
+        config.solver_choice = 'network-simplex'
+    else:
+        print("Invalid choice. Defaulting to network-simplex.")
+        config.solver_choice = 'network-simplex'
 def getForecast():
     return 17
 
@@ -20,6 +31,7 @@ TASKS = set()
 x = {}
 y = {}
 
+choose_solver()
 graph_processor = GraphProcessor()
 start_time = time.time()
 graph_processor.use_in_main()
@@ -57,22 +69,8 @@ def schedule_events(events):
         #pdb.set_trace()
         simulator.schedule(event.startTime, event.process)
 
-def choose_solver():
-    print("Choose the method for solving:")
-    print("1 - Use LINK II solver")
-    print("2 - Use network-simplex")
-    choice = input("Enter your choice (1 or 2): ")
-    if choice == '1':
-        config.solver_choice = 'solver'
-    elif choice == '2':
-        config.solver_choice = 'network-simplex'
-    else:
-        print("Invalid choice. Defaulting to network-simplex.")
-        config.solver_choice = 'network-simplex'
-
 if __name__ == "__main__":
     simulator.ready()
     #events = parse_tsg_file('TSG_0.txt')
-    choose_solver()
     schedule_events(events)
     simulator.run()
