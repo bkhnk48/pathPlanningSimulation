@@ -96,7 +96,7 @@ class GraphProcessor:
         self.Adj = lil_matrix((size, size), dtype=int)
 
         for edge in self.spaceEdges:
-            if len(edge) >= 6 and edge[3] == '0' and edge[4] == '1':
+            if len(edge) >= 6 and edge[3] == '0' and int(edge[4]) >= 1:
                 u, v, c = int(edge[1]), int(edge[2]), int(edge[5])
                 for i in range(self.H + 1):
                     source_idx = i * self.M + u
@@ -141,7 +141,8 @@ class GraphProcessor:
     def insert_from_queue(self, Q, checking_list = None):
         #pdb.set_trace()
         output_lines = []
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges \
+            if edge[3] == '0' and int(edge[4]) >= 1 }
         tsEdges = self.tsEdges if checking_list == None else \
             [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
         #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
@@ -194,7 +195,7 @@ class GraphProcessor:
 
     def create_tsg_file(self):          
         #Q = deque(range((self.H + 1)* self.M + 1))
-        #pdb.set_trace()
+        pdb.set_trace()
         Q = deque()
         Q.extend(self.startedNodes)
 
@@ -789,10 +790,13 @@ class GraphProcessor:
 
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
-        filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        #filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        #filepath = input("Nhap ten file can thuc hien (hint: 3x3Wards.txt): ")
+        filepath = input("Nhap ten file can thuc hien (hint: Redundant3x3Wards.txt): ")
         if filepath == '':
             #filepath = 'simplest.txt'
-            filepath = '3x3Wards.txt'
+            #filepath = '3x3Wards.txt'
+            filepath = 'Redundant3x3Wards.txt'
         self.startedNodes = [1, 10]
         self.process_input_file(filepath)
         #pdb.set_trace()
