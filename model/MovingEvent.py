@@ -9,7 +9,7 @@ class MovingEvent(Event):
 
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
-        #pdb.set_trace()
+        pdb.set_trace()
         #if(self.start_node == 10 or self.agv.id == 'AGV10'):
         #    pdb.set_trace()
         #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
@@ -19,18 +19,19 @@ class MovingEvent(Event):
         real_end_node = actual_time*M + (M if self.end_node % M == 0 else self.end_node % M)
         self.agv.path.add(real_end_node)
         
-        self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv\
-            if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
+        if(real_end_node in self.graph.nodes):
+            self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv \
+                if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
         self.graph.nodes[self.start_node].agv = None
-        self.graph.nodes[self.end_node].agv = None
         
         weight_of_edge = t2 - t1
         predicted_time = weight_of_edge or None
         #pdb.set_trace()
 
         if actual_time != predicted_time:
-            self.agv.traces = [self.graph.nodes[real_end_node]]
+            self.graph.nodes[self.end_node].agv = None
             self.graph.update_graph(self.start_node, self.end_node, actual_time, self.agv.id)
+            self.agv.traces = [self.graph.nodes[real_end_node]]
             #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
