@@ -64,13 +64,25 @@ class GraphProcessor:
 
     def find_node(self, id):
         # Tìm kiếm đối tượng Node có ID tương ứng
-        for node in self.ts_nodes:
+        """for node in self.ts_nodes:
             if node.id == id:
                 return node
         # Nếu không tìm thấy, tạo mới và thêm vào danh sách
         new_node = Node(id)
         self.ts_nodes.append(new_node)
-        return new_node
+        return new_node"""
+        if not hasattr(self, 'mapNodes'):
+            # Nếu chưa tồn tại, chuyển self.ts_nodes thành self.mapNodes
+            self.mapNodes = {node.id: node for node in self.ts_nodes}
+        # Tìm kiếm trên self.mapNodes
+        if id in self.mapNodes:
+            return self.mapNodes[id]
+        else:
+            # Nếu không có trên mapNodes, thêm vào cả ts_nodes và mapNodes
+            new_node = Node(id)
+            self.ts_nodes.append(new_node)
+            self.mapNodes[id] = new_node
+            return new_node
 	
     def generate_hm_matrix(self):
         self.matrix = [[j + 1 + self.M * i for j in range(self.M)] for i in range(self.H)]
@@ -133,7 +145,14 @@ class GraphProcessor:
         tsEdges = self.tsEdges if checking_list == None else \
             [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
         #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
+        var_value = os.environ.get('PRINT')
+        count = 0
         while Q:
+            #if var_value == 'insert_from_queue' or True:
+                # Thực hiện khối lệnh của bạn ở đây
+            if(count % 1000 == 0):
+                print(f'Vòng lặp thứ {count} và Q có {len(Q)}')
+            count = count + 1
             ID = Q.popleft()
             #print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
