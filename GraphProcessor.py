@@ -149,6 +149,12 @@ class GraphProcessor:
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
 
+    def show(self, Q):
+        if len(Q) < 10:
+            return list(Q)
+        else:
+            return list(Q)[:5] + ["..."]
+
     def insert_from_queue(self, Q, checking_list = None):
         pdb.set_trace()
         output_lines = []
@@ -159,17 +165,29 @@ class GraphProcessor:
         #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
         var_value = os.environ.get('PRINT')
         count = 0
+        my_dict = {element: 1 for element in Q}
         while Q:
             #if var_value == 'insert_from_queue' or True:
                 # Thực hiện khối lệnh của bạn ở đây
             if(count % 1000 == 0):
-                print(f'Vòng lặp thứ {count} và Q có {len(Q)}')
+                #print(f'Vòng lặp thứ {count} và Q có {len(Q)}')
+                pass
             count = count + 1
             ID = Q.popleft()
             #print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
-                    Q.append(j)
+                    #Q.append(j)
+                    if j in Q:
+                        #print(f'\t{j} đã tồn tại trong {self.show(Q)}')
+                        continue
+                    else:
+                        Q.append(j)
+                    """if(j in my_dict.keys()):
+                        pdb.set_trace()
+                        print(f'{j} đã tồn tại trong Q')
+                    else:
+                        my_dict[j] = 1"""
                     u, v = ID % self.M, j % self.M
                     u = u if u != 0 or ID == 0 else self.M
                     #if(v == 0):
