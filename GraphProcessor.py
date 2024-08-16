@@ -123,23 +123,34 @@ class GraphProcessor:
             print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
     def check_and_add_nodes(self, args, isArtificialNode = False, label = ""):
+        if not hasattr(self, 'mapNodes'):
+            # Nếu chưa tồn tại, chuyển self.ts_nodes thành self.mapNodes
+            self.mapNodes = {node.id: node for node in self.ts_nodes}
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes) and isinstance(id, int):
                 if(isArtificialNode):
                    if(label == "TimeWindow"):
-                        self.ts_nodes.append(TimeWindowNode(id, label))
+                       temp = TimeWindowNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                    elif(label == "Restriction"):
-                       self.ts_nodes.append(RestrictionNode(id, label))
+                       temp = RestrictionNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                    else:
-                        self.ts_nodes.append(ArtificialNode(id, label))
+                       temp = ArtificialNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                 else:
-                    self.ts_nodes.append(Node(id))
+                    temp = Node(id)
+                    self.ts_nodes.append(temp)
+                    self.mapNodes[id] = temp
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
 
     def insert_from_queue(self, Q, checking_list = None):
-        #pdb.set_trace()
+        pdb.set_trace()
         output_lines = []
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
