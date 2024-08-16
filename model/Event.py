@@ -117,6 +117,7 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def find_path(self, DimacsFileReader, ForecastingModel):
+        #pdb.set_trace()
         if self.graph.version == -1 == self.agv.versionOfGraph:
             #pdb.set_trace()
             self.updateGraph()
@@ -185,7 +186,7 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        #pdb.set_trace()
+        pdb.set_trace()
         self.graph.setTrace("traces.txt")
         self.agv.traces = self.graph.getTrace(self.agv)
         self.agv.versionOfGraph = self.graph.version
