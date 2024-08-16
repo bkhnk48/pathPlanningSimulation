@@ -9,7 +9,7 @@ class MovingEvent(Event):
 
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
-        pdb.set_trace()
+        #pdb.set_trace()
         #if(self.start_node == 10 or self.agv.id == 'AGV10'):
         #    pdb.set_trace()
         #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
