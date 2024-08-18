@@ -199,7 +199,10 @@ class Graph:
         else:
             for id in self.nodes:
                 if self.nodes[id].agv == agv:
-                    return self.map[id]
+                    temp = self.map[id]
+                    node = self.nodes[id]
+                    return [node, *temp]
+                    #return s self.map[id]
         return None
     
     def has_initial_movement(self, node):
@@ -324,7 +327,8 @@ class Graph:
                         index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
                         self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
                     except ValueError:
-                        print("Phần tử x không tồn tại trong danh sách.")
+                        print(f"Phần tử {source_id} không tồn tại trong danh sách.")
+                        #pdb.set_trace()
                 del self.nodes[source_id]
         
         Q = deque()
