@@ -186,17 +186,29 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        pdb.set_trace()
+        #pdb.set_trace()
         self.graph.setTrace("traces.txt")
-        self.agv.traces = self.graph.getTrace(self.agv)
+        #if (self.startTime == 0 and self.endTime == 17):
+        #    pdb.set_trace()
+        if(self.agv.get_traces() != None):
+            #print("Truoc khi gan thi ko None")
+            pass
+        temp = self.graph.getTrace(self.agv) 
+        self.agv.set_traces(temp if temp != None else self.agv.get_traces())
         self.agv.versionOfGraph = self.graph.version
-        self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
-        global allAGVs
-        for a in allAGVs:
-            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                a.traces = self.graph.getTrace(a)
-                a.versionOfGraph = self.graph.version
-                a.target_node = a.traces[len(a.traces) - 1]
+        if self.agv.get_traces() == None:
+            pdb.set_trace()
+        else:
+            self.agv.target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
+            global allAGVs
+            for a in allAGVs:
+                if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                    temp = self.graph.getTrace(a)
+                    if temp != None:
+                        a.set_traces(temp)
+                    
+                    a.versionOfGraph = self.graph.version
+                    a.target_node = a.traces[len(a.traces) - 1]
 
 
 def get_largest_id_from_map(filename):
