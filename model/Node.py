@@ -1,116 +1,74 @@
-#from .TimeWindowEdge import TimeWindowEdge
-#from .Edge import HoldingEdge, MovingEdge
-#from .RestrictionEdge import RestrictionEdge
-#from .RestrictionNode import RestrictionNode
-#from .TimeWindowNode import TimeWindowNode
+from .Event import Event
+import inspect
 import pdb
-
-class Node:
-    def __init__(self, id,label=None):
-        if not isinstance(id, int):
-            raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
-        self.id = id
-        self.label=label
-        self.edges = []
-        self.agv = None
-
-    def create_edge(self, node, M, d, e, debug = False):
-        if(debug):
-            pdb.set_trace()
-        from .RestrictionNode import RestrictionNode
-        from .TimeWindowNode import TimeWindowNode
-        from .Edge import HoldingEdge
-        from .RestrictionEdge import RestrictionEdge
-        from .TimeWindowEdge import TimeWindowEdge 
-        from .Edge import MovingEdge
-        if node.id % M == self.id % M and \
-        ((node.id - self.id) // M == d) and \
-        isinstance(node, Node) and \
-        not isinstance(node, RestrictionNode) and \
-        not isinstance(node, TimeWindowNode):
-            return HoldingEdge(self, node, e[2], e[3], d, d)
-        elif isinstance(node, RestrictionNode):
-            return RestrictionEdge(self, node, e, "Restriction")
-        elif isinstance(node, TimeWindowNode):
-            return TimeWindowEdge(self, node, e[4], "TimeWindows")
-        elif isinstance(node, Node):
-            if node.id % M != self.id % M:
-                return MovingEdge(self, node, e[2], e[3], e[4])
-        else:
-            return None
-        
-    def connect(self, other_node, weight, graph):
-        graph.add_edge(self.id, other_node.id, weight)
-        
-    def getEventForReaching(self, event):
-        #next_vertex = event.agv.getNextNode().id
-        #event.agv.path.add(self.id)
-        #print(f"========={event.agv.path}")
-        from .HoldingEvent import HoldingEvent
-        from .ReachingTargetEvent import ReachingTargetEvent
-
-        # Xác định kiểu sự kiện tiếp theo
-        deltaT = (self.id // event.graph.numberOfNodesInSpaceGraph \
-                                - (1 if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
-            event.agv.current_node // event.graph.numberOfNodesInSpaceGraph \
-                                - (1 if event.agv.current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
-        )
-
-        if (self.id % event.graph.numberOfNodesInSpaceGraph) == (
-            event.agv.current_node % event.graph.numberOfNodesInSpaceGraph
-        ):
-            from .StartEvent import StartEvent
-            if(not isinstance(event, StartEvent)):
-                event.agv.move_to()
-            return HoldingEvent(
-                event.endTime,
-                event.endTime + deltaT,
-                event.agv,
-                event.graph,
-                deltaT,
-            )
-        elif self.id == event.agv.target_node.id:
-            #pdb.set_trace()
-            print(f"Target {event.agv.target_node.id}")
-            #deltaT = getReal()
-            return ReachingTargetEvent(
-                event.endTime, event.endTime, event.agv, event.graph, self.id
-            )
-        else:
-            return self.goToNextNode(event)
-
-    # TODO Rename this here and in `getEventForReaching`
-    def goToNextNode(self, event):
-        from .Event import Event
-        from .StartEvent import StartEvent
-        from .MovingEvent import MovingEvent
-        from .HaltingEvent import HaltingEvent
-        if(not isinstance(event, StartEvent)):
-            #pdb.set_trace()
-            event.agv.move_to()
+class MovingEvent(Event):
+    def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
+        super().__init__(startTime, endTime, agv, graph)
         #pdb.set_trace()
-        next_vertex = event.agv.get_traces()[0].id
-        deltaT= event.graph.getReal(event.agv.current_node, next_vertex)
-        if event.endTime + deltaT < event.graph.graph_processor.H:
-                #pdb.set_trace()
-            return MovingEvent(
-                event.endTime,
-                event.endTime + deltaT,
-                event.agv,
-                event.graph,
-                event.agv.current_node,
-                next_vertex,
-            )
-        if(event.graph.graph_processor.printOut):
-            print(f"H = {event.graph.graph_processor.H} and {event.endTime} + {deltaT}")
-        return HaltingEvent(
-            event.endTime,
-            event.graph.graph_processor.H,
-            event.agv,
-            event.graph,
-            event.agv.current_node,
-            next_vertex,
-        )
-    
-    def __repr__(self):
-        return f"Node(id={self.id}, label='{self.label}', agv='{self.agv}')"   
+        self.start_node = start_node
+        self.end_node = end_node
+        M = self.graph.numberOfNodesInSpaceGraph
+        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        if(t1 != self.startTime):
+            if(self.graph.graph_processor.printOut):
+                print("Errror")
+            pdb.set_trace()
+            # Lấy thông tin về khung hiện tại
+            current_frame = inspect.currentframe()
+            # Lấy tên của hàm gọi my_function
+            caller_name = inspect.getframeinfo(current_frame.f_back).function
+            if(self.graph.graph_processor.printOut):
+                print(f'MovingEvent.py:19 {caller_name}')
+
+    def updateGraph(self):
+        actual_time = self.endTime - self.startTime
+        #pdb.set_trace()
+        #if(self.start_node == 10 or self.agv.id == 'AGV10'):
+        #    pdb.set_trace()
+        #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
+        M = self.graph.numberOfNodesInSpaceGraph
+        t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
+        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        #if(t1 != self.startTime):
+        #    pdb.set_trace()
+        real_end_node = self.endTime*M + (M if self.end_node % M == 0 else self.end_node % M)
+        self.agv.path.add(real_end_node)
+        
+        if(real_end_node in self.graph.nodes):
+            self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv \
+                if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
+        self.graph.nodes[self.start_node].agv = None
+        
+        weight_of_edge = t2 - t1
+        predicted_time = weight_of_edge or None
+        #if(real_end_node == 14987):
+        #    pdb.set_trace()
+        #pdb.set_trace()
+
+        if actual_time != predicted_time:
+            self.graph.nodes[self.end_node].agv = None
+            self.graph.update_graph(self.start_node, self.end_node, actual_time, self.agv.id)
+            #pdb.set_trace()
+            self.agv.set_traces([self.graph.nodes[real_end_node]])
+            self.graph.nodes[real_end_node].agv = self.agv
+            #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
+            #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
+
+    def calculateCost(self):
+        #pdb.set_trace()
+        # Tính chi phí dựa trên thời gian di chuyển thực tế
+        cost_increase = self.graph.graph_processor.alpha*(self.endTime - self.startTime)
+        self.agv.cost += cost_increase  # Cập nhật chi phí của AGV
+        return cost_increase
+
+    def process(self):
+        #pdb.set_trace()
+        self.calculateCost()
+        # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
+        self.updateGraph()
+        if(self.graph.graph_processor.printOut):
+            print(
+                f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
+                )
+        #pdb.set_trace()
+        self.getNext()
