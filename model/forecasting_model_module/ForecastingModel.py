@@ -428,6 +428,7 @@ class ForecastingModel:
 
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
+            #pdb.set_trace()
             print(f"====> {tmp_traces}")
 
             #pdb.set_trace()
@@ -462,7 +463,7 @@ class ForecastingModel:
         else:
             #pdb.set_trace()
             print("No solution found")
-        print(f"version of graph : {graph_version}")
+        #print(f"version of graph : {graph_version}")
 
 
     def get_problem_info(self):
