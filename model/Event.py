@@ -208,7 +208,7 @@ class Event:
                         a.set_traces(temp)
                     
                     a.versionOfGraph = self.graph.version
-                    a.target_node = a.traces[len(a.traces) - 1]
+                    a.target_node = a.get_traces()[len(a.get_traces()) - 1]
 
 
 def get_largest_id_from_map(filename):
