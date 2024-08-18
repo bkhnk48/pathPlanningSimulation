@@ -156,7 +156,7 @@ class GraphProcessor:
             return list(Q)[:5] + ["..."]
 
     def insert_from_queue(self, Q, checking_list = None):
-        pdb.set_trace()
+        #pdb.set_trace()
         output_lines = []
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
@@ -224,7 +224,7 @@ class GraphProcessor:
 
     def create_tsg_file(self):          
         #Q = deque(range((self.H + 1)* self.M + 1))
-        pdb.set_trace()
+        #pdb.set_trace()
         Q = deque()
         Q.extend(self.startedNodes)
 
@@ -826,7 +826,7 @@ class GraphProcessor:
             #filepath = 'simplest.txt'
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
-        self.startedNodes = [1, 10]
+        self.startedNodes = [1]#[1, 10]
         self.process_input_file(filepath)
         #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
