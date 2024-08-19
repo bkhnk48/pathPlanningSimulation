@@ -4,11 +4,20 @@ class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
-        #pdb.set_trace()
+        pdb.set_trace()
         node = self.graph.nodes[target_node]
         M = self.graph.numberOfNodesInSpaceGraph
         time = self.agv.current_node // M \
             - (1 if self.agv.current_node % M == 0 else 0)
+        pdb.set_trace()
+        if not hasattr(node, 'earliness'):
+            try:
+                node = next(node for node in self.graph.graph_processor.targetNodes if node.id == target_node)
+                #print(f"Đối tượng Node với id {target_id} được tìm thấy.")
+                self.graph.nodes[target_node] = node
+            except StopIteration:
+                print(f"Không tìm thấy đối tượng Node với id {target_node}.")
+                pdb.set_trace()
         earliness = node.earliness
         tardiness = node.tardiness
         self.last_cost = self.graph.graph_processor.beta*(max([earliness - time, 0, time - tardiness]))/self.graph.graph_processor.alpha
