@@ -8,7 +8,7 @@ class AGV:
         self.id = id
         self.current_node = current_node
         self.previous_node = None
-        self.target_node = None
+        self._target_node = None
         self.state = 'idle'
         self.cost = cost
         self.versionOfGraph = versionOfGraph
@@ -35,8 +35,13 @@ class AGV:
             #print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self._traces:
             if(endedEvent):
+                pdb.set_trace()
                 self.current_node = self._traces.pop(0)
-            self.path.add(self.current_node)
+            if isinstance(self.current_node, int):
+                self.path.add(self.current_node)
+            else:
+                self.path.add(self.current_node.id)
+                self.current_node = self.current_node.id
             #print(f"{self.path}")
             
             next_node = self._traces[0]
