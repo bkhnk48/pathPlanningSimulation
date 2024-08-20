@@ -18,6 +18,13 @@ class AGV:
         self.graph.nodes[current_node].agv = self
         self.event = None
         
+    @property
+    def target_node(self):
+        return self._target_node
+    
+    @target_node.setter
+    def target_node(self, value):
+        self._target_node = value
     def updateInfo(width, length, speed):
         self.width = width
         self.length = length
