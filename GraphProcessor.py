@@ -36,13 +36,34 @@ class GraphProcessor:
         self.ts_nodes = []
         self.ts_edges = []
         self.startedNodes = []
-        self.targetNodes = []
+        self._targetNodes = []
         self.printOut = True
         self.time_window_controller = None 
         self.restriction_controller = None
         self.startBan = -1
         self.endBan = -1
 
+        
+    @property
+    def targetNodes(self):
+        return self._targetNodes
+    
+    def appendTarget(self, target_node):
+        if isinstance(target_node, TimeWindowNode):
+            #pdb.set_trace()
+            pass
+        self._targetNodes.append(target_node)
+        
+    def getTargets(self, index = -1):
+        if (index != -1):
+            return self._targetNodes[index]
+        return self._targetNodes
+    
+    def getTargetByID(self, id):
+        for node in self._targetNodes:
+            if(node.id == id):
+                return node
+        return None
         
     def process_input_file(self, filepath):
         self.spaceEdges = []
@@ -250,7 +271,7 @@ class GraphProcessor:
             allAGVs.add(agv)  # Thêm vào tập hợp AGV
     
     def init_TASKs(self, TASKs):
-        for node_id in self.targetNodes:
+        for node_id in self.getTargets():
             TASKs.add(node_id)
     
     def query_edges_by_source_id(self):
@@ -471,7 +492,7 @@ class GraphProcessor:
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
-            for target in self.targetNodes:
+            for target in self.getTargets():
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
@@ -513,7 +534,8 @@ class GraphProcessor:
         max_val += 1
         targetNode = TimeWindowNode(max_val, "TimeWindow")
         self.ts_nodes.append(targetNode)
-        self.targetNodes.append(targetNode)
+        #self.targetNodes.append(targetNode)
+        self.appendTarget(targetNode)
         if(self.time_window_controller == None):
             self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma)
         self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
@@ -826,7 +848,7 @@ class GraphProcessor:
             #filepath = 'simplest.txt'
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
-        self.startedNodes = [1]#[1, 10]
+        self.startedNodes = [1, 10]
         self.process_input_file(filepath)
         #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
