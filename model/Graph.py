@@ -233,12 +233,14 @@ class Graph:
                     Q.append(i)      
               
     def update_node(self, node, properties):
-        if node in self.nodes:
+        pdb.set_trace()
+        pass
+        """if node in self.nodes:
             self.nodes[node].update(properties)
             print(f"Node {node} updated with properties {properties}.")
         else:
             self.nodes[node] = properties
-            print(f"Node {node} added with properties {properties}.")
+            print(f"Node {node} added with properties {properties}.")"""
  
     def add_edge(self, from_node, to_node, weight):
         self.adjacency_list[from_node].append((to_node, weight))
@@ -420,7 +422,7 @@ class Graph:
                 #if(start_node == 24):
                 #    pdb.set_trace()
                 file.write(f"n {start_node} 1\n")
-            for target in self.graph_processor.targetNodes:
+            for target in self.graph_processor.getTargets():
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
