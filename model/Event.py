@@ -186,7 +186,7 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        #pdb.set_trace()
+        pdb.set_trace()
         self.graph.setTrace("traces.txt")
         #if (self.startTime == 0 and self.endTime == 17):
         #    pdb.set_trace()
@@ -199,7 +199,11 @@ class Event:
         if self.agv.get_traces() == None:
             pdb.set_trace()
         else:
-            self.agv.target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
+            pdb.set_trace()
+            target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
+            allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
+            if target_node.id in allIDsOfTargetNodes:
+                self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
             global allAGVs
             for a in allAGVs:
                 if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
@@ -208,7 +212,9 @@ class Event:
                         a.set_traces(temp)
                     
                     a.versionOfGraph = self.graph.version
-                    a.target_node = a.get_traces()[len(a.get_traces()) - 1]
+                    target_node = a.get_traces()[len(a.get_traces()) - 1]
+                    if target_node.id in allIDsOfTargetNodes:
+                        a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
 
 
 def get_largest_id_from_map(filename):
