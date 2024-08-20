@@ -12,7 +12,7 @@ class ReachingTargetEvent(Event):
         pdb.set_trace()
         if not hasattr(node, 'earliness'):
             try:
-                node = next(node for node in self.graph.graph_processor.targetNodes if node.id == target_node)
+                node = next(node for node in self.graph.graph_processor.getTargets() if node.id == target_node)
                 #print(f"Đối tượng Node với id {target_id} được tìm thấy.")
                 self.graph.nodes[target_node] = node
             except StopIteration:
