@@ -4,16 +4,34 @@
 #from .RestrictionNode import RestrictionNode
 #from .TimeWindowNode import TimeWindowNode
 import pdb
+from inspect import currentframe, getframeinfo
+import inspect
 
 class Node:
     def __init__(self, id,label=None):
         if not isinstance(id, int):
             raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
-        self.id = id
+        self._id = id
+        if(id == 13899):
+            print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
+            print("==========Nghi ngo van de o day!========", end='')
+            current_frame = inspect.currentframe()
+            caller_name = inspect.getframeinfo(current_frame.f_back).function
+            print(caller_name)
         self.label=label
         self.edges = []
         self.agv = None
 
+    @property
+    def id(self):
+        return self._id
+    
+    @id.setter
+    def id(self, value):
+        if(value == 13899):
+            print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
+            print("==========Nghi ngo van de o day!========")
+        self._id = value
     def create_edge(self, node, M, d, e, debug = False):
         if(debug):
             pdb.set_trace()
@@ -91,6 +109,10 @@ class Node:
             #pdb.set_trace()
             event.agv.move_to()
         #pdb.set_trace()
+        print(f'Node.py:94 {event.agv.id}', end=' ')
+        for node in event.agv.get_traces():
+            print(node.id, end= ' ')
+        print()
         next_vertex = event.agv.get_traces()[0].id
         deltaT= event.graph.getReal(event.agv.current_node, next_vertex)
         if event.endTime + deltaT < event.graph.graph_processor.H:
