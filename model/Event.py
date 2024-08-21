@@ -8,6 +8,8 @@ import pdb
 import os
 from collections import defaultdict
 import config
+from inspect import currentframe, getframeinfo
+
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
@@ -122,6 +124,11 @@ class Event:
             #pdb.set_trace()
             self.updateGraph()
         filename = self.saveGraph()
+        
+        print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(f'{node.id} 130', end= ' ')
+        print()
 
         if config.solver_choice == 'solver':
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
@@ -140,11 +147,15 @@ class Event:
         print(f"{self} {self.startTime} {self.endTime}")
         if self.graph.version == -1 == self.agv.versionOfGraph:
             self.graph.version += 1
+        print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(f'{node.id} 147', end= ' ')
+        print()
         self.setTracesForAllAGVs()
 
     # TODO Rename this here and in `getNext`
     def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
-        print("Running ForecastingModel...")
+        print(f"Running ForecastingModel {filename}...")
         # Assuming `filename` is a path to the file with necessary data for the model
         dimacs_file_reader = DimacsFileReader(filename)
         dimacs_file_reader.read_custom_dimacs()
@@ -186,7 +197,11 @@ class Event:
         # return traces
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
-        pdb.set_trace()
+        #pdb.set_trace()
+        print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(node.id, end= ' ')
+        print()
         self.graph.setTrace("traces.txt")
         #if (self.startTime == 0 and self.endTime == 17):
         #    pdb.set_trace()
@@ -194,14 +209,18 @@ class Event:
             #print("Truoc khi gan thi ko None")
             pass
         temp = self.graph.getTrace(self.agv) 
-        self.agv.set_traces(temp if temp != None else self.agv.get_traces())
+        allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
+        #self.agv.set_traces(temp if temp != None else self.agv.get_traces())
+        if temp != None:
+            if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                self.agv.set_traces(temp)
         self.agv.versionOfGraph = self.graph.version
         if self.agv.get_traces() == None:
             pdb.set_trace()
         else:
             pdb.set_trace()
             target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
-            allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
+            
             if target_node.id in allIDsOfTargetNodes:
                 self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
             global allAGVs
@@ -209,12 +228,17 @@ class Event:
                 if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
                     temp = self.graph.getTrace(a)
                     if temp != None:
-                        a.set_traces(temp)
+                        if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                            a.set_traces(temp)
                     
                     a.versionOfGraph = self.graph.version
                     target_node = a.get_traces()[len(a.get_traces()) - 1]
                     if target_node.id in allIDsOfTargetNodes:
                         a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+                print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {a.id}', end=' ')
+                for node in a.get_traces():
+                    print(node.id, end= ' ')
+                print()
 
 
 def get_largest_id_from_map(filename):
