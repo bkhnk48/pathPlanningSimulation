@@ -2,6 +2,8 @@ from model.utility import get_largest_id_from_map
 import inspect
 from sortedcontainers import SortedSet
 import pdb
+from inspect import currentframe, getframeinfo
+
 
 class AGV:
     def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
@@ -42,8 +44,10 @@ class AGV:
             #print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self._traces:
             if(endedEvent):
-                pdb.set_trace()
+                #pdb.set_trace()
                 self.current_node = self._traces.pop(0)
+                if (self._traces[0].id == 13899):
+                    print("+++++++++++++++++++++++")
             if isinstance(self.current_node, int):
                 self.path.add(self.current_node)
             else:
@@ -60,19 +64,30 @@ class AGV:
             return None
     
     def get_traces(self):
-        return self._traces
-    
-    def set_traces(self, traces):
         if(self._traces != None):
             if len(self._traces) >= 1:
-                if self._traces[0].id == 1097:
+                if self._traces[0].id == 13899:
                     #pdb.set_trace()
                     # Lấy thông tin về khung hiện tại
                     current_frame = inspect.currentframe()
                     # Lấy tên của hàm gọi my_function
                     caller_name = inspect.getframeinfo(current_frame.f_back).function
-                    if(self.graph.graph_processor.printOut):
-                        print(f'AGV.py:62 {caller_name}')
+                    #if(self.graph.graph_processor.printOut):
+                    print(f'AGV.py:74 {caller_name}')
+                    print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
+        return self._traces
+    
+    def set_traces(self, traces):
+        if(self._traces != None):
+            if len(self._traces) >= 1:
+                if self._traces[0].id == 13899:
+                    #pdb.set_trace()
+                    # Lấy thông tin về khung hiện tại
+                    current_frame = inspect.currentframe()
+                    # Lấy tên của hàm gọi my_function
+                    caller_name = inspect.getframeinfo(current_frame.f_back).function
+                    #if(self.graph.graph_processor.printOut):
+                    print(f'AGV.py:88 {caller_name}')
         self._traces = traces
     
     def move_to(self):
