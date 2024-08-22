@@ -134,7 +134,7 @@ class Node:
                 event.agv.current_node,
                 next_vertex,
             )
-        if(event.graph.graph_processor.printOut or True):
+        if(event.graph.graph_processor.printOut):
             print(f"H = {event.graph.graph_processor.H} and {event.endTime} + {deltaT}")
         return HaltingEvent(
             event.endTime,
