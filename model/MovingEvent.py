@@ -54,7 +54,8 @@ class MovingEvent(Event):
                 self.graph.nodes[self.end_node].agv = None
             self.graph.update_graph(self.start_node, self.end_node, actual_time, self.agv.id)
             #pdb.set_trace()
-            self.agv.set_traces([self.graph.nodes[real_end_node]])
+            #self.agv.set_traces([self.graph.nodes[real_end_node]])
+            self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
             self.graph.nodes[real_end_node].agv = self.agv
             #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
@@ -67,7 +68,8 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
-        #pdb.set_trace()
+        #if(self.endTime == 217):
+        #    pdb.set_trace()
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
