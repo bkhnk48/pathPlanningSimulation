@@ -58,6 +58,7 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
+        pdb.set_trace()
         return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
 
     def getWait(self, wait_time):
@@ -182,7 +183,7 @@ class Event:
             subprocess.run(command, shell=True)
 
         #pdb.set_trace()
-        print(f"{self} {self.startTime} {self.endTime}")
+        #print(f"{self} {self.startTime} {self.endTime}")
         if self.graph.version == -1 == self.agv.versionOfGraph:
             self.graph.version += 1
         """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
