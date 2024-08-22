@@ -13,6 +13,7 @@ class HaltingEvent(Event):
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
     def calculateCost(self):
+        #pdb.set_trace()
         # Tính chi phí dựa trên thời gian di chuyển thực tế
         cost_increase = float('inf') if(self.end_node != self.agv.target_node.id) else self.endTime - self.startTime
         self.agv.cost += cost_increase  # Cập nhật chi phí của AGV
