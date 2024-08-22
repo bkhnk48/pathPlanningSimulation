@@ -462,7 +462,8 @@ class ForecastingModel:
                         cost += trace[2]
         else:
             #pdb.set_trace()
-            print("No solution found")
+            #print("No solution found")
+            pass
         #print(f"version of graph : {graph_version}")
 
 
