@@ -404,8 +404,10 @@ class ForecastingModel:
 
     def create_traces(self, filepath, graph_version):  # sourcery skip: low-code-quality
         import time
-        milliseconds = int(round(time.time() * 1000))
-        print(milliseconds)
+        milliseconds = int(round(time.time()))
+        seconds = milliseconds / (1000*1000)
+        if(seconds > 60*100):
+            print(seconds/(60*100))
         if self.model.getStatus() == "optimal":
             #pdb.set_trace()
             vars = self.model.getVars()
