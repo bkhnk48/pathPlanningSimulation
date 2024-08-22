@@ -38,8 +38,22 @@ class Graph:
         M = self.numberOfNodesInSpaceGraph
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
         endTime = next_id // M - (1 if next_id % M == 0 else 0)
-        if isinstance(self.nodes[next_id], TimeWindowNode):
-            return (endTime - startTime)
+        allIDsOfTargetNodes = [node.id for node in self.graph_processor.targetNodes]
+        if(next_id in allIDsOfTargetNodes):
+            #pdb.set_trace()
+            return 0
+        try:
+            if isinstance(self.nodes[next_id], TimeWindowNode):
+                return (endTime - startTime)
+        except:
+            #pdb.set_trace()
+            if next_id not in self.nodes:
+                #print(f'in self.nodes doesnt have {next_id}')
+                for e in self.graph_processor.tsEdges:
+                    if(e[0] % M == start_id % M and e[1] % M == next_id % M):
+                        #pdb.set_trace()
+                        return e[4]    
+                return abs(endTime - startTime)
         return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
     def count_edges(self):
         count = 0
