@@ -17,7 +17,8 @@ class HoldingEvent(Event):
         if next_node in self.graph.nodes:
             self.graph.update_node(current_node, next_node)
         else:
-            print("Calculated next node does not exist in the graph.")
+            #print("Calculated next node does not exist in the graph.")
+            pass
 
         #self.agv.current_node = next_node
 
@@ -28,7 +29,7 @@ class HoldingEvent(Event):
         #pdb.set_trace() 
         #Lần 2 gọi getNextNode của AGV 
         next_node = self.agv.getNextNode(endedEvent = True)
-        print(f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving from node ID {self.agv.current_node} to node ID {next_node}")
+        #print(f"Processed HoldingEvent for AGV {self.agv.id}, added cost: {added_cost}, moving from node ID {self.agv.current_node} to node ID {next_node}")
         #self.agv.current_node = next_node  # Update the AGV's current node
         self.updateGraph()  # Optional, if there's a need to update the graph based on this event
         self.getNext()
