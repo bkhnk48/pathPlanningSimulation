@@ -12,12 +12,12 @@ class Node:
         if not isinstance(id, int):
             raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
         self._id = id
-        if(id == 13899):
+        """if(id == 13899):
             print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
             print("==========Nghi ngo van de o day!========", end='')
             current_frame = inspect.currentframe()
             caller_name = inspect.getframeinfo(current_frame.f_back).function
-            print(caller_name)
+            print(caller_name)"""
         self.label=label
         self.edges = []
         self.agv = None
@@ -28,9 +28,9 @@ class Node:
     
     @id.setter
     def id(self, value):
-        if(value == 13899):
+        """if(value == 13899):
             print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
-            print("==========Nghi ngo van de o day!========")
+            print("==========Nghi ngo van de o day!========")"""
         self._id = value
     def create_edge(self, node, M, d, e, debug = False):
         if(debug):
@@ -94,9 +94,9 @@ class Node:
                 event.endTime, event.endTime, event.agv, event.graph, self.id
             )
         else:
-            print(f'{self.id}')
+            """print(f'{self.id}')
             if self.id == 30091:
-                pdb.set_trace()
+                pdb.set_trace()"""
             return self.goToNextNode(event)
 
     # TODO Rename this here and in `getEventForReaching`
@@ -105,16 +105,25 @@ class Node:
         from .StartEvent import StartEvent
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
+        from .ReachingTargetEvent import ReachingTargetEvent
         if(not isinstance(event, StartEvent)):
             #pdb.set_trace()
             event.agv.move_to()
         #pdb.set_trace()
-        print(f'Node.py:94 {event.agv.id}', end=' ')
+        """print(f'Node.py:94 {event.agv.id}', end=' ')
         for node in event.agv.get_traces():
             print(node.id, end= ' ')
-        print()
+        print()"""
         next_vertex = event.agv.get_traces()[0].id
         deltaT= event.graph.getReal(event.agv.current_node, next_vertex)
+        allIDsOfTargetNodes = [node.id for node in event.graph.graph_processor.targetNodes]
+        if(next_vertex in allIDsOfTargetNodes):
+            #pdb.set_trace()
+            return ReachingTargetEvent(\
+                event.endTime, event.endTime, event.agv, event.graph, next_vertex)
+        if(deltaT == 0):
+            #pdb.set_trace()
+            pass
         if event.endTime + deltaT < event.graph.graph_processor.H:
                 #pdb.set_trace()
             return MovingEvent(
@@ -125,7 +134,7 @@ class Node:
                 event.agv.current_node,
                 next_vertex,
             )
-        if(event.graph.graph_processor.printOut):
+        if(event.graph.graph_processor.printOut or True):
             print(f"H = {event.graph.graph_processor.H} and {event.endTime} + {deltaT}")
         return HaltingEvent(
             event.endTime,
