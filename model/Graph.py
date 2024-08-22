@@ -343,7 +343,8 @@ class Graph:
                         index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
                         self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
                     except ValueError:
-                        print(f"Phần tử {source_id} không tồn tại trong danh sách.")
+                        #print(f"Phần tử {source_id} không tồn tại trong danh sách.")
+                        pass
                         #pdb.set_trace()
                 del self.nodes[source_id]
         
