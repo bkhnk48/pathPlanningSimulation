@@ -12,13 +12,13 @@ class MovingEvent(Event):
         if(t1 != self.startTime):
             if(self.graph.graph_processor.printOut):
                 print("Errror")
-            pdb.set_trace()
+            #pdb.set_trace()
             # Lấy thông tin về khung hiện tại
-            current_frame = inspect.currentframe()
+            """current_frame = inspect.currentframe()
             # Lấy tên của hàm gọi my_function
             caller_name = inspect.getframeinfo(current_frame.f_back).function
             if(self.graph.graph_processor.printOut):
-                print(f'MovingEvent.py:19 {caller_name}')
+                print(f'MovingEvent.py:19 {caller_name}')"""
 
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
