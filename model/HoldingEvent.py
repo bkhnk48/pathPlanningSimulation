@@ -10,7 +10,7 @@ class HoldingEvent(Event):
 
     def updateGraph(self):
         # Calculate the next node based on the current node, duration, and largest ID
-        current_node = self.agv.current_node
+        current_node = self.agv.current_node if isinstance(self.agv.current_node, int) else self.agv.current_node.id
         next_node = current_node + (self.duration * self.numberOfNodesInSpaceGraph) + 1
 
         # Check if this node exists in the graph and update accordingly
