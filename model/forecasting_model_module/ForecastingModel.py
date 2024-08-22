@@ -355,21 +355,23 @@ class ForecastingModel:
 
     def output_solution(self):
         if self.model.getStatus() == "optimal":
-            print("Run time:", time.time() - time_start, "SEC\n")
-            print("Solver time:", self.solve_time)
-            print("Total time:", self.total_time)
-            print("Reading time:", self.reading_time)
-            print("Presolving time:", self.presolving_time)
-            print("Optimal value:", self.model.getObjVal())
-            print("Solution:")
+            #print("Run time:", time.time() - time_start, "SEC\n")
+            #print("Solver time:", self.solve_time)
+            #print("Total time:", self.total_time)
+            #print("Reading time:", self.reading_time)
+            #print("Presolving time:", self.presolving_time)
+            #print("Optimal value:", self.model.getObjVal())
+            #print("Solution:")
             # Lấy tất cả các biến từ mô hình
-            vars = self.model.getVars()
+            #vars = self.model.getVars()
             # In giá trị của tất cả các biến
-            for var in vars:
-                if self.model.getVal(var) > 0:
-                    print(f"{var.name} = {self.model.getVal(var)}")
+            #for var in vars:
+            #    if self.model.getVal(var) > 0:
+            #        print(f"{var.name} = {self.model.getVal(var)}")
+            pass
         else:
-            print("No solution found")
+            #print("No solution found")
+            pass
 
     def save_solution(self, filename, dirname):
         # check if output folder exists
