@@ -416,7 +416,7 @@ class ForecastingModel:
                 if self.model.getVal(var) > 0 and var.name.startswith("x"):
                     # split x{agvID}_{i}_{j} to get i and j
                     parts = var.name.split("_")
-                    print(parts)
+                    #print(parts)
                     agvID = parts[0]
                     #print(agvID)
                     i = int(parts[1])
