@@ -385,6 +385,7 @@ class Graph:
             #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
             #pdb.set_trace()
             self.version = self.version + 1
+        print("******")
         self.write_to_file([agv_id, new_node_id])
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
@@ -414,7 +415,7 @@ class Graph:
         if(agv_id_and_new_start is None):
             return start
         if agv_id_and_new_start[0] == f'AGV{str(start)}':
-            print(agv_id_and_new_start[1])
+            #print(agv_id_and_new_start[1])
             return agv_id_and_new_start[1]
         return start
         
@@ -444,8 +445,8 @@ class Graph:
             #for edge in self.ts_edges:
             for source_id, edges in sorted_edges:
                 for edge in edges:
-                    if isinstance(edge[1], int):
-                        pdb.set_trace()
+                    #if isinstance(edge[1], int):
+                    #    pdb.set_trace()
                     file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
         
     """def update_edge(self, start_node, end_node, new_weight):
