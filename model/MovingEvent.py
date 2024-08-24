@@ -8,7 +8,7 @@ class MovingEvent(Event):
         self.start_node = start_node
         self.end_node = end_node
         M = self.graph.numberOfNodesInSpaceGraph
-        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
         if(t1 != self.startTime):
             if(self.graph.graph_processor.printOut):
                 print("Errror")
@@ -27,8 +27,8 @@ class MovingEvent(Event):
         #    pdb.set_trace()
         #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
         M = self.graph.numberOfNodesInSpaceGraph
-        t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
-        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
+        t2 = self.end_node // M - (self.graph.graph_processor.d if self.end_node % M == 0 else 0)
+        t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
         #if(t1 != self.startTime):
         #    pdb.set_trace()
         real_end_node = self.endTime*M + (M if self.end_node % M == 0 else self.end_node % M)
@@ -52,6 +52,7 @@ class MovingEvent(Event):
         if actual_time != predicted_time:
             if self.end_node in self.graph.nodes:
                 self.graph.nodes[self.end_node].agv = None
+            print('=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=')
             self.graph.update_graph(self.start_node, self.end_node, actual_time, self.agv.id)
             #pdb.set_trace()
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
