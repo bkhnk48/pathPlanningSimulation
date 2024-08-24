@@ -69,9 +69,9 @@ class Node:
 
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (self.id // event.graph.numberOfNodesInSpaceGraph \
-                                - (1 if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
+                                - (event.graph.graph_processor.d if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
             event.agv.current_node // event.graph.numberOfNodesInSpaceGraph \
-                                - (1 if event.agv.current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
+                                - (event.graph.graph_processor.d if event.agv.current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
         )
 
         if (self.id % event.graph.numberOfNodesInSpaceGraph) == (
