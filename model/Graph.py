@@ -385,7 +385,6 @@ class Graph:
             #thì việc đến điểm lệch đi so với dự đoán cũng có thể đồ thị phải cập nhật rồi
             #pdb.set_trace()
             self.version = self.version + 1
-        print("******")
         self.write_to_file([agv_id, new_node_id])
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
