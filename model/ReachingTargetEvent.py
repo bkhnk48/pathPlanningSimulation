@@ -60,6 +60,34 @@ class ReachingTargetEvent(Event):
                 print("Previous node or target node not set; no cost calculated.")
         return self.agv.cost
 
+
+    def re_calculate(self, path):
+        cost = 0
+        deltaCost = 0
+        prev = 0
+        M = self.graph.numberOfNodesInSpaceGraph 
+        D = self.graph.graph_processor.d
+        P = len(path)
+        for i in range(P):
+            node = path[i]
+            real_node = node % M + (M if node % M == 0 else 0)
+            #pdb.set_trace()
+            t2 = node // M - (D if node % M == 0 else 0)
+            t1 = prev // M - (D if prev % M == 0 else 0)
+            deltaCost = self.graph.graph_processor.alpha*(t2 - t1)
+            if(i != P - 1):
+                #print('===', end='')
+                if(i > 0):
+                    # print('===', end='')                                                            
+                    cost = cost + deltaCost
+                    print(f'({deltaCost})===', end='')
+                print(f'{real_node}===', end='')
+            else:
+                cost = cost + self.last_cost + deltaCost
+                deltaCost = self.last_cost + deltaCost
+                print(f'({deltaCost})==={real_node}===END. ', end='')
+            prev = path[i]
+        print(f'Total cost: {cost}')
     def process(self):
         if(self.graph.graph_processor.printOut):
             # Đây là phương thức để xử lý khi AGV đạt đến mục tiêu
@@ -67,7 +95,8 @@ class ReachingTargetEvent(Event):
                 f"AGV {self.agv.id} has reached the target node {self.target_node} at time {self.endTime}"
                 )
         #pdb.set_trace()
-        print(self.agv.path)
+        #print(self.agv.path)
+        self.re_calculate(self.agv.path)
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
