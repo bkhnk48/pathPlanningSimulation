@@ -372,21 +372,23 @@ class ForecastingModel:
 
     def output_solution(self):
         if self.model.getStatus() == "optimal":
-            print("Run time:", time.time() - time_start, "SEC\n")
-            print("Solver time:", self.solve_time)
-            print("Total time:", self.total_time)
-            print("Reading time:", self.reading_time)
-            print("Presolving time:", self.presolving_time)
-            print("Optimal value:", self.model.getObjVal())
-            print("Solution:")
+            #print("Run time:", time.time() - time_start, "SEC\n")
+            #print("Solver time:", self.solve_time)
+            #print("Total time:", self.total_time)
+            #print("Reading time:", self.reading_time)
+            #print("Presolving time:", self.presolving_time)
+            #print("Optimal value:", self.model.getObjVal())
+            #print("Solution:")
             # Lấy tất cả các biến từ mô hình
-            vars = self.model.getVars()
+            #vars = self.model.getVars()
             # In giá trị của tất cả các biến
-            for var in vars:
-                if self.model.getVal(var) > 0:
-                    print(f"{var.name} = {self.model.getVal(var)}")
+            #for var in vars:
+            #    if self.model.getVal(var) > 0:
+            #        print(f"{var.name} = {self.model.getVal(var)}")
+            pass
         else:
-            print("No solution found")
+            #print("No solution found")
+            pass
 
     def save_solution(self, filename, dirname):
         # check if output folder exists
@@ -419,8 +421,10 @@ class ForecastingModel:
 
     def create_traces(self, filepath, graph_version):  # sourcery skip: low-code-quality
         import time
-        milliseconds = int(round(time.time() * 1000))
-        print(milliseconds)
+        milliseconds = int(round(time.time()))
+        seconds = milliseconds / (1000*1000)
+        if(seconds > 60*100):
+            print(seconds/(60*100))
         if self.model.getStatus() == "optimal":
             #pdb.set_trace()
             vars = self.model.getVars()
@@ -431,7 +435,7 @@ class ForecastingModel:
                 if self.model.getVal(var) > 0 and var.name.startswith("x"):
                     # split x{agvID}_{i}_{j} to get i and j
                     parts = var.name.split("_")
-                    print(parts)
+                    #print(parts)
                     agvID = parts[0]
                     #print(agvID)
                     i = int(parts[1])
@@ -445,6 +449,7 @@ class ForecastingModel:
 
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
+            #pdb.set_trace()
             print(f"====> {tmp_traces}")
 
             #pdb.set_trace()
@@ -478,8 +483,9 @@ class ForecastingModel:
                         cost += trace[2]
         else:
             #pdb.set_trace()
-            print("No solution found")
-        print(f"version of graph : {graph_version}")
+            #print("No solution found")
+            pass
+        #print(f"version of graph : {graph_version}")
 
 
     def get_problem_info(self):

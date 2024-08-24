@@ -8,11 +8,13 @@ import pdb
 import os
 from collections import defaultdict
 import config
+from inspect import currentframe, getframeinfo
+
 
 numberOfNodesInSpaceGraph = 0
 debug = 0
 allAGVs = {}
-
+numOfCalling = 0
 
 class Event:
     def __init__(self, startTime, endTime, agv, graph):
@@ -56,6 +58,7 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
+        pdb.set_trace()
         return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
 
     def getWait(self, wait_time):
@@ -92,6 +95,28 @@ class Event:
         return filename
 
     def getNext(self):
+        """global numOfCalling
+        numOfCalling = numOfCalling + 1
+        if(numOfCalling <= 5):
+            print(f'as {numOfCalling}: {self.agv.id} has been served.')
+        if(numOfCalling < 5 and self.agv.id == 'AGV10'):
+            print(f'{self.agv.id} has first trace: {self.agv.get_traces()[0]}')
+        would_break_point = False
+        if(numOfCalling == 4 or numOfCalling == 5):
+            #pdb.set_trace()
+            print(f'getNext {getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno}')
+            global allAGVs
+            for a in allAGVs:
+                print(f'\t{a.id}', end=' ')
+                if(len(a.get_traces()) == 0):
+                    print("Trace is empty")
+                else:
+                    for node in a.get_traces():
+                        if(node.id == 13899):
+                            would_break_point = True
+                            #pdb.set_trace()
+                        print(f'{node.id}', end= ' ')
+                    print()"""
         from .HoldingEvent import HoldingEvent
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
@@ -106,8 +131,24 @@ class Event:
             or self.graph.version == -1
         ):
             self.find_path(DimacsFileReader, ForecastingModel)
-        #pdb.set_trace()
+        #if(would_break_point):
+        #    pdb.set_trace()
+        """if(numOfCalling == 4):
+            #pdb.set_trace()
+            print(f'getNext {getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno}')
+            #global allAGVs
+            for a in allAGVs:
+                if(a.id == 'AGV10'):
+                    print(f'\t{a.id}', end=' ')
+                    if(len(a.get_traces()) == 0):
+                        print("Trace is empty")
+                    else:
+                        for node in a.get_traces():
+                            print(f'{node.id}', end= ' ')
+                        print()"""
         next_vertex = self.agv.getNextNode()
+        """if(next_vertex.id == 51265 or next_vertex.id == 51266):
+            pdb.set_trace()"""
         new_event = next_vertex.getEventForReaching(self)
 
         # Lên lịch cho sự kiện mới
@@ -117,10 +158,16 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def find_path(self, DimacsFileReader, ForecastingModel):
+        #pdb.set_trace()
         if self.graph.version == -1 == self.agv.versionOfGraph:
             #pdb.set_trace()
             self.updateGraph()
         filename = self.saveGraph()
+        
+        """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(f'{node.id} 130', end= ' ')
+        print()"""
 
         if config.solver_choice == 'solver':
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
@@ -141,14 +188,18 @@ class Event:
             subprocess.run(command, shell=True)
 
         #pdb.set_trace()
-        print(f"{self} {self.startTime} {self.endTime}")
+        #print(f"{self} {self.startTime} {self.endTime}")
         if self.graph.version == -1 == self.agv.versionOfGraph:
             self.graph.version += 1
+        """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(f'{node.id} 147', end= ' ')
+        print()"""
         self.setTracesForAllAGVs()
 
     # TODO Rename this here and in `getNext`
     def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
-        print("Running ForecastingModel...")
+        print(f"Running ForecastingModel {filename}...")
         # Assuming `filename` is a path to the file with necessary data for the model
         dimacs_file_reader = DimacsFileReader(filename)
         dimacs_file_reader.read_custom_dimacs()
@@ -191,16 +242,48 @@ class Event:
         # if not self.graph.map:
         #     self.graph.setTrace("traces.txt")
         #pdb.set_trace()
+        """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.agv.id}', end=' ')
+        for node in self.agv.get_traces():
+            print(node.id, end= ' ')
+        print()"""
         self.graph.setTrace("traces.txt")
-        self.agv.traces = self.graph.getTrace(self.agv)
+        #if (self.startTime == 0 and self.endTime == 17):
+        #    pdb.set_trace()
+        if(self.agv.get_traces() != None):
+            #print("Truoc khi gan thi ko None")
+            pass
+        temp = self.graph.getTrace(self.agv) 
+        allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
+        #self.agv.set_traces(temp if temp != None else self.agv.get_traces())
+        if temp != None:
+            if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                self.agv.set_traces(temp)
         self.agv.versionOfGraph = self.graph.version
-        self.agv.target_node = self.agv.traces[len(self.agv.traces) - 1]
-        global allAGVs
-        for a in allAGVs:
-            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                a.traces = self.graph.getTrace(a)
-                a.versionOfGraph = self.graph.version
-                a.target_node = a.traces[len(a.traces) - 1]
+        if self.agv.get_traces() == None:
+            #pdb.set_trace()
+            pass
+        else:
+            #pdb.set_trace()
+            target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
+            
+            if target_node.id in allIDsOfTargetNodes:
+                self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+            global allAGVs
+            for a in allAGVs:
+                if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                    temp = self.graph.getTrace(a)
+                    if temp != None:
+                        if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                            a.set_traces(temp)
+                    
+                    a.versionOfGraph = self.graph.version
+                    target_node = a.get_traces()[len(a.get_traces()) - 1]
+                    if target_node.id in allIDsOfTargetNodes:
+                        a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+                """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {a.id}', end=' ')
+                for node in a.get_traces():
+                    print(node.id, end= ' ')
+                print()"""
 
 
 def get_largest_id_from_map(filename):

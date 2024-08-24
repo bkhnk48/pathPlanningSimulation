@@ -38,8 +38,22 @@ class Graph:
         M = self.numberOfNodesInSpaceGraph
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
         endTime = next_id // M - (1 if next_id % M == 0 else 0)
-        if isinstance(self.nodes[next_id], TimeWindowNode):
-            return (endTime - startTime)
+        allIDsOfTargetNodes = [node.id for node in self.graph_processor.targetNodes]
+        if(next_id in allIDsOfTargetNodes):
+            #pdb.set_trace()
+            return 0
+        try:
+            if isinstance(self.nodes[next_id], TimeWindowNode):
+                return (endTime - startTime)
+        except:
+            #pdb.set_trace()
+            if next_id not in self.nodes:
+                #print(f'in self.nodes doesnt have {next_id}')
+                for e in self.graph_processor.tsEdges:
+                    if(e[0] % M == start_id % M and e[1] % M == next_id % M):
+                        #pdb.set_trace()
+                        return e[4]    
+                return abs(endTime - startTime)
         return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
     def count_edges(self):
         count = 0
@@ -118,6 +132,7 @@ class Graph:
         
     def build_path_tree(self, file_path = 'traces.txt'):
         """ Build a tree from edges listed in a file for path finding. """
+        #pdb.set_trace()
         id1_id3_tree = defaultdict(list)
         M = self.numberOfNodesInSpaceGraph
         #start = -1
@@ -198,7 +213,10 @@ class Graph:
         else:
             for id in self.nodes:
                 if self.nodes[id].agv == agv:
-                    return self.map[id]
+                    temp = self.map[id]
+                    node = self.nodes[id]
+                    return [node, *temp]
+                    #return s self.map[id]
         return None
     
     def has_initial_movement(self, node):
@@ -229,12 +247,14 @@ class Graph:
                     Q.append(i)      
               
     def update_node(self, node, properties):
-        if node in self.nodes:
+        pdb.set_trace()
+        pass
+        """if node in self.nodes:
             self.nodes[node].update(properties)
             print(f"Node {node} updated with properties {properties}.")
         else:
             self.nodes[node] = properties
-            print(f"Node {node} added with properties {properties}.")
+            print(f"Node {node} added with properties {properties}.")"""
  
     def add_edge(self, from_node, to_node, weight):
         self.adjacency_list[from_node].append((to_node, weight))
@@ -317,12 +337,15 @@ class Graph:
                     #pdb.set_trace()
                     space_id = M if (source_id % M == 0) else source_id % M
                     new_source_id = current_time*M + space_id
-                    self.nodes[new_source_id].agv = self.nodes[source_id].agv
                     try:
+                        if new_source_id in self.nodes:
+                            self.nodes[new_source_id].agv = self.nodes[source_id].agv
                         index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
                         self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
                     except ValueError:
-                        print("Phần tử x không tồn tại trong danh sách.")
+                        #print(f"Phần tử {source_id} không tồn tại trong danh sách.")
+                        pass
+                        #pdb.set_trace()
                 del self.nodes[source_id]
         
         Q = deque()
@@ -414,7 +437,7 @@ class Graph:
                 #if(start_node == 24):
                 #    pdb.set_trace()
                 file.write(f"n {start_node} 1\n")
-            for target in self.graph_processor.targetNodes:
+            for target in self.graph_processor.getTargets():
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:

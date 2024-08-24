@@ -36,13 +36,34 @@ class GraphProcessor:
         self.ts_nodes = []
         self.ts_edges = []
         self.startedNodes = []
-        self.targetNodes = []
+        self._targetNodes = []
         self.printOut = True
         self.time_window_controller = None 
         self.restriction_controller = None
         self.startBan = -1
         self.endBan = -1
 
+        
+    @property
+    def targetNodes(self):
+        return self._targetNodes
+    
+    def appendTarget(self, target_node):
+        if isinstance(target_node, TimeWindowNode):
+            #pdb.set_trace()
+            pass
+        self._targetNodes.append(target_node)
+        
+    def getTargets(self, index = -1):
+        if (index != -1):
+            return self._targetNodes[index]
+        return self._targetNodes
+    
+    def getTargetByID(self, id):
+        for node in self._targetNodes:
+            if(node.id == id):
+                return node
+        return None
         
     def process_input_file(self, filepath):
         self.spaceEdges = []
@@ -51,7 +72,7 @@ class GraphProcessor:
                 self.M = 0
                 for line in file:
                     parts = line.strip().split()
-                    if parts[0] == 'a' and len(parts) == 6:
+                    if parts[0] == 'a' and len(parts) >= 6:
                         id1, id2 = int(parts[1]), int(parts[2])
                         self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
@@ -64,13 +85,25 @@ class GraphProcessor:
 
     def find_node(self, id):
         # Tìm kiếm đối tượng Node có ID tương ứng
-        for node in self.ts_nodes:
+        """for node in self.ts_nodes:
             if node.id == id:
                 return node
         # Nếu không tìm thấy, tạo mới và thêm vào danh sách
         new_node = Node(id)
         self.ts_nodes.append(new_node)
-        return new_node
+        return new_node"""
+        if not hasattr(self, 'mapNodes'):
+            # Nếu chưa tồn tại, chuyển self.ts_nodes thành self.mapNodes
+            self.mapNodes = {node.id: node for node in self.ts_nodes}
+        # Tìm kiếm trên self.mapNodes
+        if id in self.mapNodes:
+            return self.mapNodes[id]
+        else:
+            # Nếu không có trên mapNodes, thêm vào cả ts_nodes và mapNodes
+            new_node = Node(id)
+            self.ts_nodes.append(new_node)
+            self.mapNodes[id] = new_node
+            return new_node
 	
     def generate_hm_matrix(self):
         self.matrix = [[j + 1 + self.M * i for j in range(self.M)] for i in range(self.H)]
@@ -84,7 +117,7 @@ class GraphProcessor:
         self.Adj = lil_matrix((size, size), dtype=int)
 
         for edge in self.spaceEdges:
-            if len(edge) >= 6 and edge[3] == '0' and edge[4] == '1':
+            if len(edge) >= 6 and edge[3] == '0' and int(edge[4]) >= 1:
                 u, v, c = int(edge[1]), int(edge[2]), int(edge[5])
                 for i in range(self.H + 1):
                     source_idx = i * self.M + u
@@ -111,34 +144,71 @@ class GraphProcessor:
             print("Cac cap chi so (i,j) khac 0 cua Adjacency matrix duoc luu tai adj_matrix.txt.")
 
     def check_and_add_nodes(self, args, isArtificialNode = False, label = ""):
+        if not hasattr(self, 'mapNodes'):
+            # Nếu chưa tồn tại, chuyển self.ts_nodes thành self.mapNodes
+            self.mapNodes = {node.id: node for node in self.ts_nodes}
         for id in args:
             # Ensure that Node objects for id exist in ts_nodes
             if not any(node.id == id for node in self.ts_nodes) and isinstance(id, int):
                 if(isArtificialNode):
                    if(label == "TimeWindow"):
-                        self.ts_nodes.append(TimeWindowNode(id, label))
+                       temp = TimeWindowNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                    elif(label == "Restriction"):
-                       self.ts_nodes.append(RestrictionNode(id, label))
+                       temp = RestrictionNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                    else:
-                        self.ts_nodes.append(ArtificialNode(id, label))
+                       temp = ArtificialNode(id, label)
+                       self.ts_nodes.append(temp)
+                       self.mapNodes[id] = temp
                 else:
-                    self.ts_nodes.append(Node(id))
+                    temp = Node(id)
+                    self.ts_nodes.append(temp)
+                    self.mapNodes[id] = temp
         #if not any(node.ID == ID2 for node in self.ts_nodes):
         #    self.ts_nodes.append(Node(ID2))
+
+    def show(self, Q):
+        if len(Q) < 10:
+            return list(Q)
+        else:
+            return list(Q)[:5] + ["..."]
 
     def insert_from_queue(self, Q, checking_list = None):
         #pdb.set_trace()
         output_lines = []
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges \
+            if edge[3] == '0' and int(edge[4]) >= 1 }
         tsEdges = self.tsEdges if checking_list == None else \
             [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
         #[[edge.start_node, end_node] for (end_node, edge) in checking_list.values()]
+        var_value = os.environ.get('PRINT')
+        count = 0
+        my_dict = {element: 1 for element in Q}
         while Q:
+            #if var_value == 'insert_from_queue' or True:
+                # Thực hiện khối lệnh của bạn ở đây
+            if(count % 1000 == 0):
+                #print(f'Vòng lặp thứ {count} và Q có {len(Q)}')
+                pass
+            count = count + 1
             ID = Q.popleft()
             #print(Q)
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
-                    Q.append(j)
+                    #Q.append(j)
+                    if j in Q:
+                        #print(f'\t{j} đã tồn tại trong {self.show(Q)}')
+                        continue
+                    else:
+                        Q.append(j)
+                    """if(j in my_dict.keys()):
+                        pdb.set_trace()
+                        print(f'{j} đã tồn tại trong Q')
+                    else:
+                        my_dict[j] = 1"""
                     u, v = ID % self.M, j % self.M
                     u = u if u != 0 or ID == 0 else self.M
                     #if(v == 0):
@@ -174,8 +244,8 @@ class GraphProcessor:
         return output_lines
 
     def create_tsg_file(self):          
-        
         #Q = deque(range((self.H + 1)* self.M + 1))
+        #pdb.set_trace()
         Q = deque()
         Q.extend(self.startedNodes)
 
@@ -201,7 +271,7 @@ class GraphProcessor:
             allAGVs.add(agv)  # Thêm vào tập hợp AGV
     
     def init_TASKs(self, TASKs):
-        for node_id in self.targetNodes:
+        for node_id in self.getTargets():
             TASKs.add(node_id)
     
     def query_edges_by_source_id(self):
@@ -230,7 +300,8 @@ class GraphProcessor:
 
     def init_nodes_n_edges(self, graph):
         for edge in self.ts_edges:
-            graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
+            if edge is not None:
+                graph.insertEdgesAndNodes(edge.start_node, edge.end_node, edge)
     
     def check_file_conditions(self):
         try:
@@ -413,6 +484,7 @@ class GraphProcessor:
             self.create_set_of_edges(newA)
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
+        #pdb.set_trace()
         self.write_to_file(Max)
         
     def write_to_file(self, Max, filename = "TSG.txt"):
@@ -420,12 +492,16 @@ class GraphProcessor:
             file.write(f"p min {Max} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
-            for target in self.targetNodes:
+            for target in self.getTargets():
                 target_id = target.id
                 file.write(f"n {target_id} -1\n")
             #for edge in self.tsEdges:
             for edge in self.ts_edges:
-                file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
+                """if not hasattr(edge, 'start_node'):
+                    pdb.set_trace()
+                    print(edge)"""
+                if edge is not None:
+                    file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
         
@@ -450,6 +526,7 @@ class GraphProcessor:
       return max_val
       
     def add_time_windows_constraints(self):
+        #pdb.set_trace()
         from model.TimeWindowController import TimeWindowController
         # Tìm giá trị lớn nhất trong TSG.txt
         max_val = self.getMaxID()
@@ -457,7 +534,8 @@ class GraphProcessor:
         max_val += 1
         targetNode = TimeWindowNode(max_val, "TimeWindow")
         self.ts_nodes.append(targetNode)
-        self.targetNodes.append(targetNode)
+        #self.targetNodes.append(targetNode)
+        self.appendTarget(targetNode)
         if(self.time_window_controller == None):
             self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma)
         self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
@@ -763,14 +841,28 @@ class GraphProcessor:
 
     def use_in_main(self, printOutput = False):
         self.printOut = printOutput
-        filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        #filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
+        #filepath = input("Nhap ten file can thuc hien (hint: 3x3Wards.txt): ")
+        filepath = input("Nhap ten file can thuc hien (hint: Redundant3x3Wards.txt): ")
         if filepath == '':
-            filepath = 'simplest.txt'
+            #filepath = 'simplest.txt'
+            #filepath = '3x3Wards.txt'
+            filepath = 'Redundant3x3Wards.txt'
         self.startedNodes = [1, 10]
         self.process_input_file(filepath)
-        self.H = 10
+        #pdb.set_trace()
+        self.H = input("Nhap thoi gian can gia lap (default: 10): ")
+        if(self.H == ''):
+            self.H = 10
+        else:
+            self.H = int(self.H)
         self.generate_hm_matrix()
-        self.d = 1
+        self.d = input("Nhap time unit (default: 1): ")
+        if(self.d == ''):
+            self.d = 1
+        else:
+            self.d = int(self.d)
+        
         self.generate_adj_matrix()
         self.create_tsg_file()
         count = 0
@@ -791,6 +883,7 @@ class GraphProcessor:
         self.endBan = 2
         self.restrictions = [[1, 2]]
         self.Ur = 3
+        #pdb.set_trace()
         self.process_restrictions()
 
     def test_menu(self):
@@ -876,4 +969,5 @@ class GraphProcessor:
 
 if __name__ == "__main__":
     gp = GraphProcessor()
-    gp.main_menu()
+    #gp.main_menu()
+    gp.use_in_main()
