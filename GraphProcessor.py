@@ -414,6 +414,7 @@ class GraphProcessor:
             self.ts_edges.append(temp)
         
     def process_restrictions(self):
+        #pdb.set_trace()
         S = set()
         R = []
         newA = set()
@@ -423,7 +424,7 @@ class GraphProcessor:
         endBan = self.endBan #16, 30  # Giả sử giá trị cố định cho ví dụ này
         
         edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) \
-                           for edge in self.spaceEdges if edge[3] == '0' and edge[4] == '1' }
+                           for edge in self.spaceEdges if edge[3] == '0' and int(edge[4]) >= 1 }
         Max = self.getMaxID() + 1
         # Xác định các điểm bị cấm
         for restriction in self.restrictions:
@@ -880,8 +881,9 @@ class GraphProcessor:
         self.gamma = 1
         self.restriction_count = 1
         self.startBan = 0
-        self.endBan = 2
-        self.restrictions = [[1, 2]]
+        self.endBan = 2*self.d
+        #self.restrictions = [[1, 2]]
+        self.restrictions = [[2, 1]]#dành cho map Redundant3x3Wards.txt
         self.Ur = 3
         #pdb.set_trace()
         self.process_restrictions()
