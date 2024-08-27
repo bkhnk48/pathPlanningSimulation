@@ -174,6 +174,10 @@ class Event:
                     #self.graph.version += 1
         elif len(self.pns_path) == 0:
             self.pns_path = input("Enter the path for pns-seq: ")
+            # editting the TSG.txt file to be compatible with the pns-seq
+            file_reader = DimacsFileReader(filename)
+            file_reader.read_custom_dimacs()
+            file_reader.pns_compat_edit(filename)
             command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
             print("Running network-simplex:", command)
             subprocess.run(command, shell=True)
