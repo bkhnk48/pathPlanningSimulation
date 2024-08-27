@@ -325,6 +325,9 @@ class Graph:
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
+            if(source_id == 51268):
+                #pdb.set_trace()
+                pass
             # Tính giá trị time
             node = self.nodes[source_id]
             time = source_id // M - (1 if source_id % M == 0 else 0)
@@ -386,6 +389,7 @@ class Graph:
             #pdb.set_trace()
             self.version = self.version + 1
         self.write_to_file([agv_id, new_node_id])
+        #pdb.set_trace()
         """for node in self.graph_processor.ts_nodes:
             if node.id not in self.nodes:
                 self.nodes[node.id] = node
