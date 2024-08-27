@@ -537,7 +537,7 @@ class GraphProcessor:
         #self.targetNodes.append(targetNode)
         self.appendTarget(targetNode)
         if(self.time_window_controller == None):
-            self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma)
+            self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma, self.d)
         self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
         R = set()
         new_edges = set()

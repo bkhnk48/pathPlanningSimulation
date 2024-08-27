@@ -414,7 +414,7 @@ class Graph:
         if(agv_id_and_new_start is None):
             return start
         if agv_id_and_new_start[0] == f'AGV{str(start)}':
-            print(agv_id_and_new_start[1])
+            #print(agv_id_and_new_start[1])
             return agv_id_and_new_start[1]
         return start
         
@@ -444,8 +444,8 @@ class Graph:
             #for edge in self.ts_edges:
             for source_id, edges in sorted_edges:
                 for edge in edges:
-                    if isinstance(edge[1], int):
-                        pdb.set_trace()
+                    #if isinstance(edge[1], int):
+                    #    pdb.set_trace()
                     file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")        
         
     """def update_edge(self, start_node, end_node, new_weight):
