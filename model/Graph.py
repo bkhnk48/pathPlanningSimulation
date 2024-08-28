@@ -213,7 +213,9 @@ class Graph:
         else:
             for id in self.nodes:
                 if self.nodes[id].agv == agv:
-                    temp = self.map[id]
+                    if(id == 13899):
+                        pdb.set_trace()
+                    temp = self.map[id]#13899
                     node = self.nodes[id]
                     return [node, *temp]
                     #return s self.map[id]
@@ -320,8 +322,8 @@ class Graph:
         #    pdb.set_trace()
         current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
         new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
-        #if(new_node_id == 45):
-        #    pdb.set_trace()
+        if(new_node_id == 13899):
+            pdb.set_trace()
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
@@ -353,10 +355,13 @@ class Graph:
         
         Q = deque()
         Q.append(new_node_id)
-        for start in self.graph_processor.startedNodes:
+        new_started_nodes = self.getAllNewStartedNodes()
+        for start in new_started_nodes:
+            if(start != new_node_id):
+        #for start in self.graph_processor.startedNodes:
             #pdb.set_trace()
             #if(start != new_node_id)
-            if(agv_id != f'AGV{str(start)}'):
+            #if(agv_id != f'AGV{str(start)}'):
                 Q.append(start)
             #start_node = self.get_current_node(agv_id_and_new_start, start)
         #pdb.set_trace()
@@ -427,6 +432,24 @@ class Graph:
             #print(agv_id_and_new_start[1])
             return agv_id_and_new_start[1]
         return start
+    
+    def getAllNewStartedNodes(self, excludedAgv = None):
+        allAGVs = {}
+        #pdb.set_trace()
+        for id in self.nodes:
+            if self.nodes[id].agv is not None:
+                if(excludedAgv is not None):
+                    if(self.nodes[id].agv.id == excludedAgv.id):
+                        continue
+                if any(agv.id == self.nodes[id].agv.id for agv in allAGVs):
+                    allAGVs.add(self.nodes[id].agv)
+        startedNodes = []
+        for agv in allAGVs:
+            if(len(agv.path) > 0):
+                startedNodes.append(agv.path[-1])
+        if(len(startedNodes) == 0):
+            return self.graph_processor.startedNodes
+        return startedNodes
         
     def write_to_file(self, agv_id_and_new_start = None, filename="TSG.txt"):
         #with open(filename, "w") as file:
@@ -441,11 +464,16 @@ class Graph:
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
         with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
+            #pdb.set_trace()
+            """if(Max == 8161 and num_edges == 13865):
+                pdb.set_trace()
             for start in self.graph_processor.startedNodes:
                 #pdb.set_trace()
                 start_node = self.get_current_node(agv_id_and_new_start, start)
                 #if(start_node == 24):
-                #    pdb.set_trace()
+                #    pdb.set_trace()"""
+            startedNodes = self.getAllNewStartedNodes()
+            for start_node in startedNodes:
                 file.write(f"n {start_node} 1\n")
             for target in self.graph_processor.getTargets():
                 target_id = target.id
