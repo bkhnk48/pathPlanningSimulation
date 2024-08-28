@@ -353,6 +353,12 @@ class Graph:
         
         Q = deque()
         Q.append(new_node_id)
+        for start in self.graph_processor.startedNodes:
+            #pdb.set_trace()
+            #if(start != new_node_id)
+            if(agv_id != f'AGV{str(start)}'):
+                Q.append(start)
+            #start_node = self.get_current_node(agv_id_and_new_start, start)
         #pdb.set_trace()
         new_edges = self.graph_processor.insert_from_queue(Q, self.adjacency_list)
         #print(new_edges)
