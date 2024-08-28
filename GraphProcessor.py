@@ -179,7 +179,7 @@ class GraphProcessor:
     def insert_from_queue(self, Q, checking_list = None):
         #pdb.set_trace()
         output_lines = []
-        edges_with_cost = { (int(edge[1]), int(edge[2])): int(edge[5]) for edge in self.spaceEdges \
+        edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in self.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
         tsEdges = self.tsEdges if checking_list == None else \
             [[item[1].start_node.id, item[1].end_node.id] for sublist in checking_list.values() for item in sublist]
@@ -218,17 +218,17 @@ class GraphProcessor:
                     temp = None
                     #start_time = (ID // self.M) if (ID // self.M) != 0 else ID
                     #if (start_time + edges_with_cost.get((u, v), -1) == j // self.M) and ((u, v) in edges_with_cost):
-                    if ((ID // self.M) + edges_with_cost.get((u, v), -1) == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
-                        c = edges_with_cost[(u, v)]
-                        output_lines.append(f"a {ID} {j} 0 1 {c}")
+                    if ((ID // self.M) + edges_with_cost.get((u, v), (-1, -1))[1] == (j // self.M) - (v//self.M)) and ((u, v) in edges_with_cost):
+                        [upper, c] = edges_with_cost[(u, v)]
+                        output_lines.append(f"a {ID} {j} 0 {upper} {c}")
                         if(checking_list == None):
-                            self.tsEdges.append((ID, j, 0, 1, c))
+                            self.tsEdges.append((ID, j, 0, upper, c))
                         self.check_and_add_nodes([ID, j])
                         #self.ts_edges.append(MovingEdge(self.find_node(ID), self.find_node(j), c))
                         #if(ID == 1 and j == 8):
                         #    pdb.set_trace()
                             #print()
-                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, 1, c])
+                        temp = self.find_node(ID).create_edge(self.find_node(j), self.M, self.d, [ID, j, 0, upper, c])
                     elif ID + self.M * self.d == j and ID % self.M == j % self.M:
                         output_lines.append(f"a {ID} {j} 0 1 {self.d}")
                         if(checking_list == None):
@@ -487,6 +487,7 @@ class GraphProcessor:
         self.tsEdges = sorted(self.tsEdges, key=lambda edge: (edge[0], edge[1]))
         #pdb.set_trace()
         self.write_to_file(Max)
+        #pdb.set_trace()
         
     def write_to_file(self, Max, filename = "TSG.txt"):
         with open('TSG.txt', 'w') as file:
