@@ -12,6 +12,7 @@ from model.RestrictionController import RestrictionController
 from model.Node import Node
 from collections import deque
 from scipy.sparse import lil_matrix
+import numpy as np
 #from ortools.linear_solver import pywraplp
 import pdb
 """
@@ -42,6 +43,7 @@ class GraphProcessor:
         self.restriction_controller = None
         self.startBan = -1
         self.endBan = -1
+        self._seed = 0
 
         
     @property
@@ -543,6 +545,22 @@ class GraphProcessor:
         pass
       return max_val
       
+    def generate_numbers_student(self, G, H, M, N, df=10):
+        while True:
+            self._seed = self._seed + 1
+            self._seed = self._seed % G
+            np.random.seed(self._seed)
+            # Sinh 4 số ngẫu nhiên theo phân phối Student
+            first_two = np.random.standard_t(df, size=2)
+            numbers = np.random.standard_t(df, size=2)
+            # Chuyển đổi các số này thành số nguyên trong khoảng từ 1 đến 100
+            first_two = np.round((first_two - np.min(first_two)) / (np.max(first_two) - np.min(first_two)) * (G//3) + self._seed).astype(int)
+            numbers = np.round((numbers - np.min(numbers)) / (np.max(numbers) - np.min(numbers)) * (H//3) + self._seed).astype(int)
+            if first_two[0] < G and first_two[1] < G and numbers[0] < numbers[1] and numbers[1] < H:
+                # Kiểm tra điều kiện khoảng cách tối thiểu
+                if (abs(first_two[0] - first_two[1]) >= M and abs(numbers[0] - numbers[1]) >= N):
+                    return np.concatenate((first_two, numbers))
+    
     def add_time_windows_constraints(self):
         #pdb.set_trace()
         from model.TimeWindowController import TimeWindowController
@@ -868,6 +886,17 @@ class GraphProcessor:
                         print(f'x_{m}_{i}_{j} = 1')
         else:
             print('The problem does not have an optimal solution.')
+            
+    def generate_poisson_random(self, M = None):
+        if M is None:
+            M = self.M
+        while True:
+            # Sinh số ngẫu nhiên theo phân phối Poisson
+            number = np.random.poisson(lam=M)        
+            # Kiểm tra điều kiện số ngẫu nhiên lớn hơn 1 và nhỏ hơn hoặc bằng M
+            if 1 < number < M:
+                return number
+
 
 
     def use_in_main(self, printOutput = False):
@@ -896,15 +925,28 @@ class GraphProcessor:
         
         self.generate_adj_matrix()
         self.create_tsg_file()
-        #pdb.set_trace()
+        pdb.set_trace()
         count = 0
-        while(count <= len(self.startedNodes) - 1):
+        
+        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(4)
+        if len(self.startedNodes) == 0:
+            self.ID = []
+            for i in range(numOfAGVs):
+                [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
+                self.startedNodes.append(s)
+                self.ID.append(d)
+                self.earliness.append(e)
+                self.tardiness.append(e)
+        
+        while(count <= numOfAGVs - 1):
             if(isinstance(self.ID, int)):
                 self.ID = 3
                 self.earliness = 4 if count == 0 else 7
                 self.tardiness = 6 if count == 0 else 9
                 self.alpha = 1
                 self.beta = 1
+            else:
+                pass
             self.add_time_windows_constraints()
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1
