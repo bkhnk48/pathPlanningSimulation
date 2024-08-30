@@ -32,6 +32,8 @@ class MovingEvent(Event):
         #if(t1 != self.startTime):
         #    pdb.set_trace()
         real_end_node = self.endTime*M + (M if self.end_node % M == 0 else self.end_node % M)
+        #if(real_end_node == 2186):
+        #    pdb.set_trace()
         self.agv.path.add(real_end_node)
         
         if(real_end_node in self.graph.nodes):
@@ -49,10 +51,11 @@ class MovingEvent(Event):
         #    pdb.set_trace()
         #pdb.set_trace()
 
-        if actual_time != predicted_time:
+        #if actual_time != predicted_time:
+        if real_end_node != self.end_node:
             if self.end_node in self.graph.nodes:
                 self.graph.nodes[self.end_node].agv = None
-            self.graph.update_graph(self.start_node, self.end_node, actual_time, self.agv.id)
+            self.graph.update_graph(self.start_node, self.end_node, real_end_node, self.agv.id)
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
             self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
             self.graph.nodes[real_end_node].agv = self.agv
