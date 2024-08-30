@@ -213,9 +213,14 @@ class Graph:
         else:
             for id in self.nodes:
                 if self.nodes[id].agv == agv:
-                    if(id == 13899):
-                        pdb.set_trace()
-                    temp = self.map[id]#13899
+                    #if(id == 13899 or id == 13898):
+                    #    pdb.set_trace()
+                    if(id not in self.map):
+                        for old_id in self.map.keys():
+                            if(self.nodes[id].agv == self.nodes[old_id].agv):
+                                temp = self.map[old_id]
+                    else:
+                        temp = self.map[id]#13899
                     node = self.nodes[id]
                     return [node, *temp]
                     #return s self.map[id]
@@ -297,7 +302,7 @@ class Graph:
                     path.append((node, neighbor, weight))
         return path
     
-    def update_graph(self, id1 = -1, id2 = -1, c12 = -1, agv_id = None):
+    def update_graph(self, id1 = -1, id2 = -1, end_id = -1, agv_id = None):
     #ý nghĩa của các tham số: id1 - id của nút nguồn X trong đồ thị TSG
     #                         id2 - id cuả nút đích dự kiến Y trong đồ thị TSG
     #                         c12 - thời gian thực tế mà AGV di chuyển từ nút X đến Y
@@ -305,7 +310,7 @@ class Graph:
         #self.add_edge(currentpos, nextpos, realtime)
         ID1 = int(input("Nhap ID1: ")) if id1 == -1 else id1
         ID2 = int(input("Nhap ID2: ")) if id2 == -1 else id2
-        C12 = int(input("Nhap trong so C12: ")) if c12 == -1 else c12
+        endID = int(input("Nhap ID thực sự khi AGV kết thúc hành trình: ")) if end_id == -1 else end_id
         M = self.numberOfNodesInSpaceGraph
         time1, time2 = ID1 // M - (1 if ID1 % M == 0 else 0), ID2 // M - (1 if ID2 % M == 0 else 0)
         #if i2 - i1 != C12:
@@ -317,13 +322,14 @@ class Graph:
             for destination_id, edge in edges:
                 if isinstance(edge, TimeWindowEdge):
                     old_time_window_edges.append(edge)"""
-        current_time = time1 + C12 # Giá trị của current_time
+        #current_time = time1 + C12 # Giá trị của current_time
+        current_time = endID // M - (1 if endID % M == 0 else 0)
         #if(current_time > self.graph_processor.H):
         #    pdb.set_trace()
         current_time = current_time if current_time <= self.graph_processor.H else self.graph_processor.H
         new_node_id = current_time*M + (M if ID2 % M == 0 else ID2 % M)
-        if(new_node_id == 13899):
-            pdb.set_trace()
+        #if(new_node_id == 13899):
+        #    pdb.set_trace()
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
@@ -434,15 +440,18 @@ class Graph:
         return start
     
     def getAllNewStartedNodes(self, excludedAgv = None):
-        allAGVs = {}
+        from .AGV import AGV
+        allAGVs = AGV.allInstances()
         #pdb.set_trace()
-        for id in self.nodes:
+        """for id in self.nodes:
             if self.nodes[id].agv is not None:
                 if(excludedAgv is not None):
                     if(self.nodes[id].agv.id == excludedAgv.id):
                         continue
-                if any(agv.id == self.nodes[id].agv.id for agv in allAGVs):
+                if(len(allAGVs) == 0):
                     allAGVs.add(self.nodes[id].agv)
+                elif any(agv.id == self.nodes[id].agv.id for agv in allAGVs):
+                    allAGVs.add(self.nodes[id].agv)"""
         startedNodes = []
         for agv in allAGVs:
             if(len(agv.path) > 0):
@@ -501,6 +510,15 @@ class Graph:
     def remove_node_and_origins(self, node_id):
         #pdb.set_trace()
         from .Node import Node
+        #if(node_id == 51265):
+        #    pdb.set_trace()
+        node = None
+        if isinstance(node_id, Node):
+            node = node_id
+        elif node_id in self.nodes:
+            node = self.nodes[node_id]
+        else:
+            return
         node = node_id if isinstance(node_id, Node) else self.nodes[node_id]
         R = [node]  # Khởi tạo danh sách R với nút cần xóa
         while R:  # Tiếp tục cho đến khi R rỗng
