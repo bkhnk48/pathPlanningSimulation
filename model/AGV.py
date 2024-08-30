@@ -6,6 +6,7 @@ from inspect import currentframe, getframeinfo
 
 
 class AGV:
+    __allInstances = set()
     def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
         self.id = id
         self.current_node = current_node
@@ -19,10 +20,15 @@ class AGV:
         self.graph = graph
         self.graph.nodes[current_node].agv = self
         self.event = None
+        AGV.__allInstances.add(self)
         
     @property
     def target_node(self):
         return self._target_node
+    
+    @staticmethod
+    def allInstances():
+        return AGV.__allInstances
     
     @target_node.setter
     def target_node(self, value):
@@ -56,7 +62,7 @@ class AGV:
             #print(f"{self.path}")
             
             next_node = self._traces[0]
-            if(self.graph.graph_processor.printOut):
+            if(self.graph.graph_processor.printOut or True):
                 print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
         else:
