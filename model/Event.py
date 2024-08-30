@@ -24,6 +24,7 @@ class Event:
         self.agv.event = self
         self.graph = graph
         self.pns_path = ""
+        #pdb.set_trace()
 
     def setValue(name, value):
         if name == "debug":
@@ -58,7 +59,6 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
-        pdb.set_trace()
         return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
 
     def getWait(self, wait_time):
@@ -170,6 +170,7 @@ class Event:
         print()"""
 
         if config.solver_choice == 'solver':
+            #print("----------------------------")
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
                     #self.graph.version += 1
         elif len(self.pns_path) == 0:
@@ -194,7 +195,7 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
-        print(f"Running ForecastingModel {filename}...")
+        #print(f"Running ForecastingModel {filename}...")
         # Assuming `filename` is a path to the file with necessary data for the model
         dimacs_file_reader = DimacsFileReader(filename)
         dimacs_file_reader.read_custom_dimacs()
