@@ -370,7 +370,8 @@ class ForecastingModel:
             #        print(f"{var.name} = {self.model.getVal(var)}")
             pass
         else:
-            #print("No solution found")
+            print("No solution found")
+            pdb.set_trace()
             pass
 
     def save_solution(self, filename, dirname):
