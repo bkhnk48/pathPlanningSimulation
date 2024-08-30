@@ -368,6 +368,7 @@ class GraphProcessor:
             Q = deque([ID2])
             visited = {ID2}
             new_edges = [(ID1, ID2, C12)]
+            pdb.set_trace()
 
             while Q:
                 ID = Q.popleft()
@@ -867,6 +868,7 @@ class GraphProcessor:
         
         self.generate_adj_matrix()
         self.create_tsg_file()
+        #pdb.set_trace()
         count = 0
         while(count <= len(self.startedNodes) - 1):
             self.ID = 3
