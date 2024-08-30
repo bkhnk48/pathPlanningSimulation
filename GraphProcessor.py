@@ -28,7 +28,7 @@ class GraphProcessor:
         self.alpha = 1
         self.beta = 1
         self.gamma = 1
-        self.ID = 0
+        self.ID = []
         self.earliness = 0
         self.tardiness = 0
         self.spaceEdges = []
@@ -76,6 +76,21 @@ class GraphProcessor:
                         id1, id2 = int(parts[1]), int(parts[2])
                         self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
+                    elif parts[0] == 'n':
+                        if(parts[2] == '1'):
+                            self.startedNodes.append(int(parts[1]))
+                        if(parts[2] == '-1'):
+                            self.ID.append(int(parts[1]))
+                            if isinstance(self.earliness, int):
+                                self.earliness = []
+                            if isinstance(self.tardiness, int):
+                                self.tardiness = []
+                            self.earliness.append(int(parts[3]))
+                            self.tardiness.append(int(parts[4]))
+                    elif parts[0] == 'alpha':
+                        self.alpha = int(parts[1])
+                    elif parts[0] == 'beta':
+                        self.beta = int(parts[1])
             if(self.printOut):
                 print("Doc file hoan tat, M =", self.M)
         except FileNotFoundError:
@@ -541,7 +556,20 @@ class GraphProcessor:
         self.appendTarget(targetNode)
         if(self.time_window_controller == None):
             self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma, self.d)
-        self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
+        ID = -1
+        earliness = 0
+        tardiness = 0
+        if(isinstance(self.ID, list)):
+            self.time_window_controller.add_source_and_TWNode(self.ID[0], targetNode, self.earliness[0], self.tardiness[0])
+            ID = self.ID[0]
+            earliness = self.earliness[0]
+            tardiness = self.tardiness[0]
+            self.ID = self.ID[1:]
+            self.earliness = self.earliness[1:]
+            self.tardiness = self.tardiness[1:]
+        else:
+            ID = self.ID
+            self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
         R = set()
         new_edges = set()
         # Duyệt các dòng của file TSG.txt
@@ -552,9 +580,9 @@ class GraphProcessor:
                   if parts[0] == 'a' and len(parts) == 6:
                       ID2 =int(parts[2])
                       for i in range(1, self.H + 1):
-                          j = i * self.M + self.ID
+                          j = i * self.M + ID
                           if j == ID2:
-                              C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
+                              C = int(int(self.beta) * max(earliness - i, 0, i - tardiness) / int(self.alpha))
                               new_edges.add((j, max_val, 0, 1, C))
                               self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
                               break
@@ -851,7 +879,7 @@ class GraphProcessor:
             #filepath = 'simplest.txt'
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
-        self.startedNodes = [1, 10]
+        self.startedNodes = [] #[1, 10]
         self.process_input_file(filepath)
         #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
@@ -871,11 +899,12 @@ class GraphProcessor:
         #pdb.set_trace()
         count = 0
         while(count <= len(self.startedNodes) - 1):
-            self.ID = 3
-            self.earliness = 4 if count == 0 else 7
-            self.tardiness = 6 if count == 0 else 9
-            self.alpha = 1
-            self.beta = 1
+            if(isinstance(self.ID, int)):
+                self.ID = 3
+                self.earliness = 4 if count == 0 else 7
+                self.tardiness = 6 if count == 0 else 9
+                self.alpha = 1
+                self.beta = 1
             self.add_time_windows_constraints()
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1
