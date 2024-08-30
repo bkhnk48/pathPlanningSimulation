@@ -62,7 +62,7 @@ class AGV:
             #print(f"{self.path}")
             
             next_node = self._traces[0]
-            if(self.graph.graph_processor.printOut or True):
+            if(self.graph.graph_processor.printOut):
                 print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
         else:
