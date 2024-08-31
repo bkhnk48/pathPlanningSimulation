@@ -935,8 +935,8 @@ class GraphProcessor:
                 self.startedNodes.append(s)
                 self.ID.append(d)
                 self.earliness.append(e)
-                self.tardiness.append(e)
-            print(f'{self.earlinesss} \n{self.tardinesss}')
+                self.tardiness.append(t)
+            #print(f'{self.earliness} \n{self.tardiness}')
         
         self.create_tsg_file()
         #pdb.set_trace()
