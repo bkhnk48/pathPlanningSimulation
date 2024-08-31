@@ -371,8 +371,8 @@ class ForecastingModel:
             pass
         else:
             print("No solution found")
-            pdb.set_trace()
-            pass
+            #pdb.set_trace()
+            #pass
 
     def save_solution(self, filename, dirname):
         # check if output folder exists
