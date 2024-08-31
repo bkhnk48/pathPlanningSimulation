@@ -103,12 +103,16 @@ class AGV:
     def update_traces(self, predicted_id_node, real_node):
         #pdb.set_trace()
         index = 0
+        M = self.graph.graph_processor.M
         for node in self._traces:
-            if node.id == predicted_id_node:
+            if node.id % M == predicted_id_node % M:
                 break
             else:
                 index = index + 1
-        self._traces[index] = real_node
+        if(index >= len(self._traces)):
+            pdb.set_trace()
+        else:    
+            self._traces[index] = real_node
     def move_to(self):
         if len(self._traces) >= 1:
             self.previous_node = self.current_node
