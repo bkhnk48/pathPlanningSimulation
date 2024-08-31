@@ -220,7 +220,7 @@ class Event:
 
     def calculateCost(self):
         # Increase cost by the actual time spent in holding
-        cost_increase = self.endTime - self.startTime
+        cost_increase = self.graph.graph_processor.alpha*(self.endTime - self.startTime)
         self.agv.cost += cost_increase
         return cost_increase
 
