@@ -930,12 +930,13 @@ class GraphProcessor:
         numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(4)
         if len(self.startedNodes) == 0:
             self.ID = []
-        for i in range(numOfAGVs):
-            [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
-            self.startedNodes.append(s)
-            self.ID.append(d)
-            self.earliness.append(e)
-            self.tardiness.append(e)
+            for i in range(numOfAGVs):
+                [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
+                self.startedNodes.append(s)
+                self.ID.append(d)
+                self.earliness.append(e)
+                self.tardiness.append(e)
+            print(f'{self.earlinesss} \n{self.tardinesss}')
         
         self.create_tsg_file()
         #pdb.set_trace()
