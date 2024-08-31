@@ -3,7 +3,7 @@ import inspect
 from sortedcontainers import SortedSet
 import pdb
 from inspect import currentframe, getframeinfo
-
+import numpy as np
 
 class AGV:
     __allInstances = set()
@@ -18,6 +18,10 @@ class AGV:
         self._traces = [] #các đỉnh sắp đi qua
         self.path = SortedSet([]) #các đỉnh đã đi qua 
         self.graph = graph
+        if current_node not in self.graph.nodes.keys():
+            #pdb.set_trace()
+            node = self.graph.graph_processor.find_node(current_node)
+            self.graph.nodes[current_node] = node
         self.graph.nodes[current_node].agv = self
         self.event = None
         AGV.__allInstances.add(self)
@@ -54,7 +58,7 @@ class AGV:
                 self.current_node = self._traces.pop(0)
                 """if (self._traces[0].id == 13899):
                     print("+++++++++++++++++++++++")"""
-            if isinstance(self.current_node, int):
+            if isinstance(self.current_node, (int, np.int64)):
                 self.path.add(self.current_node)
             else:
                 self.path.add(self.current_node.id)
