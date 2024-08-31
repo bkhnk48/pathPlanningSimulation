@@ -101,6 +101,7 @@ class GraphProcessor:
             return
 
     def find_node(self, id):
+        id = int(id)
         # Tìm kiếm đối tượng Node có ID tương ứng
         """for node in self.ts_nodes:
             if node.id == id:
@@ -279,7 +280,7 @@ class GraphProcessor:
         from model.AGV import AGV
         for node_id in self.startedNodes:
             #node_id = start.id
-            pdb.set_trace()
+            #pdb.set_trace()
             agv = AGV("AGV" + str(node_id), node_id, graph)  # Create an AGV at this node
             #print(Event.getValue("numberOfNodesInSpaceGraph"))
             startTime = node_id // self.M
@@ -910,6 +911,7 @@ class GraphProcessor:
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
         self.startedNodes = [] #[1, 10]
+        
         self.process_input_file(filepath)
         #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
@@ -925,19 +927,19 @@ class GraphProcessor:
             self.d = int(self.d)
         
         self.generate_adj_matrix()
-        self.create_tsg_file()
-        pdb.set_trace()
-        count = 0
-        
         numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(4)
         if len(self.startedNodes) == 0:
             self.ID = []
-            for i in range(numOfAGVs):
-                [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
-                self.startedNodes.append(s)
-                self.ID.append(d)
-                self.earliness.append(e)
-                self.tardiness.append(e)
+        for i in range(numOfAGVs):
+            [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
+            self.startedNodes.append(s)
+            self.ID.append(d)
+            self.earliness.append(e)
+            self.tardiness.append(e)
+        
+        self.create_tsg_file()
+        #pdb.set_trace()
+        count = 0
         
         while(count <= numOfAGVs - 1):
             if(isinstance(self.ID, int)):
