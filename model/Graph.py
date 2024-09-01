@@ -32,28 +32,33 @@ class Graph:
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
-    def getReal(self, start_id, next_id):
-        #pdb.set_trace()
+    def getReal(self, start_id, next_id, agv):
         from .TimeWindowNode import TimeWindowNode
         M = self.numberOfNodesInSpaceGraph
+        if(agv is not None):
+            agv.path.add(start_id)
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
         endTime = next_id // M - (1 if next_id % M == 0 else 0)
         allIDsOfTargetNodes = [node.id for node in self.graph_processor.targetNodes]
         if(next_id in allIDsOfTargetNodes):
             #pdb.set_trace()
+            if(agv is not None):
+                agv.path.add(next_id)
             return 0
         try:
             if isinstance(self.nodes[next_id], TimeWindowNode):
+                #pdb.set_trace()
                 return (endTime - startTime)
         except:
-            #pdb.set_trace()
             if next_id not in self.nodes:
                 #print(f'in self.nodes doesnt have {next_id}')
                 for e in self.graph_processor.tsEdges:
                     if(e[0] % M == start_id % M and e[1] % M == next_id % M):
                         #pdb.set_trace()
                         return e[4]    
+                #pdb.set_trace()
                 return abs(endTime - startTime)
+        #pdb.set_trace()
         return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
     def count_edges(self):
         count = 0
@@ -211,6 +216,8 @@ class Graph:
         if idOfAGV in self.map:
             return self.map[idOfAGV]  
         else:
+            found = False
+            temp = []
             for id in self.nodes:
                 if self.nodes[id].agv == agv:
                     #if(id == 13899 or id == 13898):
@@ -219,9 +226,23 @@ class Graph:
                         for old_id in self.map.keys():
                             if(self.nodes[id].agv == self.nodes[old_id].agv):
                                 temp = self.map[old_id]
+                                found = True
+                                break
+                            else:
+                                if isinstance(self.map[old_id], list):
+                                    for node in self.map[old_id]:
+                                        if node.agv == agv:
+                                            temp = self.map[old_id]
+                                            found = True
+                                            break
+                            if found:
+                                break
                     else:
                         temp = self.map[id]#13899
+                        found = True
                     node = self.nodes[id]
+                    #if(found == False):
+                    #    pdb.set_trace()
                     return [node, *temp]
                     #return s self.map[id]
         return None
@@ -254,8 +275,9 @@ class Graph:
                     Q.append(i)      
               
     def update_node(self, node, properties):
-        pdb.set_trace()
-        pass
+        #pdb.set_trace()
+        #pass
+        return
         """if node in self.nodes:
             self.nodes[node].update(properties)
             print(f"Node {node} updated with properties {properties}.")
@@ -333,9 +355,16 @@ class Graph:
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
-            if(source_id == 51268):
+            if(source_id == 51265):
                 #pdb.set_trace()
                 pass
+            isContinued = False
+            for node in self.graph_processor.targetNodes:
+                if node.id == source_id:
+                    isContinued = True
+                    break
+            if isContinued:
+                continue
             # Tính giá trị time
             node = self.nodes[source_id]
             time = source_id // M - (1 if source_id % M == 0 else 0)
