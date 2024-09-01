@@ -1,10 +1,17 @@
 from .Event import Event
+import inspect
 import pdb
 class HaltingEvent(Event):
-    def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
+    def __init__(self, startTime, endTime, agv, graph, start_node, end_node, deltaT):
         super().__init__(startTime, endTime, agv, graph)
         self.start_node = start_node
         self.end_node = end_node
+        self.deltaT = deltaT
+        """current_frame = inspect.currentframe()
+        # Lấy tên của hàm gọi my_function
+        caller_name = inspect.getframeinfo(current_frame.f_back).function
+        if(self.graph.graph_processor.printOut or True):
+            print(f'HaltingEvent.py:12 {caller_name}')"""
 
     def updateGraph(self):
         if(self.endTime >= self.graph.H):
@@ -58,6 +65,7 @@ class HaltingEvent(Event):
         print(
             f"AGV {self.agv.id} moves from {start}({space_start_node}) to {self.end_node}({space_end_node}) but time outs!!!!"
         )
+        print(f'Because it left {self.start_node }({self.start_node % M +  (M if self.start_node % M == 0 else 0)}) as {self.startTime} and spending {self.deltaT} for moving')
         self.re_calculate(self.agv.path)
         self.calculateCost()
         print(f"The total cost of {self.agv.id} is {self.agv.cost}")
