@@ -146,6 +146,8 @@ class Event:
                         for node in a.get_traces():
                             print(f'{node.id}', end= ' ')
                         print()"""
+        #if(self.agv.id == 'AGV4'):
+        #    pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         """if(next_vertex.id == 51265 or next_vertex.id == 51266):
             pdb.set_trace()"""
@@ -258,8 +260,12 @@ class Event:
         if self.agv.get_traces() == None:
             #pdb.set_trace()
             pass
-        else:
+        #else:
+        elif len(self.agv.get_traces()) > 0:
             #pdb.set_trace()
+            """if(len(self.agv.get_traces()) == 0):
+                print(f'len(self.agv.get_traces()) = 0')
+                pdb.set_trace()"""
             target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
             
             if target_node.id in allIDsOfTargetNodes:
