@@ -895,6 +895,8 @@ class GraphProcessor:
     def generate_poisson_random(self, M = None):
         if M is None:
             M = self.M
+        if M <= 2 and M >= 1:
+            return M
         while True:
             # Sinh số ngẫu nhiên theo phân phối Poisson
             number = np.random.poisson(lam=M)        
@@ -929,7 +931,7 @@ class GraphProcessor:
             self.d = int(self.d)
         
         self.generate_adj_matrix()
-        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(4)
+        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(1)
         if len(self.startedNodes) == 0:
             self.ID = []
             self.earliness = []
