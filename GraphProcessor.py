@@ -214,6 +214,9 @@ class GraphProcessor:
             count = count + 1
             ID = Q.popleft()
             #print(Q)
+            if ID < 0 or ID >= self.Adj.shape[0]:
+                continue
+            
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
                     #Q.append(j)
@@ -936,7 +939,7 @@ class GraphProcessor:
                 self.ID.append(d)
                 self.earliness.append(e)
                 self.tardiness.append(t)
-            #print(f'{self.earliness} \n{self.tardiness}')
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
         
         self.create_tsg_file()
         #pdb.set_trace()
