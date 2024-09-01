@@ -23,8 +23,12 @@ class HaltingEvent(Event):
         #pdb.set_trace()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         #self.updateGraph()
+        M = self.graph.graph_processor.M
+        start = self.agv.path[0]
+        space_start_node = start % M + (M if start % M == 0 else 0)
+        space_end_node = self.end_node % M + (M if self.end_node % M == 0 else 0)
         print(
-            f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} but time outs!!!!"
+            f"AGV {self.agv.id} moves from {start}({space_start_node}) to {self.end_node}({space_end_node}) but time outs!!!!"
         )
         self.calculateCost()
         print(f"The total cost of {self.agv.id} is {self.agv.cost}")
