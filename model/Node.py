@@ -66,16 +66,18 @@ class Node:
         #print(f"========={event.agv.path}")
         from .HoldingEvent import HoldingEvent
         from .ReachingTargetEvent import ReachingTargetEvent
+        
+        current_node = event.agv.current_node.id if isinstance(event.agv.current_node, Node) else event.agv.current_node
 
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (self.id // event.graph.numberOfNodesInSpaceGraph \
                                 - (event.graph.graph_processor.d if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
-            event.agv.current_node // event.graph.numberOfNodesInSpaceGraph \
-                                - (event.graph.graph_processor.d if event.agv.current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
+            current_node // event.graph.numberOfNodesInSpaceGraph \
+                                - (event.graph.graph_processor.d if current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
         )
 
         if (self.id % event.graph.numberOfNodesInSpaceGraph) == (
-            event.agv.current_node % event.graph.numberOfNodesInSpaceGraph
+            current_node % event.graph.numberOfNodesInSpaceGraph
         ):
             from .StartEvent import StartEvent
             if(not isinstance(event, StartEvent)):
@@ -115,7 +117,7 @@ class Node:
             print(node.id, end= ' ')
         print()"""
         next_vertex = event.agv.get_traces()[0].id
-        deltaT= event.graph.getReal(event.agv.current_node, next_vertex)
+        deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         allIDsOfTargetNodes = [node.id for node in event.graph.graph_processor.targetNodes]
         if(next_vertex in allIDsOfTargetNodes):
             #pdb.set_trace()
