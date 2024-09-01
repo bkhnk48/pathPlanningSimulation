@@ -116,8 +116,13 @@ class Node:
         for node in event.agv.get_traces():
             print(node.id, end= ' ')
         print()"""
+        if(len(event.agv.get_traces()) == 0):
+            pdb.set_trace()
         next_vertex = event.agv.get_traces()[0].id
         deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
+        #if(deltaT <= 10):
+        #    #pdb.set_trace()
+        #    deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         allIDsOfTargetNodes = [node.id for node in event.graph.graph_processor.targetNodes]
         if(next_vertex in allIDsOfTargetNodes):
             #pdb.set_trace()
@@ -136,8 +141,9 @@ class Node:
                 event.agv.current_node,
                 next_vertex,
             )
-        if(event.graph.graph_processor.printOut):
+        if(event.graph.graph_processor.printOut or True):
             print(f"H = {event.graph.graph_processor.H} and {event.endTime} + {deltaT}")
+            #pdb.set_trace()
         return HaltingEvent(
             event.endTime,
             event.graph.graph_processor.H,
@@ -145,6 +151,7 @@ class Node:
             event.graph,
             event.agv.current_node,
             next_vertex,
+            deltaT
         )
     
     def __repr__(self):
