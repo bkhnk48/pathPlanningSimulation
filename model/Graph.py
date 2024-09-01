@@ -36,9 +36,17 @@ class Graph:
         from .TimeWindowNode import TimeWindowNode
         M = self.numberOfNodesInSpaceGraph
         if(agv is not None):
+            #print(f'{agv.id}')
+            #pdb.set_trace()
             agv.path.add(start_id)
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
         endTime = next_id // M - (1 if next_id % M == 0 else 0)
+        space_start_node = start_id % M + (M if start_id % M == 0 else 0)
+        space_end_node = next_id % M + (M if next_id % M == 0 else 0)
+        edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in self.graph_processor.spaceEdges \
+            if edge[3] == '0' and int(edge[4]) >= 1 }
+        min_moving_time = edges_with_cost.get((space_start_node, space_end_node), [-1, -1])[1]
+        endTime = max(endTime, startTime + min_moving_time)
         allIDsOfTargetNodes = [node.id for node in self.graph_processor.targetNodes]
         if(next_id in allIDsOfTargetNodes):
             #pdb.set_trace()
@@ -450,6 +458,13 @@ class Graph:
         
         self.write_to_file()"""
 
+    def reset_agv(self, real_node_id, agv):
+        for node_id in self.nodes.keys():
+            if(node_id != real_node_id):
+                if self.nodes[node_id].agv == agv:
+                    self.nodes[node_id].agv = None
+        self.nodes[real_node_id].agv = agv
+    
     def parse_string(self, input_string):
         parts = input_string.split()
         if len(parts) != 6 or parts[0] != "a":
