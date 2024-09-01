@@ -914,9 +914,8 @@ class GraphProcessor:
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
         self.startedNodes = [] #[1, 10]
-        
+
         self.process_input_file(filepath)
-        #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
         if(self.H == ''):
             self.H = 10
@@ -933,7 +932,10 @@ class GraphProcessor:
         numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(4)
         if len(self.startedNodes) == 0:
             self.ID = []
-            for i in range(numOfAGVs + 1):
+            self.earliness = []
+            self.tardiness = []
+            #pdb.set_trace()
+            for i in range(numOfAGVs):
                 [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
                 self.startedNodes.append(s)
                 self.ID.append(d)
@@ -946,6 +948,7 @@ class GraphProcessor:
         count = 0
         
         while(count <= numOfAGVs - 1):
+            #pdb.set_trace()
             if(isinstance(self.ID, int)):
                 self.ID = 3
                 self.earliness = 4 if count == 0 else 7
