@@ -7,8 +7,8 @@ class ReachingTargetEvent(Event):
         #pdb.set_trace()
         node = self.graph.nodes[target_node]
         M = self.graph.numberOfNodesInSpaceGraph
-        time = self.agv.current_node // M \
-            - (1 if self.agv.current_node % M == 0 else 0)
+        #time = self.agv.current_node // M \
+        #    - (1 if self.agv.current_node % M == 0 else 0)
         #pdb.set_trace()
         if not hasattr(node, 'earliness'):
             try:
@@ -19,9 +19,12 @@ class ReachingTargetEvent(Event):
                 pass
                 #print(f"Không tìm thấy đối tượng Node với id {target_node}.")
                 #pdb.set_trace()
-        earliness = node.earliness
-        tardiness = node.tardiness
-        self.last_cost = self.graph.graph_processor.beta*(max([earliness - time, 0, time - tardiness]))/self.graph.graph_processor.alpha
+        self.earliness = node.earliness
+        self.tardiness = node.tardiness
+        #if(self.endTime != time):
+        #if(self.agv.id == 'AGV4'):
+        #    pdb.set_trace()
+        self.last_cost = self.graph.graph_processor.beta*(max([self.earliness - self.endTime, 0, self.endTime - self.tardiness]))/self.graph.graph_processor.alpha
         #self.last_cost = self.graph.get_edge(self.agv.current_node, self.target_node)
         """for node, earliness, tardiness in \
             self.graph.graph_processor.time_window_controller.TWEdges[self.agv.current_node]:
@@ -72,8 +75,8 @@ class ReachingTargetEvent(Event):
             node = path[i]
             real_node = node % M + (M if node % M == 0 else 0)
             #pdb.set_trace()
-            t2 = node // M - (D if node % M == 0 else 0)
-            t1 = prev // M - (D if prev % M == 0 else 0)
+            t2 = node // M - (1 if node % M == 0 else 0)
+            t1 = prev // M - (1 if prev % M == 0 else 0)
             deltaCost = self.graph.graph_processor.alpha*(t2 - t1)
             if(i != P - 1):
                 #print('===', end='')
@@ -87,7 +90,7 @@ class ReachingTargetEvent(Event):
                 deltaCost = self.last_cost + deltaCost
                 print(f'({deltaCost})==={real_node}===END. ', end='')
             prev = path[i]
-        print(f'Total cost: {cost}')
+        print(f'Total cost: {cost}. The AGV reaches its destination at {self.endTime} along with earliness = {self.earliness} and tardiness = {self.tardiness}')
     def process(self):
         if(self.graph.graph_processor.printOut):
             # Đây là phương thức để xử lý khi AGV đạt đến mục tiêu
