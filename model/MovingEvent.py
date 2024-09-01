@@ -27,8 +27,10 @@ class MovingEvent(Event):
         #    pdb.set_trace()
         #weight_of_edge = self.graph.get_edge(self.start_node, self.end_node)  # Use self.graph instead of Graph
         M = self.graph.numberOfNodesInSpaceGraph
-        t2 = self.end_node // M - (self.graph.graph_processor.d if self.end_node % M == 0 else 0)
-        t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
+        #t2 = self.end_node // M - (self.graph.graph_processor.d if self.end_node % M == 0 else 0)
+        #t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
+        t2 = self.end_node // M - (1 if self.end_node % M == 0 else 0)
+        t1 = self.start_node // M - (1 if self.start_node % M == 0 else 0)
         #if(t1 != self.startTime):
         #    pdb.set_trace()
         real_end_node = self.endTime*M + (M if self.end_node % M == 0 else self.end_node % M)
@@ -59,7 +61,8 @@ class MovingEvent(Event):
             self.graph.update_graph(self.start_node, self.end_node, real_end_node, self.agv.id)
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
             self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
-            self.graph.nodes[real_end_node].agv = self.agv
+            #self.graph.nodes[real_end_node].agv = self.agv
+            self.graph.reset_agv(real_end_node, self.agv)
             #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
@@ -71,7 +74,7 @@ class MovingEvent(Event):
         return cost_increase
 
     def process(self):
-        #if(self.endTime == 217):
+        #if(self.agv.id == 'AGV4'):
         #    pdb.set_trace()
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
