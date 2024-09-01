@@ -13,10 +13,10 @@ class AGV:
         self.previous_node = None
         self._target_node = None
         self.state = 'idle'
-        self.cost = cost
+        self._cost = cost
         self.versionOfGraph = versionOfGraph
         self._traces = [] #các đỉnh sắp đi qua
-        self.path = SortedSet([]) #các đỉnh đã đi qua 
+        self._path = SortedSet([]) #các đỉnh đã đi qua 
         self.graph = graph
         if current_node not in self.graph.nodes.keys():
             #pdb.set_trace()
@@ -26,6 +26,26 @@ class AGV:
         self.event = None
         AGV.__allInstances.add(self)
         
+    @property
+    def path(self):
+        #pdb.set_trace()
+        return self._path
+    
+    @path.setter
+    def path(self, value):
+        pdb.set_trace()
+        self._path = value
+    
+    @property
+    def cost(self):
+        return self._cost
+    
+    @cost.setter
+    def cost(self, value):
+        if(self.id == 'AGV4' and False):
+            pdb.set_trace()
+        self._cost = value
+    
     @property
     def target_node(self):
         return self._target_node
@@ -58,11 +78,12 @@ class AGV:
                 self.current_node = self._traces.pop(0)
                 """if (self._traces[0].id == 13899):
                     print("+++++++++++++++++++++++")"""
-            if isinstance(self.current_node, (int, np.int64)):
+            #24 09 01
+            """if isinstance(self.current_node, (int, np.int64)):
                 self.path.add(self.current_node)
             else:
                 self.path.add(self.current_node.id)
-                self.current_node = self.current_node.id
+                self.current_node = self.current_node.id"""
             #print(f"{self.path}")
             
             next_node = self._traces[0]
