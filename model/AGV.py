@@ -33,7 +33,7 @@ class AGV:
     
     @path.setter
     def path(self, value):
-        pdb.set_trace()
+        #pdb.set_trace()
         self._path = value
     
     @property
@@ -85,8 +85,13 @@ class AGV:
                 self.path.add(self.current_node.id)
                 self.current_node = self.current_node.id"""
             #print(f"{self.path}")
-            
-            next_node = self._traces[0]
+            next_node = None
+            for node in self._traces:
+                if(node.agv == self):
+                    next_node = node
+                    break
+            if(next_node is None):
+                next_node = self._traces[0]
             if(self.graph.graph_processor.printOut):
                 print(f"AGV {self.id} is moving to next node: {next_node} from current node: {self.current_node}.")
             return next_node
@@ -131,6 +136,7 @@ class AGV:
             else:
                 index = index + 1
         if(index >= len(self._traces)):
+            print(f'{self.id} has _traces: {self._traces} needs to be inserted {real_node} at [{index}]')
             pdb.set_trace()
         else:    
             self._traces[index] = real_node
