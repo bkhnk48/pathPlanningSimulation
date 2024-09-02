@@ -196,6 +196,9 @@ class Graph:
         self.visited = set()
         #self.id2_id4_list = []
         self.map = {}
+        edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in self.graph_processor.spaceEdges \
+            if edge[3] == '0' and int(edge[4]) >= 1 }
+        M = self.graph_processor.M
         #pdb.set_trace()
         #unique_numbers = self.find_unique_numbers()
         #unique_numbers = self.find_unique_nodes()
@@ -208,7 +211,14 @@ class Graph:
                 #self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
                 self.dfs(id1_id3_tree, number)
-                self.map[number] = self.cur
+                if len(self.cur) >= 1:
+                    start = number % M + (M if number % M == 0 else 0)
+                    end = self.cur[0].id % M + (M if self.cur[0].id % M == 0 else 0)
+                    min_cost = edges_with_cost.get((start, end), [-1, -1])[1]
+                    if(min_cost == -1):
+                        #pdb.set_trace()
+                        self.cur = self.cur[1:]
+                self.map[number] = self.cur #[1: ] if len(self.cur) > 1 else self.cur
                 #print('#', end=' ')
                 #print(' '.join(map(str, id2_id4_list)))
                 #self.id2_id4_list = []
