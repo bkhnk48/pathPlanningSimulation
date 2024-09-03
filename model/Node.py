@@ -110,15 +110,17 @@ class Node:
         from .ReachingTargetEvent import ReachingTargetEvent
         if(not isinstance(event, StartEvent)):
             #pdb.set_trace()
-            event.agv.move_to()
+            event.agv.move_to(event)
         #pdb.set_trace()
         """print(f'Node.py:94 {event.agv.id}', end=' ')
         for node in event.agv.get_traces():
             print(node.id, end= ' ')
         print()"""
-        if(len(event.agv.get_traces()) == 0):
-            pdb.set_trace()
-        next_vertex = event.agv.get_traces()[0].id
+        if(len(event.agv.get_traces()) > 0):
+            #pdb.set_trace()
+            next_vertex = event.agv.get_traces()[0].id
+        else:
+            next_vertex = event.agv.target_node.id
         """M = event.graph.graph_processor.M
         edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
@@ -127,7 +129,7 @@ class Node:
         min_moving_time = edges_with_cost.get((space_start_node, space_end_node), [-1, -1])[1]
         if(min_moving_time == -1):
             pdb.set_trace()"""
-        deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
+        deltaT = event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         #if(deltaT <= 10):
         #    pdb.set_trace()
         #    deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
