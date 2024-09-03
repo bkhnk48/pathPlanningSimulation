@@ -94,7 +94,7 @@ class Event:
         # Code để lưu đồ thị vào file
         return filename
 
-    def getNext(self):
+    def getNext(self, debug = False):
         """global numOfCalling
         numOfCalling = numOfCalling + 1
         if(numOfCalling <= 5):
@@ -146,7 +146,7 @@ class Event:
                         for node in a.get_traces():
                             print(f'{node.id}', end= ' ')
                         print()"""
-        #if(self.agv.id == 'AGV4'):
+        #if(self.agv.id == 'AGV4' and debug):
         #    pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         """if(next_vertex.id == 51265 or next_vertex.id == 51266):
@@ -267,21 +267,26 @@ class Event:
                 print(f'len(self.agv.get_traces()) = 0')
                 pdb.set_trace()"""
             target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
-            
-            if target_node.id in allIDsOfTargetNodes:
+        else:
+            target_node = self.agv.target_node
+        if(target_node is not None):    
+            if target_node.id in allIDsOfTargetNodes and len(self.agv.get_traces()) > 0:
                 self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
-            global allAGVs
-            for a in allAGVs:
-                if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                    temp = self.graph.getTrace(a)
-                    if temp != None:
-                        if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
-                            a.set_traces(temp)
+        global allAGVs
+        for a in allAGVs:
+            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                temp = self.graph.getTrace(a)
+                if temp != None:
+                    if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                        a.set_traces(temp)
                     
-                    a.versionOfGraph = self.graph.version
+                a.versionOfGraph = self.graph.version
+                if(len(a.get_traces()) > 0):
                     target_node = a.get_traces()[len(a.get_traces()) - 1]
-                    if target_node.id in allIDsOfTargetNodes:
-                        a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+                else:
+                    target_node = a.target_node
+                if target_node.id in allIDsOfTargetNodes:
+                    a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
                 """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {a.id}', end=' ')
                 for node in a.get_traces():
                     print(node.id, end= ' ')
