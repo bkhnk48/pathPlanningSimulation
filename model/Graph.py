@@ -216,6 +216,8 @@ class Graph:
                     end = self.cur[0].id % M + (M if self.cur[0].id % M == 0 else 0)
                     min_cost = edges_with_cost.get((start, end), [-1, -1])[1]
                     if(min_cost == -1):
+                        if(isinstance(self.cur[0], TimeWindowNode) or len(self.cur) == 1):
+                            pdb.set_trace()
                         #pdb.set_trace()
                         self.cur = self.cur[1:]
                 self.map[number] = self.cur #[1: ] if len(self.cur) > 1 else self.cur
