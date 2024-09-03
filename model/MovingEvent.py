@@ -50,6 +50,9 @@ class MovingEvent(Event):
         
         weight_of_edge = t2 - t1
         predicted_time = weight_of_edge or None
+        #if(self.startTime == 682 and self.endTime == 713 and self.agv.id == 'AGV4'):
+        #    print("Gonna out of range exception")
+        #    pdb.set_trace()
         #if(real_end_node == 14987):
         #    pdb.set_trace()
         #pdb.set_trace()
@@ -84,4 +87,5 @@ class MovingEvent(Event):
                 f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
                 )
         #pdb.set_trace()
-        self.getNext()
+        #debug = self.startTime == 682 and self.endTime == 713
+        self.getNext("""debug""")
