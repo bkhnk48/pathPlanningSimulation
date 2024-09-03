@@ -44,6 +44,7 @@ class GraphProcessor:
         self.startBan = -1
         self.endBan = -1
         self._seed = 0
+        self.numMaxAGVs = 0
 
         
     @property
@@ -931,7 +932,13 @@ class GraphProcessor:
             self.d = int(self.d)
         
         self.generate_adj_matrix()
-        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(1)
+        
+        self.numMaxAGVs = input("Nhap so luong AGV toi da di chuyen trong toan moi truong (default: 4):")
+        if(self.numMaxAGVs == ''):
+            self.numMaxAGVs = 4
+        else:
+            self.numMaxAGVs = int(self.numMaxAGVs)
+        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
         if len(self.startedNodes) == 0:
             self.ID = []
             self.earliness = []
