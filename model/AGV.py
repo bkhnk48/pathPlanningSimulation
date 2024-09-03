@@ -74,7 +74,8 @@ class AGV:
             #print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         if self._traces:
             if(endedEvent):
-                #pdb.set_trace()
+                print(self.id)
+                pdb.set_trace()
                 self.current_node = self._traces.pop(0)
                 """if (self._traces[0].id == 13899):
                     print("+++++++++++++++++++++++")"""
@@ -140,7 +141,7 @@ class AGV:
             pdb.set_trace()
         else:    
             self._traces[index] = real_node
-    def move_to(self):
+    def move_to(self, event):
         if len(self._traces) >= 1:
             self.previous_node = self.current_node
             self.current_node = self.get_traces()[0].id
