@@ -223,7 +223,8 @@ class GraphProcessor:
                     #Q.append(j)
                     if j in Q:
                         #print(f'\t{j} đã tồn tại trong {self.show(Q)}')
-                        continue
+                        if any(line.startswith(f"a {ID} {j} 0") for line in output_lines):
+                            continue
                     else:
                         Q.append(j)
                     """if(j in my_dict.keys()):
