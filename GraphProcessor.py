@@ -51,6 +51,10 @@ class GraphProcessor:
     def targetNodes(self):
         return self._targetNodes
     
+    @targetNodes.setter
+    def targetNodes(self, value):
+        self._targetNodes = value
+    
     def appendTarget(self, target_node):
         if isinstance(target_node, TimeWindowNode):
             #pdb.set_trace()
