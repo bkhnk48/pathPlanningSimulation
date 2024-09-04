@@ -7,11 +7,13 @@ class HaltingEvent(Event):
         self.start_node = start_node
         self.end_node = end_node
         self.deltaT = deltaT
-        """current_frame = inspect.currentframe()
+        pdb.set_trace()
+        current_frame = inspect.currentframe()
         # Lấy tên của hàm gọi my_function
         caller_name = inspect.getframeinfo(current_frame.f_back).function
         if(self.graph.graph_processor.printOut or True):
-            print(f'HaltingEvent.py:12 {caller_name}')"""
+            print(f'HaltingEvent.py:14 {caller_name}')
+        print(self)
 
     def updateGraph(self):
         if(self.endTime >= self.graph.H):
@@ -50,7 +52,7 @@ class HaltingEvent(Event):
             else:
                 deltaCost = (float('inf') if(self.end_node != self.agv.target_node.id) else self.endTime - self.startTime)
                 cost = cost + deltaCost
-                print(f'({deltaCost})==={real_node}===END. ', end='')
+                print(f'({self.deltaT})/({deltaCost})==={real_node}===END. ', end='')
             prev = path[i]
         print(f'Total cost: {cost}. The AGV reaches its destination at {self.endTime}')
     
@@ -65,8 +67,11 @@ class HaltingEvent(Event):
         print(
             f"AGV {self.agv.id} moves from {start}({space_start_node}) to {self.end_node}({space_end_node}) but time outs!!!!"
         )
-        print(f'Because it left {self.start_node }({self.start_node % M +  (M if self.start_node % M == 0 else 0)}) as {self.startTime} and spending {self.deltaT} for moving')
+        print(f'Because it left {self.start_node }({self.start_node % M + (M if self.start_node % M == 0 else 0)}) as {self.startTime} and spending {self.deltaT} for moving')
         self.re_calculate(self.agv.path)
         self.calculateCost()
         print(f"The total cost of {self.agv.id} is {self.agv.cost}")
         #self.getNext()
+    
+    def __str__(self):
+        return f"HaltingEvent for {self.agv.id} because it leaves {self.start_node} at {self.startTime} and its finished time at {self.endTime}"
