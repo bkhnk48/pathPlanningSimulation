@@ -122,6 +122,8 @@ class Node:
             #pdb.set_trace()
             next_vertex = event.agv.get_traces()[0].id
         else:
+            if(event.agv.target_node is None):
+                pdb.set_trace()
             next_vertex = event.agv.target_node.id
         M = event.graph.graph_processor.M
         """edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
