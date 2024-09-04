@@ -138,7 +138,8 @@ class AGV:
                 index = index + 1
         if(index >= len(self._traces)):
             print(f'{self.id} has _traces: {self._traces} needs to be inserted {real_node} at [{index}]')
-            pdb.set_trace()
+            #pdb.set_trace()
+            self._traces = [real_node]
         else:    
             self._traces[index] = real_node
     def move_to(self, event = None):
