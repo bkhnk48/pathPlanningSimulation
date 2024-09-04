@@ -1,12 +1,14 @@
 from .Event import Event
 import inspect
 import pdb
+from discrevpy import simulator
 class MovingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
         super().__init__(startTime, endTime, agv, graph)
         #pdb.set_trace()
         self.start_node = start_node
         self.end_node = end_node
+        #print(self)
         M = self.graph.numberOfNodesInSpaceGraph
         t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
         if(t1 != self.startTime):
@@ -19,7 +21,12 @@ class MovingEvent(Event):
             caller_name = inspect.getframeinfo(current_frame.f_back).function
             if(self.graph.graph_processor.printOut):
                 print(f'MovingEvent.py:19 {caller_name}')"""
-
+    def __str__(self):
+        M = self.graph.numberOfNodesInSpaceGraph
+        space_start_node = self.start_node % M + (M if self.start_node % M == 0 else 0)
+        space_end_node = self.end_node % M + (M if self.end_node % M == 0 else 0)
+        return f"MovingEvent for {self.agv.id} to move from {self.start_node}({space_start_node}) at {self.startTime} and agv might reach {space_end_node} at {self.endTime}"
+        
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
         #pdb.set_trace()
@@ -61,11 +68,15 @@ class MovingEvent(Event):
         if real_end_node != self.end_node:
             if self.end_node in self.graph.nodes:
                 self.graph.nodes[self.end_node].agv = None
+            self.agv.current_node = real_end_node
             self.graph.update_graph(self.start_node, self.end_node, real_end_node, self.agv.id)
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
             self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
+            if(len(self.agv.get_traces()) == 0):
+                pdb.set_trace()
             #self.graph.nodes[real_end_node].agv = self.agv
             self.graph.reset_agv(real_end_node, self.agv)
+            
             #self.graph.update_edge(self.start_node, self.end_node, actual_time)  # Use self.graph instead of Graph
             #self.graph.handle_edge_modifications(self.start_node, self.end_node, self.agv)  # Use self.graph instead of Graph
 
@@ -88,4 +99,11 @@ class MovingEvent(Event):
                 )
         #pdb.set_trace()
         #debug = self.startTime == 682 and self.endTime == 713
-        self.getNext("""debug""")
+        #self.getNext("""debug""")
+        #self.getNext()
+        self.solve()
+        #pdb.set_trace()
+        next_node = self.graph.nodes[self.agv.current_node]
+        #new_event = next_node.getEventForReaching(self)
+        new_event = next_node.goToNextNode(self)
+        simulator.schedule(new_event.endTime, new_event.process)
