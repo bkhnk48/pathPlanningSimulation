@@ -5,6 +5,8 @@ class ReachingTargetEvent(Event):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
         #pdb.set_trace()
+        if(target_node not in self.graph.nodes):
+            pdb.set_trace()
         node = self.graph.nodes[target_node]
         M = self.graph.numberOfNodesInSpaceGraph
         #time = self.agv.current_node // M \
@@ -45,6 +47,8 @@ class ReachingTargetEvent(Event):
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
         self.graph.remove_node_and_origins(self.target_node)
+        new_target_nodes = [node for node in self.graph.graph_processor.targetNodes if node.id != self.target_node]
+        self.graph.graph_processor.targetNodes = new_target_nodes
 
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
