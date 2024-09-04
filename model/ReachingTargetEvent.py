@@ -40,6 +40,7 @@ class ReachingTargetEvent(Event):
                     break"""
         if(self.graph.graph_processor.printOut):
             print(f"Last cost: {self.last_cost}")
+        print(self)
 
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
@@ -101,9 +102,12 @@ class ReachingTargetEvent(Event):
                 f"AGV {self.agv.id} has reached the target node {self.target_node} at time {self.endTime}"
                 )
         #pdb.set_trace()
-        #print(self.agv.path)
+        print(self.agv.path)
         self.re_calculate(self.agv.path)
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
         self.updateGraph()  # Optional: update the graph if necessary
+    
+    def __str__(self):
+        return f"ReachingTargetEvent for {self.agv.id} at time: {self.endTime} and it reaches the artificial node {self.target_node}"
