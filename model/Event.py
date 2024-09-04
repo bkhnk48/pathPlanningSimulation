@@ -93,6 +93,15 @@ class Event:
         #filename = "input_dimacs/supply_03_demand_69_edit.txt"
         # Code để lưu đồ thị vào file
         return filename
+    
+    def solve(self):
+        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
+        #pdb.set_trace()
+        if self.graph.numberOfNodesInSpaceGraph == -1:
+            global numberOfNodesInSpaceGraph
+            self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
+        if (self.graph.version != self.agv.versionOfGraph or self.graph.version == -1):
+            self.find_path(DimacsFileReader, ForecastingModel)
 
     def getNext(self, debug = False):
         """global numOfCalling
@@ -120,17 +129,7 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
-        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
-        #pdb.set_trace()
-        if self.graph.numberOfNodesInSpaceGraph == -1:
-            global numberOfNodesInSpaceGraph
-            self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
-
-        if (
-            self.graph.version != self.agv.versionOfGraph
-            or self.graph.version == -1
-        ):
-            self.find_path(DimacsFileReader, ForecastingModel)
+        self.solve()
         #if(would_break_point):
         #    pdb.set_trace()
         """if(numOfCalling == 4):
@@ -148,9 +147,13 @@ class Event:
                         print()"""
         #if(self.agv.id == 'AGV4' and debug):
         #    pdb.set_trace()
+        if(len(self.agv.get_traces()) == 0):
+            pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         """if(next_vertex.id == 51265 or next_vertex.id == 51266):
             pdb.set_trace()"""
+        if(next_vertex is None):
+            print(f'{self.agv.id} at Event.py:155')
         new_event = next_vertex.getEventForReaching(self)
 
         # Lên lịch cho sự kiện mới
@@ -272,21 +275,22 @@ class Event:
         if(target_node is not None):    
             if target_node.id in allIDsOfTargetNodes and len(self.agv.get_traces()) > 0:
                 self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
-        global allAGVs
-        for a in allAGVs:
-            if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
-                temp = self.graph.getTrace(a)
-                if temp != None:
-                    if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
-                        a.set_traces(temp)
+            global allAGVs
+            for a in allAGVs:
+                if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
+                    temp = self.graph.getTrace(a)
+                    if temp != None:
+                        if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
+                            a.set_traces(temp)
                     
-                a.versionOfGraph = self.graph.version
-                if(len(a.get_traces()) > 0):
-                    target_node = a.get_traces()[len(a.get_traces()) - 1]
-                else:
-                    target_node = a.target_node
-                if target_node.id in allIDsOfTargetNodes:
-                    a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+                    a.versionOfGraph = self.graph.version
+                    if(len(a.get_traces()) > 0):
+                        target_node = a.get_traces()[len(a.get_traces()) - 1]
+                    else:
+                        target_node = a.target_node
+                    if(target_node is not None):
+                        if target_node.id in allIDsOfTargetNodes:
+                            a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
                 """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {a.id}', end=' ')
                 for node in a.get_traces():
                     print(node.id, end= ' ')
