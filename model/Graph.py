@@ -7,6 +7,17 @@ from .RestrictionNode import RestrictionNode
 from .TimeWindowNode import TimeWindowNode
 from .Node import Node
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    RED = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    
 class Graph:
     def __init__(self, graph_processor):
         self.graph_processor = graph_processor 
@@ -38,6 +49,12 @@ class Graph:
         if(agv is not None):
             #print(f'{agv.id}')
             #pdb.set_trace()
+            old_real_path = [(node % M + (M if node % M == 0 else 0)) for node in agv.path]
+            real_start_id = start_id % M + (M if start_id % M == 0 else 0)
+            for real_node in old_real_path:
+                if(real_start_id == real_node):
+                    #pdb.set_trace()
+                    break
             agv.path.add(start_id)
         startTime = start_id // M - (1 if start_id % M == 0 else 0)
         endTime = next_id // M - (1 if next_id % M == 0 else 0)
@@ -154,6 +171,9 @@ class Graph:
                 if line.startswith('a'):
                     numbers = line.split()
                     id1 = int(numbers[1])
+                    if(id1 == 23):
+                        #pdb.set_trace()
+                        pass
                     id3 = int(numbers[2])
                     id2 = id1 % M
                     id4 = id3 % M
@@ -216,14 +236,16 @@ class Graph:
                     end = self.cur[0].id % M + (M if self.cur[0].id % M == 0 else 0)
                     min_cost = edges_with_cost.get((start, end), [-1, -1])[1]
                     if(min_cost == -1):
-                        if(isinstance(self.cur[0], TimeWindowNode) or len(self.cur) == 1):
-                            pdb.set_trace()
+                        #if(isinstance(self.cur[0], TimeWindowNode) or len(self.cur) == 1):
+                        #    pdb.set_trace()
                         #pdb.set_trace()
                         self.cur = self.cur[1:]
                 self.map[number] = self.cur #[1: ] if len(self.cur) > 1 else self.cur
                 #print('#', end=' ')
                 #print(' '.join(map(str, id2_id4_list)))
                 #self.id2_id4_list = []
+        """for item in self.map.keys():
+            print(f'\033[4m Graph.py: 234: {item} has trace: \033[0m {self.map[item]}\n')"""
     
     def getTrace(self, agv):
         #pdb.set_trace()
@@ -510,8 +532,9 @@ class Graph:
                     allAGVs.add(self.nodes[id].agv)"""
         startedNodes = []
         for agv in allAGVs:
-            if(len(agv.path) > 0):
-                startedNodes.append(agv.path[-1])
+            #if(len(agv.path) > 0):
+            #    startedNodes.append(agv.path[-1])
+            startedNodes.append(agv.current_node)
         if(len(startedNodes) == 0):
             return self.graph_processor.startedNodes
         return startedNodes
@@ -525,6 +548,7 @@ class Graph:
         #        for end_node, weight in self.adjacency_list[start_node]:
         #            file.write(f"a {start_node} {end_node} 0 1 {weight}\n")
         Max = len(self.nodes)
+        #pdb.set_trace()
         num_edges = self.count_edges()
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
         with open(filename, 'w') as file:
