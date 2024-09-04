@@ -71,9 +71,11 @@ class Node:
 
         # Xác định kiểu sự kiện tiếp theo
         deltaT = (self.id // event.graph.numberOfNodesInSpaceGraph \
-                                - (event.graph.graph_processor.d if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
+                                #- (event.graph.graph_processor.d if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
+                                - (1 if self.id % event.graph.numberOfNodesInSpaceGraph == 0 else 0)) - (
             current_node // event.graph.numberOfNodesInSpaceGraph \
-                                - (event.graph.graph_processor.d if current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
+                                #- (event.graph.graph_processor.d if current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
+                                - (1 if current_node % event.graph.numberOfNodesInSpaceGraph == 0 else 0)
         )
 
         if (self.id % event.graph.numberOfNodesInSpaceGraph) == (
@@ -81,7 +83,7 @@ class Node:
         ):
             from .StartEvent import StartEvent
             if(not isinstance(event, StartEvent)):
-                event.agv.move_to()
+                event.agv.move_to(event)
             return HoldingEvent(
                 event.endTime,
                 event.endTime + deltaT,
@@ -121,14 +123,22 @@ class Node:
             next_vertex = event.agv.get_traces()[0].id
         else:
             next_vertex = event.agv.target_node.id
-        """M = event.graph.graph_processor.M
-        edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
+        M = event.graph.graph_processor.M
+        """edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
         space_start_node = event.agv.current_node % M + (M if event.agv.current_node % M == 0 else 0)
         space_end_node = next_vertex % M + (M if next_vertex % M == 0 else 0)
         min_moving_time = edges_with_cost.get((space_start_node, space_end_node), [-1, -1])[1]
         if(min_moving_time == -1):
             pdb.set_trace()"""
+        #if(event.agv.current_node != self.id):
+        #    #pass
+        #    #pdb.set_trace()
+        #if (event.agv.id == 'AGV30'):
+        #    real_current_node = event.agv.current_node % M + (M if event.agv.current_node % M == 0 else 0)
+        #    if(real_current_node == 21):
+        #        pass
+        #        #pdb.set_trace()
         deltaT = event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         #if(deltaT <= 10):
         #    pdb.set_trace()
@@ -143,6 +153,7 @@ class Node:
             pass
         if event.endTime + deltaT < event.graph.graph_processor.H:
                 #pdb.set_trace()
+            #pdb.set_trace()
             return MovingEvent(
                 event.endTime,
                 event.endTime + deltaT,
