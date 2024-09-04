@@ -141,7 +141,7 @@ class AGV:
             pdb.set_trace()
         else:    
             self._traces[index] = real_node
-    def move_to(self, event):
+    def move_to(self, event = None):
         if len(self._traces) >= 1:
             self.previous_node = self.current_node
             self.current_node = self.get_traces()[0].id
