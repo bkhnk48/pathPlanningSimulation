@@ -7,13 +7,13 @@ class HaltingEvent(Event):
         self.start_node = start_node
         self.end_node = end_node
         self.deltaT = deltaT
-        pdb.set_trace()
+        #pdb.set_trace()
         current_frame = inspect.currentframe()
         # Lấy tên của hàm gọi my_function
         caller_name = inspect.getframeinfo(current_frame.f_back).function
-        if(self.graph.graph_processor.printOut or True):
+        if(self.graph.graph_processor.printOut):
             print(f'HaltingEvent.py:14 {caller_name}')
-        print(self)
+        #print(self)
 
     def updateGraph(self):
         if(self.endTime >= self.graph.H):
