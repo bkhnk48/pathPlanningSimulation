@@ -171,9 +171,9 @@ class Graph:
                 if line.startswith('a'):
                     numbers = line.split()
                     id1 = int(numbers[1])
-                    if(id1 == 23):
-                        #pdb.set_trace()
-                        pass
+                    #if(id1 == 32):
+                    #    pdb.set_trace()
+                    #    #pass
                     id3 = int(numbers[2])
                     id2 = id1 % M
                     id4 = id3 % M
@@ -231,6 +231,7 @@ class Graph:
                 #self.id2_id4_list.append(self.neighbour_list[number])
                 self.cur = []
                 self.dfs(id1_id3_tree, number)
+                self.visited = set()
                 if len(self.cur) >= 1:
                     start = number % M + (M if number % M == 0 else 0)
                     end = self.cur[0].id % M + (M if self.cur[0].id % M == 0 else 0)
@@ -408,27 +409,28 @@ class Graph:
             if isContinued:
                 continue
             # Tính giá trị time
-            node = self.nodes[source_id]
-            time = source_id // M - (1 if source_id % M == 0 else 0)
-            # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
-            if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
-                #if(source_id == 18):
-                #    pdb.set_trace()allAGVs
-                del self.adjacency_list[source_id]
-                if(self.nodes[source_id].agv is not None):
-                    #pdb.set_trace()
-                    space_id = M if (source_id % M == 0) else source_id % M
-                    new_source_id = current_time*M + space_id
-                    try:
-                        if new_source_id in self.nodes:
-                            self.nodes[new_source_id].agv = self.nodes[source_id].agv
-                        index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
-                        self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
-                    except ValueError:
-                        #print(f"Phần tử {source_id} không tồn tại trong danh sách.")
-                        pass
+            if (source_id in self.nodes):
+                node = self.nodes[source_id]
+                time = source_id // M - (1 if source_id % M == 0 else 0)
+                # Nếu time < current_time, not isinstance(node, (TimeWindowNode, RestrictionNode))
+                if time < current_time and not isinstance(node, (TimeWindowNode, RestrictionNode)):
+                    #if(source_id == 18):
+                    # #    pdb.set_trace()allAGVs
+                    del self.adjacency_list[source_id]
+                    if(self.nodes[source_id].agv is not None):
                         #pdb.set_trace()
-                del self.nodes[source_id]
+                        space_id = M if (source_id % M == 0) else source_id % M
+                        new_source_id = current_time*M + space_id
+                        try:
+                            if new_source_id in self.nodes:
+                                self.nodes[new_source_id].agv = self.nodes[source_id].agv
+                            index = self.graph_processor.startedNodes.index(source_id)  # Tìm vị trí của phần tử x
+                            self.graph_processor.startedNodes[index] = new_source_id  # Thay thế phần tử x bằng phần tử y
+                        except ValueError:
+                            #print(f"Phần tử {source_id} không tồn tại trong danh sách.")
+                            pass
+                        #pdb.set_trace()
+                    del self.nodes[source_id]
         
         Q = deque()
         Q.append(new_node_id)
