@@ -9,7 +9,7 @@ class AGV:
     __allInstances = set()
     def __init__(self, id, current_node, graph, cost = 0, versionOfGraph = -1):
         self.id = id
-        self.current_node = current_node
+        self._current_node = current_node
         self.previous_node = None
         self._target_node = None
         self.state = 'idle'
@@ -26,6 +26,18 @@ class AGV:
         self.event = None
         AGV.__allInstances.add(self)
         
+    @property
+    def current_node(self):
+        #pdb.set_trace()
+        return self._current_node
+    @current_node.setter
+    def current_node(self, value):
+        #pdb.set_trace()
+        if(self.id == 'AGV32'):
+            if(value == 1112):
+                pdb.set_trace()
+        self._current_node = value
+    
     @property
     def path(self):
         #pdb.set_trace()
