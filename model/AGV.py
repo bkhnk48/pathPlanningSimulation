@@ -26,6 +26,10 @@ class AGV:
         self.event = None
         AGV.__allInstances.add(self)
         
+    def destroy(self):
+        print(f"Huy doi tuong {self.id} trong ham huy __del__ cua AGV.py")
+        AGV.__allInstances.discard(self)
+        
     @property
     def current_node(self):
         #pdb.set_trace()
