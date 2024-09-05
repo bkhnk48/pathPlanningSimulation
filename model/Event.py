@@ -257,8 +257,11 @@ class Event:
         allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
         #self.agv.set_traces(temp if temp != None else self.agv.get_traces())
         if temp != None:
-            if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
-                self.agv.set_traces(temp)
+            while(temp[-1].id not in allIDsOfTargetNodes):
+                temp.pop()
+                if(len(temp) == 0):
+                    break
+            self.agv.set_traces(temp)
         self.agv.versionOfGraph = self.graph.version
         if self.agv.get_traces() == None:
             #pdb.set_trace()
@@ -276,6 +279,7 @@ class Event:
             if target_node.id in allIDsOfTargetNodes and len(self.agv.get_traces()) > 0:
                 self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
             global allAGVs
+            #pdb.set_trace()
             for a in allAGVs:
                 if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
                     temp = self.graph.getTrace(a)
