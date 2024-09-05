@@ -942,7 +942,7 @@ class GraphProcessor:
         if(self.numMaxAGVs == ''):
             self.numMaxAGVs = 4
         else:
-            self.numMaxAGVs = int(self.numMaxAGVs)
+            """self.numMaxAGVs = int(self.numMaxAGVs)
         numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
         if len(self.startedNodes) == 0:
             self.ID = []
@@ -955,6 +955,13 @@ class GraphProcessor:
                 self.ID.append(d)
                 self.earliness.append(e)
                 self.tardiness.append(t)
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')"""
+            self.numMaxAGVs = 7
+            numOfAGVs = 7
+            self.startedNodes = [23, 4, 29, 30, 31, 32, 33] 
+            self.ID = [2, 25, 8, 9, 10, 11, 12] 
+            self.earliness = [2, 4, 8, 9, 10, 11, 12] 
+            self.tardiness = [268, 270, 274, 275, 276, 277, 278]
             print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
         
         self.create_tsg_file()
