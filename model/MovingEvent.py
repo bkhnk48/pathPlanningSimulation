@@ -1,4 +1,5 @@
 from .Event import Event
+from .HaltingEvent import HaltingEvent
 import inspect
 import pdb
 from discrevpy import simulator
@@ -8,6 +9,7 @@ class MovingEvent(Event):
         #pdb.set_trace()
         self.start_node = start_node
         self.end_node = end_node
+        self.force_quit = False
         #print(self)
         M = self.graph.numberOfNodesInSpaceGraph
         t1 = self.start_node // M - (self.graph.graph_processor.d if self.start_node % M == 0 else 0)
@@ -47,9 +49,35 @@ class MovingEvent(Event):
         """self.agv.path.add(real_end_node)"""
         
         if(real_end_node in self.graph.nodes):
+            if(self.graph.nodes[real_end_node].agv is not None):
+                if (self.graph.nodes[real_end_node].agv.id != self.agv.id):
+                    #print(f'{self.graph.nodes[real_end_node].agv.id} != {self.agv.id}')
+                    pdb.set_trace()
+                    deltaT = 0
+                    new_event = None
+                    while(True):
+                        deltaT = deltaT + 1
+                        real_end_node = real_end_node + M*deltaT
+                        if(self.endTime + deltaT < self.graph.graph_processor.H):
+                            if(real_end_node in self.graph.nodes):
+                                if(self.graph.nodes[real_end_node].agv is not None):
+                                    if (self.graph.nodes[real_end_node].agv.id != self.agv.id):
+                                        continue
+                            new_event = MovingEvent(self.startTime, \
+                                self.endTime + deltaT, self.agv, self.graph, self.agv.current_node, real_end_node)
+                            break
+                        else:
+                            new_event = HaltingEvent(self.endTime, \
+                                self.graph.graph_processor.H, self.agv, self.graph, self.agv.current_node, real_end_node, deltaT)    
+                            break                                    
+                    simulator.schedule(new_event.endTime, new_event.process)
+                    self.force_quit = True
+                    return
+                
             self.graph.nodes[real_end_node].agv = self.agv
         if self.start_node in self.graph.nodes:
-            self.graph.nodes[self.start_node].agv = None
+            if self.start_node != real_end_node:
+                self.graph.nodes[self.start_node].agv = None
             """pdb.set_trace()
             self.graph.nodes[real_end_node].agv = self.graph.nodes[self.start_node].agv \
                 if(self.graph.nodes[self.start_node].agv is not None) else self.graph.nodes[self.end_node].agv
@@ -93,6 +121,8 @@ class MovingEvent(Event):
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
+        if(self.force_quit):
+            return
         if(self.graph.graph_processor.printOut):
             print(
                 f"AGV {self.agv.id} moves from {self.start_node} to {self.end_node} taking actual time {self.endTime - self.startTime}"
