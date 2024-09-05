@@ -97,7 +97,7 @@ class ReachingTargetEvent(Event):
             else:
                 cost = cost + self.last_cost #+ deltaCost
                 deltaCost = self.last_cost #+ deltaCost
-                print(f'({deltaCost})==={real_node}===END. ', end='')
+                print(f'({deltaCost})==={real_node}/{node}===END. ', end='')
             prev = path[i]
         print(f'Total cost: {cost}. The AGV reaches its destination at {self.endTime} along with earliness = {self.earliness} and tardiness = {self.tardiness}')
     def process(self):
@@ -113,6 +113,7 @@ class ReachingTargetEvent(Event):
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
         self.updateGraph()  # Optional: update the graph if necessary
+        self.agv.destroy()
         del self.agv
     
     def __str__(self):
