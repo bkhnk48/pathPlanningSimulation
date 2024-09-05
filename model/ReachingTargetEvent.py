@@ -1,5 +1,6 @@
 from .Event import Event
 import pdb
+from .AGV import AGV
 class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
@@ -112,6 +113,7 @@ class ReachingTargetEvent(Event):
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
         self.updateGraph()  # Optional: update the graph if necessary
+        del self.agv
     
     def __str__(self):
         return f"ReachingTargetEvent for {self.agv.id} at time: {self.endTime} and it reaches the artificial node {self.target_node}"
