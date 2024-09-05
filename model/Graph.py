@@ -38,6 +38,7 @@ class Graph:
         self.cur = []
         self.map = {}
         self.numberOfNodesInSpaceGraph = -1 if graph_processor is None else graph_processor.M
+        self.calling = 0
         #print("Initialized a new graph.")
         #stack = inspect.stack()
         #for frame in stack[1:]:
@@ -532,16 +533,17 @@ class Graph:
                     allAGVs.add(self.nodes[id].agv)
                 elif any(agv.id == self.nodes[id].agv.id for agv in allAGVs):
                     allAGVs.add(self.nodes[id].agv)"""
-        startedNodes = []
+        startedNodes = set()
         for agv in allAGVs:
             #if(len(agv.path) > 0):
             #    startedNodes.append(agv.path[-1])
-            startedNodes.append(agv.current_node)
+            startedNodes.add(agv.current_node)
         if(len(startedNodes) == 0):
             return self.graph_processor.startedNodes
         return startedNodes
         
     def write_to_file(self, agv_id_and_new_start = None, filename="TSG.txt"):
+        self.calling = self.calling + 1
         #with open(filename, "w") as file:
         #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
         #    for node in self.nodes:
@@ -555,7 +557,6 @@ class Graph:
         sorted_edges = sorted(self.adjacency_list.items(), key=lambda x: x[0])
         with open(filename, 'w') as file:
             file.write(f"p min {Max} {num_edges}\n")
-            #pdb.set_trace()
             """if(Max == 8161 and num_edges == 13865):
                 pdb.set_trace()
             for start in self.graph_processor.startedNodes:
@@ -563,7 +564,11 @@ class Graph:
                 start_node = self.get_current_node(agv_id_and_new_start, start)
                 #if(start_node == 24):
                 #    pdb.set_trace()"""
+            if(self.calling == 6):
+                pdb.set_trace()
             startedNodes = self.getAllNewStartedNodes()
+            print(f'Graph.py:566 {startedNodes}')
+            #pdb.set_trace()
             for start_node in startedNodes:
                 file.write(f"n {start_node} 1\n")
             for target in self.graph_processor.getTargets():
