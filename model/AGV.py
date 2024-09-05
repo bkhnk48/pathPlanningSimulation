@@ -36,6 +36,9 @@ class AGV:
         #pdb.set_trace()
         self._path = value
     
+    def __del__(self):
+        print(f"Huy doi tuong {self.id} trong ham huy __del__ cua AGV.py")
+        AGV.__allInstances.discard(self)
     @property
     def cost(self):
         return self._cost
@@ -56,8 +59,10 @@ class AGV:
     
     @target_node.setter
     def target_node(self, value):
+        if(value is None and (self.id == 'AGV23' or self.id == 'AGV32')):
+            pdb.set_trace()
         self._target_node = value
-    def updateInfo(width, length, speed):
+    def updateInfo(self, width, length, speed):
         self.width = width
         self.length = length
         self.speed = speed
