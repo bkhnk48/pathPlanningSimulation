@@ -45,6 +45,7 @@ class Graph:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
         
     def getReal(self, start_id, next_id, agv):
+        result = -1
         from .TimeWindowNode import TimeWindowNode
         M = self.numberOfNodesInSpaceGraph
         if(agv is not None):
@@ -70,22 +71,36 @@ class Graph:
             #pdb.set_trace()
             if(agv is not None):
                 agv.path.add(next_id)
-            return 0
+            result = 0
         try:
             if isinstance(self.nodes[next_id], TimeWindowNode):
                 #pdb.set_trace()
-                return (endTime - startTime)
+                result = (endTime - startTime) if result == -1 else result
         except:
             if next_id not in self.nodes:
                 #print(f'in self.nodes doesnt have {next_id}')
                 for e in self.graph_processor.tsEdges:
                     if(e[0] % M == start_id % M and e[1] % M == next_id % M):
                         #pdb.set_trace()
-                        return e[4]    
+                        result = e[4] if result == -1 else result
                 #pdb.set_trace()
-                return abs(endTime - startTime)
+                result = abs(endTime - startTime) if result == -1 else result
         #pdb.set_trace()
-        return (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3)
+        result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
+        collision = True
+        #pdb.set_trace()
+        while(collision):
+            collision = False
+            if (next_id not in allIDsOfTargetNodes):
+                if(next_id in self.nodes.keys()):
+                    if(self.nodes[next_id].agv is not None):
+                        if(self.nodes[next_id].agv != agv):
+                            print(f'{self.nodes[next_id].agv.id} != {agv.id}')
+                            pdb.set_trace()
+                            collision = True
+                            result = result + 1
+                            next_id = next_id + M
+        return result
     def count_edges(self):
         count = 0
         for node in self.adjacency_list:
