@@ -43,11 +43,14 @@ class ReachingTargetEvent(Event):
                     break"""
         if(self.graph.graph_processor.printOut):
             print(f"Last cost: {self.last_cost}")
-        print(self)
+        #print(self)
 
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
         self.graph.remove_node_and_origins(self.target_node)
+        if(self.agv.path[-1] != self.target_node):
+            self.target_node = self.agv.path[-1]
+            pdb.set_trace()
         new_target_nodes = [node for node in self.graph.graph_processor.targetNodes if node.id != self.target_node]
         self.graph.graph_processor.targetNodes = new_target_nodes
 
@@ -97,9 +100,12 @@ class ReachingTargetEvent(Event):
             else:
                 cost = cost + self.last_cost #+ deltaCost
                 deltaCost = self.last_cost #+ deltaCost
-                print(f'({deltaCost})==={real_node}/{node}===END. ', end='')
+                #print(f'({deltaCost})==={real_node}/{node}===END. ', end='')
+                print(f'({deltaCost})==={node}===END. ', end='')
             prev = path[i]
-        print(f'Total cost: {cost}. The AGV reaches its destination at {self.endTime} along with earliness = {self.earliness} and tardiness = {self.tardiness}')
+        dest = path[-2]
+        real_dest = M if dest % M == 0 else dest % M
+        print(f'Total cost: {cost}. The AGV reaches its destination: {real_dest} at {self.endTime} along with earliness = {self.earliness} and tardiness = {self.tardiness}')
     def process(self):
         if(self.graph.graph_processor.printOut):
             # Đây là phương thức để xử lý khi AGV đạt đến mục tiêu
@@ -107,7 +113,7 @@ class ReachingTargetEvent(Event):
                 f"AGV {self.agv.id} has reached the target node {self.target_node} at time {self.endTime}"
                 )
         #pdb.set_trace()
-        print(self.agv.path)
+        #print(self.agv.path)
         self.re_calculate(self.agv.path)
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
