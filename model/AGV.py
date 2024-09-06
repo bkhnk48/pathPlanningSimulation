@@ -52,9 +52,9 @@ class AGV:
         #pdb.set_trace()
         self._path = value
     
-    def __del__(self):
-        print(f"Huy doi tuong {self.id} trong ham huy __del__ cua AGV.py")
-        AGV.__allInstances.discard(self)
+    """def __del__(self):
+        #print(f"Huy doi tuong {self.id} trong ham huy __del__ cua AGV.py")
+        #AGV.__allInstances.discard(self)"""
     @property
     def cost(self):
         return self._cost
