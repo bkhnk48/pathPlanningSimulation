@@ -414,9 +414,9 @@ class Graph:
             
         # Duyệt qua từng phần tử của adjacency_list
         for source_id, edges in list(self.adjacency_list.items()):
-            if(source_id == 51265):
-                #pdb.set_trace()
-                pass
+            #if(source_id == 51265):
+            #    #pdb.set_trace()
+            #    pass
             isContinued = False
             for node in self.graph_processor.targetNodes:
                 if node.id == source_id:
@@ -579,10 +579,10 @@ class Graph:
                 start_node = self.get_current_node(agv_id_and_new_start, start)
                 #if(start_node == 24):
                 #    pdb.set_trace()"""
-            if(self.calling == 6):
-                pdb.set_trace()
+            #if(self.calling == 6):
+            #    pdb.set_trace()
             startedNodes = self.getAllNewStartedNodes()
-            print(f'Graph.py:566 {startedNodes}')
+            #print(f'Graph.py:566 {startedNodes}')
             #pdb.set_trace()
             for start_node in startedNodes:
                 file.write(f"n {start_node} 1\n")
