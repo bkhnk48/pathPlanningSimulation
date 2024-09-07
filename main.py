@@ -54,6 +54,7 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
+#pdb.set_trace()
 graph_processor.init_AGVs_n_events(allAGVs, events, graph)
 graph_processor.init_TASKs(TASKS)
 graph_processor.init_nodes_n_edges(graph)
