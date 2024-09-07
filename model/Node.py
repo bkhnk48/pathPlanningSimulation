@@ -128,18 +128,19 @@ class Node:
             #next_vertex = event.agv.target_node.id
             next_vertex = -1
             reaching_time = self.id // M - (1 if self.id % M == 0 else 0)
-            for source_id in self.graph.graph_processor.time_window_controller.TWEdges:
+            for source_id in event.graph.graph_processor.time_window_controller.TWEdges:
                 if(source_id % M == self.id % M):
-                    if(self.graph.graph_processor.time_window_controller.TWEdges[source_id] not None):
-                        edges = self.graph.graph_processor.time_window_controller.TWEdges[source_id]
-                        max_cost = edges[0].calculate(reaching_time)
+                    pdb.set_trace()
+                    if(event.graph.graph_processor.time_window_controller.TWEdges[source_id] is not None):
+                        edges = event.graph.graph_processor.time_window_controller.TWEdges[source_id]
+                        max_cost = edges[0][0].calculate(reaching_time)
                         index = 0
                         for i in range(1, len(edges)):
-                            temp = edges[i].calculate(reaching_time)
+                            temp = edges[i][0].calculate(reaching_time)
                             if temp > max_cost:
                                 max_cost = temp
                                 index = i
-                        next_vertex = edges[index][0]
+                        next_vertex = edges[index][0].id
                         if(event.agv.target_node is None or event.agv.target_node.id != next_vertex):
                             event.agv.target_node = edges[index][0]
                         break
