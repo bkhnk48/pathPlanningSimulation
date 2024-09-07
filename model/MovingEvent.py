@@ -27,7 +27,7 @@ class MovingEvent(Event):
         M = self.graph.numberOfNodesInSpaceGraph
         space_start_node = self.start_node % M + (M if self.start_node % M == 0 else 0)
         space_end_node = self.end_node % M + (M if self.end_node % M == 0 else 0)
-        return f"MovingEvent for {self.agv.id} to move from {self.start_node}({space_start_node}) at {self.startTime} and agv might reach {space_end_node} at {self.endTime}"
+        return f"\t MovingEvent for {self.agv.id} to move from {self.start_node}({space_start_node}) at {self.startTime} and agv reaches {space_end_node} at {self.endTime}"
         
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
@@ -52,7 +52,7 @@ class MovingEvent(Event):
             if(self.graph.nodes[real_end_node].agv is not None):
                 if (self.graph.nodes[real_end_node].agv.id != self.agv.id):
                     #print(f'{self.graph.nodes[real_end_node].agv.id} != {self.agv.id}')
-                    pdb.set_trace()
+                    #pdb.set_trace()
                     deltaT = 0
                     new_event = None
                     while(True):
@@ -118,6 +118,7 @@ class MovingEvent(Event):
     def process(self):
         #if(self.agv.id == 'AGV4'):
         #    pdb.set_trace()
+        print(self)
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
         self.updateGraph()
@@ -134,6 +135,8 @@ class MovingEvent(Event):
         self.solve()
         #pdb.set_trace()
         next_node = self.graph.nodes[self.agv.current_node]
+        #if(self.agv.id == 'AGV30' and next_node.id == 12046):
+        #    pdb.set_trace()
         #new_event = next_node.getEventForReaching(self)
         new_event = next_node.goToNextNode(self)
         simulator.schedule(new_event.endTime, new_event.process)
