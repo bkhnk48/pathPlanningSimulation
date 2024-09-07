@@ -56,14 +56,18 @@ class ReachingTargetEvent(Event):
         for source_id in self.graph.graph_processor.time_window_controller.TWEdges:
             if(self.graph.graph_processor.time_window_controller.TWEdges[source_id] is not None):
                 edges = self.graph.graph_processor.time_window_controller.TWEdges[source_id]
-                indices = set()
+                indices = []
                 index = -1
                 for e in edges:
                     index = index + 1
                     if(e[0].id == self.target_node):
-                        indices.add(index)
+                        if(index not in indices):
+                            indices.append(index)
+                indices.reverse()
                 for index in indices:
-                    self.graph.graph_processor.time_window_controller.TWEdges[source_id].remove(index)
+                    #if(index in self.graph.graph_processor.time_window_controller.TWEdges[source_id]):
+                    #pdb.set_trace()
+                    del self.graph.graph_processor.time_window_controller.TWEdges[source_id][index]
 
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
