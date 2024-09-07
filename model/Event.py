@@ -208,6 +208,7 @@ class Event:
         model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
         #if(model == None):
         #pdb.set_trace()
+        model.graph = self.graph
         model.solve()
         model.output_solution()
         model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
