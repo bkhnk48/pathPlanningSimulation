@@ -118,14 +118,33 @@ class Node:
         for node in event.agv.get_traces():
             print(node.id, end= ' ')
         print()"""
+        M = event.graph.graph_processor.M
         if(len(event.agv.get_traces()) > 0):
             #pdb.set_trace()
             next_vertex = event.agv.get_traces()[0].id
         else:
             if(event.agv.target_node is None):
                 pdb.set_trace()
-            next_vertex = event.agv.target_node.id
-        M = event.graph.graph_processor.M
+            #next_vertex = event.agv.target_node.id
+            next_vertex = -1
+            reaching_time = self.id // M - (1 if self.id % M == 0 else 0)
+            for source_id in self.graph.graph_processor.time_window_controller.TWEdges:
+                if(source_id % M == self.id % M):
+                    if(self.graph.graph_processor.time_window_controller.TWEdges[source_id] not None):
+                        edges = self.graph.graph_processor.time_window_controller.TWEdges[source_id]
+                        max_cost = edges[0].calculate(reaching_time)
+                        index = 0
+                        for i in range(1, len(edges)):
+                            temp = edges[i].calculate(reaching_time)
+                            if temp > max_cost:
+                                max_cost = temp
+                                index = i
+                        next_vertex = edges[index][0]
+                        if(event.agv.target_node is None or event.agv.target_node.id != next_vertex):
+                            event.agv.target_node = edges[index][0]
+                        break
+            assert(next_vertex != -1)
+        
         """edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
         space_start_node = event.agv.current_node % M + (M if event.agv.current_node % M == 0 else 0)
@@ -147,7 +166,8 @@ class Node:
         #    deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         allIDsOfTargetNodes = [node.id for node in event.graph.graph_processor.targetNodes]
         if(next_vertex in allIDsOfTargetNodes):
-            #pdb.set_trace()
+            if(event.agv.id == 'AGV30'):
+                pdb.set_trace()
             return ReachingTargetEvent(\
                 event.endTime, event.endTime, event.agv, event.graph, next_vertex)
         if(deltaT == 0):
