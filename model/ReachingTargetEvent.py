@@ -5,7 +5,7 @@ class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
-        #pdb.set_trace()
+        pdb.set_trace()
         if(target_node not in self.graph.nodes):
             pdb.set_trace()
         node = self.graph.nodes[target_node]
@@ -43,6 +43,7 @@ class ReachingTargetEvent(Event):
                     break"""
         if(self.graph.graph_processor.printOut):
             print(f"Last cost: {self.last_cost}")
+        self.updateGraph()  # Optional: update the graph if necessary
         #print(self)
 
     def updateGraph(self):
@@ -52,6 +53,8 @@ class ReachingTargetEvent(Event):
             self.target_node = self.agv.path[-1]
             pdb.set_trace()
         new_target_nodes = [node for node in self.graph.graph_processor.targetNodes if node.id != self.target_node]
+        if(len(new_target_nodes) != len(self.graph.graph_processor.targetNodes) - 1):
+            pdb.set_trace()
         self.graph.graph_processor.targetNodes = new_target_nodes
         for source_id in self.graph.graph_processor.time_window_controller.TWEdges:
             if(self.graph.graph_processor.time_window_controller.TWEdges[source_id] is not None):
@@ -133,7 +136,7 @@ class ReachingTargetEvent(Event):
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
-        self.updateGraph()  # Optional: update the graph if necessary
+        
         self.agv.destroy()
         del self.agv
     
