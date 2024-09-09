@@ -119,32 +119,38 @@ class Node:
             print(node.id, end= ' ')
         print()"""
         M = event.graph.graph_processor.M
+        if(event.agv.id == 'AGV30' and self.id % M == 14):
+            pdb.set_trace()
         if(len(event.agv.get_traces()) > 0):
             #pdb.set_trace()
             next_vertex = event.agv.get_traces()[0].id
         else:
-            if(event.agv.target_node is None):
-                pdb.set_trace()
+            #if(event.agv.target_node is None):
+            #    pdb.set_trace()
             #next_vertex = event.agv.target_node.id
             next_vertex = -1
             reaching_time = self.id // M - (1 if self.id % M == 0 else 0)
             for source_id in event.graph.graph_processor.time_window_controller.TWEdges:
                 if(source_id % M == self.id % M):
-                    pdb.set_trace()
+                    #pdb.set_trace()
                     if(event.graph.graph_processor.time_window_controller.TWEdges[source_id] is not None):
                         edges = event.graph.graph_processor.time_window_controller.TWEdges[source_id]
-                        max_cost = edges[0][0].calculate(reaching_time)
-                        index = 0
-                        for i in range(1, len(edges)):
-                            temp = edges[i][0].calculate(reaching_time)
-                            if temp > max_cost:
-                                max_cost = temp
-                                index = i
-                        next_vertex = edges[index][0].id
-                        if(event.agv.target_node is None or event.agv.target_node.id != next_vertex):
-                            event.agv.target_node = edges[index][0]
-                        break
-            assert(next_vertex != -1)
+                        if(len(edges) == 0):
+                            pdb.set_trace()
+                        else:
+                            max_cost = edges[0][0].calculate(reaching_time)
+                            index = 0
+                            for i in range(1, len(edges)):
+                                temp = edges[i][0].calculate(reaching_time)
+                                if temp > max_cost:
+                                    max_cost = temp
+                                    index = i
+                            next_vertex = edges[index][0].id
+                            if(event.agv.target_node is None or event.agv.target_node.id != next_vertex):
+                                event.agv.target_node = edges[index][0]
+                            break
+            if(next_vertex == -1):
+                pdb.set_trace()
         
         """edges_with_cost = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in event.graph.graph_processor.spaceEdges \
             if edge[3] == '0' and int(edge[4]) >= 1 }
@@ -167,8 +173,8 @@ class Node:
         #    deltaT= event.graph.getReal(event.agv.current_node, next_vertex, event.agv)
         allIDsOfTargetNodes = [node.id for node in event.graph.graph_processor.targetNodes]
         if(next_vertex in allIDsOfTargetNodes):
-            if(event.agv.id == 'AGV30'):
-                pdb.set_trace()
+            #if(event.agv.id == 'AGV30'):
+            #    pdb.set_trace()
             return ReachingTargetEvent(\
                 event.endTime, event.endTime, event.agv, event.graph, next_vertex)
         if(deltaT == 0):
