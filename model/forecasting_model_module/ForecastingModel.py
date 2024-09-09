@@ -170,6 +170,18 @@ class ForecastingModel:
         self.solve_time = None
         self.create_model()
         self.add_constraints()
+        self._graph = None
+    
+    @property
+    def graph(self):
+        return self._graph
+    
+    @graph.setter
+    def graph(self, value):
+        #if(self.id == 'AGV4' and False):
+        #    pdb.set_trace()
+        self._graph = value
+    
 
     def create_model(self):
 
@@ -388,8 +400,9 @@ class ForecastingModel:
             #        print(f"{var.name} = {self.model.getVal(var)}")
             pass
         else:
-            #print("No solution found")
-            pass
+            print("No solution found")
+            #pdb.set_trace()
+            #pass
 
     def save_solution(self, filename, dirname):
         # check if output folder exists
@@ -451,7 +464,18 @@ class ForecastingModel:
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
             #pdb.set_trace()
-            print(f"====> {tmp_traces}")
+            print("====>")
+            for key in tmp_traces.keys():
+                print(f'\t {key}: {tmp_traces[key]}', end='')
+                last = tmp_traces[key][-1][0]
+                M = self.graph.graph_processor.M
+                real_last = last % M if last % M != 0 else M
+                first = tmp_traces[key][0][0]
+                if first in self.graph.nodes:
+                    if self.graph.nodes[first].agv is not None:
+                        print(f'{self.graph.nodes[first].agv.id} gonna reach', end='')
+                print(f' Last = {real_last}')
+            #print(f"====> {tmp_traces}")
 
             #pdb.set_trace()
             # sort from smallest to largest i

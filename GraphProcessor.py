@@ -12,6 +12,7 @@ from model.RestrictionController import RestrictionController
 from model.Node import Node
 from collections import deque
 from scipy.sparse import lil_matrix
+import numpy as np
 #from ortools.linear_solver import pywraplp
 import pdb
 """
@@ -28,7 +29,7 @@ class GraphProcessor:
         self.alpha = 1
         self.beta = 1
         self.gamma = 1
-        self.ID = 0
+        self.ID = []
         self.earliness = 0
         self.tardiness = 0
         self.spaceEdges = []
@@ -42,11 +43,17 @@ class GraphProcessor:
         self.restriction_controller = None
         self.startBan = -1
         self.endBan = -1
+        self._seed = 0
+        self.numMaxAGVs = 0
 
         
     @property
     def targetNodes(self):
         return self._targetNodes
+    
+    @targetNodes.setter
+    def targetNodes(self, value):
+        self._targetNodes = value
     
     def appendTarget(self, target_node):
         if isinstance(target_node, TimeWindowNode):
@@ -76,6 +83,21 @@ class GraphProcessor:
                         id1, id2 = int(parts[1]), int(parts[2])
                         self.spaceEdges.append(parts)
                         self.M = max(self.M, id1, id2)
+                    elif parts[0] == 'n':
+                        if(parts[2] == '1'):
+                            self.startedNodes.append(int(parts[1]))
+                        if(parts[2] == '-1'):
+                            self.ID.append(int(parts[1]))
+                            if isinstance(self.earliness, int):
+                                self.earliness = []
+                            if isinstance(self.tardiness, int):
+                                self.tardiness = []
+                            self.earliness.append(int(parts[3]))
+                            self.tardiness.append(int(parts[4]))
+                    elif parts[0] == 'alpha':
+                        self.alpha = int(parts[1])
+                    elif parts[0] == 'beta':
+                        self.beta = int(parts[1])
             if(self.printOut):
                 print("Doc file hoan tat, M =", self.M)
         except FileNotFoundError:
@@ -84,6 +106,7 @@ class GraphProcessor:
             return
 
     def find_node(self, id):
+        id = int(id)
         # Tìm kiếm đối tượng Node có ID tương ứng
         """for node in self.ts_nodes:
             if node.id == id:
@@ -196,12 +219,16 @@ class GraphProcessor:
             count = count + 1
             ID = Q.popleft()
             #print(Q)
+            if ID < 0 or ID >= self.Adj.shape[0]:
+                continue
+            
             for j in self.Adj.rows[ID]:  # Direct access to non-zero columns for row ID in lil_matrix
                 if(not any(edge[0] == ID and edge[1] == j for edge in tsEdges)):
                     #Q.append(j)
                     if j in Q:
                         #print(f'\t{j} đã tồn tại trong {self.show(Q)}')
-                        continue
+                        if any(line.startswith(f"a {ID} {j} 0") for line in output_lines):
+                            continue
                     else:
                         Q.append(j)
                     """if(j in my_dict.keys()):
@@ -262,9 +289,10 @@ class GraphProcessor:
         from model.AGV import AGV
         for node_id in self.startedNodes:
             #node_id = start.id
+            #pdb.set_trace()
             agv = AGV("AGV" + str(node_id), node_id, graph)  # Create an AGV at this node
             #print(Event.getValue("numberOfNodesInSpaceGraph"))
-            startTime = node_id / self.M
+            startTime = node_id // self.M
             endTime = startTime
             start_event = StartEvent(startTime, endTime, agv, graph)  # Start event at time 0
             events.append(start_event)
@@ -368,6 +396,7 @@ class GraphProcessor:
             Q = deque([ID2])
             visited = {ID2}
             new_edges = [(ID1, ID2, C12)]
+            pdb.set_trace()
 
             while Q:
                 ID = Q.popleft()
@@ -527,6 +556,22 @@ class GraphProcessor:
         pass
       return max_val
       
+    def generate_numbers_student(self, G, H, M, N, df=10):
+        while True:
+            self._seed = self._seed + 1
+            self._seed = self._seed % G
+            np.random.seed(self._seed)
+            # Sinh 4 số ngẫu nhiên theo phân phối Student
+            first_two = np.random.standard_t(df, size=2)
+            numbers = np.random.standard_t(df, size=2)
+            # Chuyển đổi các số này thành số nguyên trong khoảng từ 1 đến 100
+            first_two = np.round((first_two - np.min(first_two)) / (np.max(first_two) - np.min(first_two)) * (G//3) + self._seed).astype(int)
+            numbers = np.round((numbers - np.min(numbers)) / (np.max(numbers) - np.min(numbers)) * (H//3) + self._seed).astype(int)
+            if first_two[0] < G and first_two[1] < G and numbers[0] < numbers[1] and numbers[1] < H:
+                # Kiểm tra điều kiện khoảng cách tối thiểu
+                if (abs(first_two[0] - first_two[1]) >= M and abs(numbers[0] - numbers[1]) >= N):
+                    return np.concatenate((first_two, numbers))
+    
     def add_time_windows_constraints(self):
         #pdb.set_trace()
         from model.TimeWindowController import TimeWindowController
@@ -540,7 +585,20 @@ class GraphProcessor:
         self.appendTarget(targetNode)
         if(self.time_window_controller == None):
             self.time_window_controller = TimeWindowController(self.alpha, self.beta, self.gamma, self.d)
-        self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
+        ID = -1
+        earliness = 0
+        tardiness = 0
+        if(isinstance(self.ID, list)):
+            self.time_window_controller.add_source_and_TWNode(self.ID[0], targetNode, self.earliness[0], self.tardiness[0])
+            ID = self.ID[0]
+            earliness = self.earliness[0]
+            tardiness = self.tardiness[0]
+            self.ID = self.ID[1:]
+            self.earliness = self.earliness[1:]
+            self.tardiness = self.tardiness[1:]
+        else:
+            ID = self.ID
+            self.time_window_controller.add_source_and_TWNode(self.ID, targetNode, self.earliness, self.tardiness)
         R = set()
         new_edges = set()
         # Duyệt các dòng của file TSG.txt
@@ -551,9 +609,9 @@ class GraphProcessor:
                   if parts[0] == 'a' and len(parts) == 6:
                       ID2 =int(parts[2])
                       for i in range(1, self.H + 1):
-                          j = i * self.M + self.ID
+                          j = i * self.M + ID
                           if j == ID2:
-                              C = int(int(self.beta) * max(self.earliness - i, 0, i - self.tardiness) / int(self.alpha))
+                              C = int(int(self.beta) * max(earliness - i, 0, i - tardiness) / int(self.alpha))
                               new_edges.add((j, max_val, 0, 1, C))
                               self.find_node(j).create_edge(targetNode, self.M, self.d, [j, max_val, 0, 1, C])
                               break
@@ -839,6 +897,19 @@ class GraphProcessor:
                         print(f'x_{m}_{i}_{j} = 1')
         else:
             print('The problem does not have an optimal solution.')
+            
+    def generate_poisson_random(self, M = None):
+        if M is None:
+            M = self.M
+        if M <= 2 and M >= 1:
+            return M
+        while True:
+            # Sinh số ngẫu nhiên theo phân phối Poisson
+            number = np.random.poisson(lam=M)        
+            # Kiểm tra điều kiện số ngẫu nhiên lớn hơn 1 và nhỏ hơn hoặc bằng M
+            if 1 < number < M:
+                return number
+
 
 
     def use_in_main(self, printOutput = False):
@@ -850,9 +921,9 @@ class GraphProcessor:
             #filepath = 'simplest.txt'
             #filepath = '3x3Wards.txt'
             filepath = 'Redundant3x3Wards.txt'
-        self.startedNodes = [1, 10]
+        self.startedNodes = [] #[1, 10]
+
         self.process_input_file(filepath)
-        #pdb.set_trace()
         self.H = input("Nhap thoi gian can gia lap (default: 10): ")
         if(self.H == ''):
             self.H = 10
@@ -866,14 +937,47 @@ class GraphProcessor:
             self.d = int(self.d)
         
         self.generate_adj_matrix()
+        
+        self.numMaxAGVs = input("Nhap so luong AGV toi da di chuyen trong toan moi truong (default: 4):")
+        if(self.numMaxAGVs == ''):
+            self.numMaxAGVs = 4
+        else:
+            self.numMaxAGVs = int(self.numMaxAGVs)
+        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
+        if len(self.startedNodes) == 0:
+            self.ID = []
+            self.earliness = []
+            self.tardiness = []
+            #pdb.set_trace()
+            """for i in range(numOfAGVs):
+                [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
+                self.startedNodes.append(s)
+                self.ID.append(d)
+                self.earliness.append(e)
+                self.tardiness.append(t)
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')"""
+            self.numMaxAGVs = 8
+            numOfAGVs = 8
+            self.startedNodes = [23, 4, 29, 30, 31, 32, 33, 35] 
+            self.ID = [2, 25, 8, 9, 10, 11, 12, 14] 
+            self.earliness = [2, 4, 8, 9, 10, 11, 12, 14] 
+            self.tardiness = [302, 304, 308, 309, 310, 311, 312, 314]
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
+        
         self.create_tsg_file()
+        #pdb.set_trace()
         count = 0
-        while(count <= len(self.startedNodes) - 1):
-            self.ID = 3
-            self.earliness = 4 if count == 0 else 7
-            self.tardiness = 6 if count == 0 else 9
-            self.alpha = 1
-            self.beta = 1
+        
+        while(count <= numOfAGVs - 1):
+            #pdb.set_trace()
+            if(isinstance(self.ID, int)):
+                self.ID = 3
+                self.earliness = 4 if count == 0 else 7
+                self.tardiness = 6 if count == 0 else 9
+                self.alpha = 1
+                self.beta = 1
+            else:
+                pass
             self.add_time_windows_constraints()
             assert len(self.tsEdges) == len(self.ts_edges), f"Thiếu cạnh ở đâu đó rồi {len(self.tsEdges)} != {len(self.ts_edges)}"
             count += 1

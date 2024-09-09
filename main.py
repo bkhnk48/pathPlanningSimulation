@@ -36,11 +36,12 @@ graph_processor = GraphProcessor()
 start_time = time.time()
 graph_processor.use_in_main()
 end_time = time.time()
+graph_processor.printOut = False
 # Tính thời gian thực thi
 execution_time = end_time - start_time
-if(execution_time >= 5):
+if(execution_time >= 5 and graph_processor.printOut):
     print(f"Thời gian thực thi: {execution_time} giây")
-graph_processor.printOut = False
+
 
 graph = Graph(graph_processor)  # Assuming a Graph class has appropriate methods to handle updates
 
@@ -53,6 +54,7 @@ if len(sys.argv) > 1:
 
 numberOfNodesInSpaceGraph = Event.getValue("numberOfNodesInSpaceGraph")
 # Mở file để đọc
+#pdb.set_trace()
 graph_processor.init_AGVs_n_events(allAGVs, events, graph)
 graph_processor.init_TASKs(TASKS)
 graph_processor.init_nodes_n_edges(graph)

@@ -1,14 +1,17 @@
 from .Event import Event
 import pdb
+from .AGV import AGV
 class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
-        #pdb.set_trace()
+        pdb.set_trace()
+        if(target_node not in self.graph.nodes):
+            pdb.set_trace()
         node = self.graph.nodes[target_node]
         M = self.graph.numberOfNodesInSpaceGraph
-        time = self.agv.current_node // M \
-            - (1 if self.agv.current_node % M == 0 else 0)
+        #time = self.agv.current_node // M \
+        #    - (1 if self.agv.current_node % M == 0 else 0)
         #pdb.set_trace()
         if not hasattr(node, 'earliness'):
             try:
@@ -19,9 +22,15 @@ class ReachingTargetEvent(Event):
                 pass
                 #print(f"Không tìm thấy đối tượng Node với id {target_node}.")
                 #pdb.set_trace()
-        earliness = node.earliness
-        tardiness = node.tardiness
-        self.last_cost = self.graph.graph_processor.beta*(max([earliness - time, 0, time - tardiness]))/self.graph.graph_processor.alpha
+        self.earliness = node.earliness
+        self.tardiness = node.tardiness
+        #if(self.endTime != time):
+        #if(self.agv.id == 'AGV4'):
+        #pdb.set_trace()
+        t1 = [self.earliness - self.endTime, 0, self.endTime - self.tardiness]
+        
+        self.last_cost = self.graph.graph_processor.beta*(max(t1))/self.graph.graph_processor.alpha
+        #print(f'{t1} {max(t1)} last_cost {self.last_cost}')
         #self.last_cost = self.graph.get_edge(self.agv.current_node, self.target_node)
         """for node, earliness, tardiness in \
             self.graph.graph_processor.time_window_controller.TWEdges[self.agv.current_node]:
@@ -34,10 +43,34 @@ class ReachingTargetEvent(Event):
                     break"""
         if(self.graph.graph_processor.printOut):
             print(f"Last cost: {self.last_cost}")
+        self.updateGraph()  # Optional: update the graph if necessary
+        #print(self)
 
     def updateGraph(self):
         # Không làm gì cả, vì đây là sự kiện đạt đến mục tiêu
         self.graph.remove_node_and_origins(self.target_node)
+        if(self.agv.path[-1] != self.target_node):
+            self.target_node = self.agv.path[-1]
+            pdb.set_trace()
+        new_target_nodes = [node for node in self.graph.graph_processor.targetNodes if node.id != self.target_node]
+        if(len(new_target_nodes) != len(self.graph.graph_processor.targetNodes) - 1):
+            pdb.set_trace()
+        self.graph.graph_processor.targetNodes = new_target_nodes
+        for source_id in self.graph.graph_processor.time_window_controller.TWEdges:
+            if(self.graph.graph_processor.time_window_controller.TWEdges[source_id] is not None):
+                edges = self.graph.graph_processor.time_window_controller.TWEdges[source_id]
+                indices = []
+                index = -1
+                for e in edges:
+                    index = index + 1
+                    if(e[0].id == self.target_node):
+                        if(index not in indices):
+                            indices.append(index)
+                indices.reverse()
+                for index in indices:
+                    #if(index in self.graph.graph_processor.time_window_controller.TWEdges[source_id]):
+                    #pdb.set_trace()
+                    del self.graph.graph_processor.time_window_controller.TWEdges[source_id][index]
 
     def calculateCost(self):
         # Retrieve the weight of the last edge traversed by the AGV
@@ -72,8 +105,8 @@ class ReachingTargetEvent(Event):
             node = path[i]
             real_node = node % M + (M if node % M == 0 else 0)
             #pdb.set_trace()
-            t2 = node // M - (D if node % M == 0 else 0)
-            t1 = prev // M - (D if prev % M == 0 else 0)
+            t2 = node // M - (1 if node % M == 0 else 0)
+            t1 = prev // M - (1 if prev % M == 0 else 0)
             deltaCost = self.graph.graph_processor.alpha*(t2 - t1)
             if(i != P - 1):
                 #print('===', end='')
@@ -83,11 +116,14 @@ class ReachingTargetEvent(Event):
                     print(f'({deltaCost})===', end='')
                 print(f'{real_node}===', end='')
             else:
-                cost = cost + self.last_cost + deltaCost
-                deltaCost = self.last_cost + deltaCost
-                print(f'({deltaCost})==={real_node}===END. ', end='')
+                cost = cost + self.last_cost #+ deltaCost
+                deltaCost = self.last_cost #+ deltaCost
+                #print(f'({deltaCost})==={real_node}/{node}===END. ', end='')
+                print(f'({deltaCost})==={node}===END. ', end='')
             prev = path[i]
-        print(f'Total cost: {cost}')
+        dest = path[-2]
+        real_dest = M if dest % M == 0 else dest % M
+        print(f'Total cost: {cost}. The AGV reaches its destination: {real_dest} at {self.endTime} along with earliness = {self.earliness} and tardiness = {self.tardiness}')
     def process(self):
         if(self.graph.graph_processor.printOut):
             # Đây là phương thức để xử lý khi AGV đạt đến mục tiêu
@@ -100,4 +136,9 @@ class ReachingTargetEvent(Event):
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
         print(f"The total cost of {self.agv.id} is {cost}")
-        self.updateGraph()  # Optional: update the graph if necessary
+        
+        self.agv.destroy()
+        del self.agv
+    
+    def __str__(self):
+        return f"ReachingTargetEvent for {self.agv.id} at time: {self.endTime} and it reaches the artificial node {self.target_node}"

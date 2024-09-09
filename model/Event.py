@@ -24,6 +24,7 @@ class Event:
         self.agv.event = self
         self.graph = graph
         self.pns_path = ""
+        #pdb.set_trace()
 
     def setValue(name, value):
         if name == "debug":
@@ -58,7 +59,6 @@ class Event:
             print(f"No edge found from {self.start_node} to {self.end_node}")
 
     def __repr__(self):
-        pdb.set_trace()
         return f"(time=[{self.startTime}, {self.endTime}], agv_id={self.agv.id})"
 
     def getWait(self, wait_time):
@@ -93,8 +93,17 @@ class Event:
         #filename = "input_dimacs/supply_03_demand_69_edit.txt"
         # Code để lưu đồ thị vào file
         return filename
+    
+    def solve(self):
+        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
+        #pdb.set_trace()
+        if self.graph.numberOfNodesInSpaceGraph == -1:
+            global numberOfNodesInSpaceGraph
+            self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
+        if (self.graph.version != self.agv.versionOfGraph or self.graph.version == -1):
+            self.find_path(DimacsFileReader, ForecastingModel)
 
-    def getNext(self):
+    def getNext(self, debug = False):
         """global numOfCalling
         numOfCalling = numOfCalling + 1
         if(numOfCalling <= 5):
@@ -120,17 +129,7 @@ class Event:
         from .HoldingEvent import HoldingEvent
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
-        from model.forecasting_model_module.ForecastingModel import ForecastingModel, DimacsFileReader
-        #pdb.set_trace()
-        if self.graph.numberOfNodesInSpaceGraph == -1:
-            global numberOfNodesInSpaceGraph
-            self.graph.numberOfNodesInSpaceGraph = numberOfNodesInSpaceGraph
-
-        if (
-            self.graph.version != self.agv.versionOfGraph
-            or self.graph.version == -1
-        ):
-            self.find_path(DimacsFileReader, ForecastingModel)
+        self.solve()
         #if(would_break_point):
         #    pdb.set_trace()
         """if(numOfCalling == 4):
@@ -146,9 +145,15 @@ class Event:
                         for node in a.get_traces():
                             print(f'{node.id}', end= ' ')
                         print()"""
+        #if(self.agv.id == 'AGV4' and debug):
+        #    pdb.set_trace()
+        if(len(self.agv.get_traces()) == 0):
+            pdb.set_trace()
         next_vertex = self.agv.getNextNode()
         """if(next_vertex.id == 51265 or next_vertex.id == 51266):
             pdb.set_trace()"""
+        if(next_vertex is None):
+            print(f'{self.agv.id} at Event.py:155')
         new_event = next_vertex.getEventForReaching(self)
 
         # Lên lịch cho sự kiện mới
@@ -170,6 +175,7 @@ class Event:
         print()"""
 
         if config.solver_choice == 'solver':
+            #print("----------------------------")
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
                     #self.graph.version += 1
         elif len(self.pns_path) == 0:
@@ -198,7 +204,7 @@ class Event:
 
     # TODO Rename this here and in `getNext`
     def createTracesFromSolver(self, DimacsFileReader, filename, ForecastingModel):
-        print(f"Running ForecastingModel {filename}...")
+        #print(f"Running ForecastingModel {filename}...")
         # Assuming `filename` is a path to the file with necessary data for the model
         dimacs_file_reader = DimacsFileReader(filename)
         dimacs_file_reader.read_custom_dimacs()
@@ -206,6 +212,7 @@ class Event:
         model = ForecastingModel(problem_info, supply_nodes_dict, demand_nodes_dict, zero_nodes_dict, arc_descriptors_dict, earliness_tardiness_dict)
         #if(model == None):
         #pdb.set_trace()
+        model.graph = self.graph
         model.solve()
         model.output_solution()
         model.save_solution(filename, "test_ouput") # Huy: sửa lại để log ra file
@@ -223,7 +230,7 @@ class Event:
 
     def calculateCost(self):
         # Increase cost by the actual time spent in holding
-        cost_increase = self.endTime - self.startTime
+        cost_increase = self.graph.graph_processor.alpha*(self.endTime - self.startTime)
         self.agv.cost += cost_increase
         return cost_increase
 
@@ -255,19 +262,29 @@ class Event:
         allIDsOfTargetNodes = [node.id for node in self.graph.graph_processor.targetNodes]
         #self.agv.set_traces(temp if temp != None else self.agv.get_traces())
         if temp != None:
-            if(temp[len(temp) - 1].id in allIDsOfTargetNodes):
-                self.agv.set_traces(temp)
+            while(temp[-1].id not in allIDsOfTargetNodes):
+                temp.pop()
+                if(len(temp) == 0):
+                    break
+            self.agv.set_traces(temp)
         self.agv.versionOfGraph = self.graph.version
         if self.agv.get_traces() == None:
             #pdb.set_trace()
             pass
-        else:
+        #else:
+        elif len(self.agv.get_traces()) > 0:
             #pdb.set_trace()
+            """if(len(self.agv.get_traces()) == 0):
+                print(f'len(self.agv.get_traces()) = 0')
+                pdb.set_trace()"""
             target_node = self.agv.get_traces()[len(self.agv.get_traces()) - 1]
-            
-            if target_node.id in allIDsOfTargetNodes:
+        else:
+            target_node = self.agv.target_node
+        if(target_node is not None):    
+            if target_node.id in allIDsOfTargetNodes and len(self.agv.get_traces()) > 0:
                 self.agv.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
             global allAGVs
+            #pdb.set_trace()
             for a in allAGVs:
                 if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
                     temp = self.graph.getTrace(a)
@@ -276,9 +293,13 @@ class Event:
                             a.set_traces(temp)
                     
                     a.versionOfGraph = self.graph.version
-                    target_node = a.get_traces()[len(a.get_traces()) - 1]
-                    if target_node.id in allIDsOfTargetNodes:
-                        a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
+                    if(len(a.get_traces()) > 0):
+                        target_node = a.get_traces()[len(a.get_traces()) - 1]
+                    else:
+                        target_node = a.target_node
+                    if(target_node is not None):
+                        if target_node.id in allIDsOfTargetNodes:
+                            a.target_node = self.graph.graph_processor.getTargetByID(target_node.id)
                 """print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {a.id}', end=' ')
                 for node in a.get_traces():
                     print(node.id, end= ' ')
