@@ -37,9 +37,9 @@ class AGV:
     @current_node.setter
     def current_node(self, value):
         #pdb.set_trace()
-        if(self.id == 'AGV32'):
-            if(value == 1112):
-                pdb.set_trace()
+        #if(self.id == 'AGV32'):
+        #    if(value == 1112):
+        #        pdb.set_trace()
         self._current_node = value
     
     @property
