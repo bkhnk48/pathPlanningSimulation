@@ -12,12 +12,13 @@ class Node:
         if not isinstance(id, int):
             raise ValueError(f"Tham số {id} truyền vào phải là số nguyên")
         self._id = id
-        """if(id == 13899):
+        """if(id == 19685):
             print(f'{getframeinfo(currentframe()).filename.split("/")[-1]}:{getframeinfo(currentframe()).lineno} {self.id}', end=' ')
             print("==========Nghi ngo van de o day!========", end='')
             current_frame = inspect.currentframe()
             caller_name = inspect.getframeinfo(current_frame.f_back).function
             print(caller_name)"""
+            #pdb.set_trace()
         self.label=label
         self.edges = []
         self.agv = None
@@ -119,8 +120,8 @@ class Node:
             print(node.id, end= ' ')
         print()"""
         M = event.graph.graph_processor.M
-        if(event.agv.id == 'AGV30' and self.id % M == 14):
-            pdb.set_trace()
+        #if(event.agv.id == 'AGV30' and self.id % M == 14):
+        #    pdb.set_trace()
         if(len(event.agv.get_traces()) > 0):
             #pdb.set_trace()
             next_vertex = event.agv.get_traces()[0].id
@@ -194,6 +195,7 @@ class Node:
         if(event.graph.graph_processor.printOut or True):
             print(f"H = {event.graph.graph_processor.H} and {event.endTime} + {deltaT}")
             #pdb.set_trace()
+        #pdb.set_trace()
         return HaltingEvent(
             event.endTime,
             event.graph.graph_processor.H,
