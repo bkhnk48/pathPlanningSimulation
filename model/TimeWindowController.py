@@ -9,12 +9,13 @@ from .TimeWindowEdge import TimeWindowEdge
 from .Node import Node
 
 class TimeWindowController:
-    def __init__(self, alpha, beta, gamma, d):
+    def __init__(self, alpha, beta, gamma, d, H):
         self.TWEdges = defaultdict(list)
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
         self.d = d
+        self.H = H
     
     def add_source_and_TWNode(self, source_id, node, earliness, tardiness):
         #pdb.set_trace()
@@ -38,6 +39,7 @@ class TimeWindowController:
 
     def generate_time_window_edges(self, node, adj_edges, M):
         space_id = (M if node.id % M == 0 else node.id % M)
+        time = node.id // M - (1 if node.id % M == 0 else 0)
         if(space_id in self.TWEdges):
             #nodes[node.id] = TimeWindowNode(node.id, "TimeWindow")
             for target_node, earliness, tardiness in self.TWEdges[space_id]:
@@ -58,3 +60,6 @@ class TimeWindowController:
                         pdb.set_trace()
                     edge = [node.id, target_node.id, 0, 1, C]
                     adj_edges[node.id].append((target_node.id, node.create_edge(target_node, M, -1, edge)))
+        elif (time >= self.H):
+            pdb.set_trace()
+            
