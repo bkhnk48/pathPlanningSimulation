@@ -474,9 +474,14 @@ class ForecastingModel:
             for agvID in tmp_traces:
                 for i in range(len(tmp_traces[agvID])):
                     for arc in tmp_traces[agvID]:
-                        if traces[agvID][i][1] == arc[0]:
-                            traces[agvID].append(arc)
-                            break
+                        if i < len(traces[agvID]):
+                            try:
+                                if traces[agvID][i][1] == arc[0]:
+                                    traces[agvID].append(arc)
+                                    break
+                            except IndexError as e:
+                                print(f"IndexError: {e}")
+                                pdb.set_trace()
 
             #print(traces)
             # write the traces to file
