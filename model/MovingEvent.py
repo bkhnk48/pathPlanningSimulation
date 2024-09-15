@@ -97,6 +97,8 @@ class MovingEvent(Event):
             if self.end_node in self.graph.nodes:
                 self.graph.nodes[self.end_node].agv = None
             self.agv.current_node = real_end_node
+            """if(real_end_node == 41987 or real_end_node == 53700):
+                pdb.set_trace()"""
             self.graph.update_graph(self.start_node, self.end_node, real_end_node, self.agv.id)
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
             self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
