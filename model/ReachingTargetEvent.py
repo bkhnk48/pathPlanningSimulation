@@ -5,9 +5,9 @@ class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
         super().__init__(startTime, endTime, agv, graph)
         self.target_node = target_node
-        pdb.set_trace()
-        if(target_node not in self.graph.nodes):
-            pdb.set_trace()
+        #pdb.set_trace()
+        #if(target_node not in self.graph.nodes):
+        #    pdb.set_trace()
         node = self.graph.nodes[target_node]
         M = self.graph.numberOfNodesInSpaceGraph
         #time = self.agv.current_node // M \
