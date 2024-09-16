@@ -649,13 +649,13 @@ class Graph:
                     file.write(f"a {source_id} {edge[0]} {edge[1].lower} {edge[1].upper} {edge[1].weight}\n")  
             for edge in new_halting_edges:
                 file.write(f"a {edge[0]} {edge[1]} {edge[2]} {edge[3]} {edge[4]}\n")
-            print("=================")
-        if(new_halting_edges is not None and self.continueDebugging):
+            #print("=================")
+        """if(new_halting_edges is not None and self.continueDebugging):
             if(len(new_halting_edges) > 0):
                 pdb.set_trace()
                 continueDebugging = input("Bạn co muốn debug tiếp ở đây ko?: (Y/N)")
                 if continueDebugging == "N":
-                    self.continueDebugging = False
+                    self.continueDebugging = False"""
         
     """def update_edge(self, start_node, end_node, new_weight):
         found = False
