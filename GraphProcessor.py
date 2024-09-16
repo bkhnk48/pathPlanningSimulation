@@ -144,6 +144,7 @@ class GraphProcessor:
 
     def generate_adj_matrix(self):
         size = (self.H + 1) * self.M + 1
+        pdb.set_trace()
         self.Adj = lil_matrix((2*size, 2*size), dtype=int)
 
         for edge in self.spaceEdges:
@@ -157,7 +158,7 @@ class GraphProcessor:
 
                     if source_idx < size and target_idx < size:
                         self.Adj[source_idx, target_idx] = 1
-                    elif source_idx < size and target_idx >= size:
+                    elif source_idx < size and target_idx >= size and target_idx < 2*size: 
                         #target_idx = self.H * self.M + v
                         self.Adj[source_idx, target_idx] = 1
 
