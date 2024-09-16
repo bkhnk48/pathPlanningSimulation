@@ -144,7 +144,6 @@ class GraphProcessor:
 
     def generate_adj_matrix(self):
         size = (self.H + 1) * self.M + 1
-        pdb.set_trace()
         self.Adj = lil_matrix((2*size, 2*size), dtype=int)
 
         for edge in self.spaceEdges:
