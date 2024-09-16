@@ -158,7 +158,8 @@ class AGV:
             else:
                 index = index + 1
         if(index >= len(self._traces)):
-            print(f'{self.id} has _traces: {self._traces} needs to be inserted {real_node} at [{index}]')
+            if(self.graph.graph_processor.printOut):
+                print(f'{self.id} has _traces: {self._traces} needs to be inserted {real_node} at [{index}]')
             #pdb.set_trace()
             self._traces = [real_node]
         else:    
