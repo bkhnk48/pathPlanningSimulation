@@ -446,17 +446,18 @@ class ForecastingModel:
             # sort the traces by (i, j) eg: [(1, 4): 10, (3, 2): 20, (4, 3): 30] to [(1, 4): 10, (4, 3): 30, (3, 2): 20]
             # i of the next element must be equal to j of the previous element
             #pdb.set_trace()
-            print("====>")
-            for key in tmp_traces.keys():
-                print(f'\t {key}: {tmp_traces[key]}', end='')
-                last = tmp_traces[key][-1][0]
-                M = self.graph.graph_processor.M
-                real_last = last % M if last % M != 0 else M
-                first = tmp_traces[key][0][0]
-                if first in self.graph.nodes:
-                    if self.graph.nodes[first].agv is not None:
-                        print(f'{self.graph.nodes[first].agv.id} gonna reach', end='')
-                print(f' Last = {real_last}')
+            if(self.graph.graph_processor.printOut):
+                print("====>")
+                for key in tmp_traces.keys():
+                    print(f'\t {key}: {tmp_traces[key]}', end='')
+                    last = tmp_traces[key][-1][0]
+                    M = self.graph.graph_processor.M
+                    real_last = last % M if last % M != 0 else M
+                    first = tmp_traces[key][0][0]
+                    if first in self.graph.nodes:
+                        if self.graph.nodes[first].agv is not None:
+                            print(f'{self.graph.nodes[first].agv.id} gonna reach', end='')
+                    print(f' Last = {real_last}')
             #print(f"====> {tmp_traces}")
 
             #pdb.set_trace()
