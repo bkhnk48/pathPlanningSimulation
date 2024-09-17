@@ -1011,20 +1011,20 @@ class GraphProcessor:
             self.earliness = []
             self.tardiness = []
             #pdb.set_trace()
-            """for i in range(numOfAGVs):
+            for i in range(numOfAGVs):
                 [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
                 self.startedNodes.append(s)
                 self.ID.append(d)
                 self.earliness.append(e)
                 self.tardiness.append(t)
-            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')"""
-            self.numMaxAGVs = 8
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
+            """self.numMaxAGVs = 8
             numOfAGVs = 8
             self.startedNodes = [23, 4, 29, 30, 31, 32, 33, 35] 
             self.ID = [2, 25, 8, 9, 10, 11, 12, 14] 
             self.earliness = [2, 4, 8, 9, 10, 11, 12, 14] 
             self.tardiness = [302, 304, 308, 309, 310, 311, 312, 314]
-            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
+            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')"""
         
         self.create_tsg_file()
         #pdb.set_trace()
