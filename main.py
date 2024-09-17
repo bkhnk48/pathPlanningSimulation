@@ -72,7 +72,16 @@ def schedule_events(events):
         simulator.schedule(event.startTime, event.process)
 
 if __name__ == "__main__":
+    import time
+    start_time = time.time()
     simulator.ready()
     #events = parse_tsg_file('TSG_0.txt')
     schedule_events(events)
     simulator.run()
+    end_time = time.time()
+    # Tính toán thời gian chạy
+    elapsed_time = end_time - start_time
+    # Chuyển đổi thời gian chạy sang định dạng hh-mm-ss
+    hours, rem = divmod(elapsed_time, 3600)
+    minutes, seconds = divmod(rem, 60)
+    print("Thời gian chạy: {:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds)))
