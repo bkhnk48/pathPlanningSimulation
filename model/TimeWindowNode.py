@@ -11,6 +11,14 @@ class TimeWindowNode(Node):
         self.earliness = earliness
         self.tardiness = tardiness
         
+    def calculate(self, reaching_time):
+        if reaching_time >= self.earliness and reaching_time <= self.tardiness:
+            return 0
+        if reaching_time < self.earliness:
+            return (-1)*(self.earliness - reaching_time)
+        #if reaching_time > self.tardiness:
+        return (self.tardiness - reaching_time)
+        
     def create_edge(self, node, M, d, e):
         # Does nothing and returns None, effectively preventing the creation of any edge.
         return None
