@@ -81,7 +81,7 @@ class RestrictionController:
         time_destination = end_node.id // self.M - (1 if end_node.id % self.M == 0 else 0)
         if(not (time_source >= self.graph_processor.endBan or time_destination <= self.graph_processor.startBan)):
         #space_id = (M if node.id % M == 0 else node.id % M)
-            pdb.set_trace()
+            #pdb.set_trace()
             key = tuple([space_source, space_destination])
             if(key in self.restrictionEdges):
                 #nodes[node.id] = TimeWindowNode(node.id, "TimeWindow")
