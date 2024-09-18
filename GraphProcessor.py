@@ -16,6 +16,7 @@ from scipy.sparse import lil_matrix
 import numpy as np
 #from ortools.linear_solver import pywraplp
 import pdb
+import config
 """
 Mô tả yêu cầu của code:
 https://docs.google.com/document/d/13S_Ycg-aB4GjEm8xe6tAoUHzhS-Z1iFnM4jX_bWFddo/edit?usp=sharing
@@ -570,8 +571,9 @@ class GraphProcessor:
         #return halting_nodes
     
     def write_to_file(self, Max, filename = "TSG.txt"):
+        M = max(target.id for target in self.getTargets())
         with open('TSG.txt', 'w') as file:
-            file.write(f"p min {Max} {len(self.tsEdges)}\n")
+            file.write(f"p min {M} {len(self.tsEdges)}\n")
             for start in self.startedNodes:
                 file.write(f"n {start} 1\n")
             for target in self.getTargets():
@@ -582,7 +584,7 @@ class GraphProcessor:
                 """if not hasattr(edge, 'start_node'):
                     pdb.set_trace()
                     print(edge)"""
-                if edge is not None:
+                if edge is not None:   
                     if(edge.weight == self.H*self.H):
                         #pdb.set_trace()
                         file.write(f"c Exceed {edge.weight} {edge.weight // self.M}\na {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
