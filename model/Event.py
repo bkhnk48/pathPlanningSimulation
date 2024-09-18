@@ -178,8 +178,9 @@ class Event:
             #print("----------------------------")
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
                     #self.graph.version += 1
-        elif len(self.pns_path) == 0:
-            self.pns_path = input("Enter the path for pns-seq: ")
+        else:
+            if len(self.pns_path) == 0:
+                self.pns_path = input("Enter the path for pns-seq: ")
             command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
             print("Running network-simplex:", command)
             subprocess.run(command, shell=True)
@@ -282,6 +283,8 @@ class Event:
             global allAGVs
             #pdb.set_trace()
             for a in allAGVs:
+                #if a.id == 'AGV4':
+                #    pdb.set_trace()
                 if a.id != self.agv.id and a.versionOfGraph < self.graph.version:
                     temp = self.graph.getTrace(a)
                     if temp != None:
