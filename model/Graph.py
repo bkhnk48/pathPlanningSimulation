@@ -7,6 +7,7 @@ from .RestrictionNode import RestrictionNode
 from .TimeWindowNode import TimeWindowNode
 from .TimeoutNode import TimeoutNode
 from .Node import Node
+import config
 
 class bcolors:
     HEADER = '\033[95m'
@@ -592,6 +593,9 @@ class Graph:
         
     def write_to_file(self, agv_id_and_new_start = None, new_halting_edges = None, filename="TSG.txt"):
         #self.calling = self.calling + 1
+        M = max(target.id for target in self.graph_processor.getTargets())
+        m1 = max(edge[1] for edge in new_halting_edges)
+        M = max(M, m1)
         num_halting_edges = len(new_halting_edges) if new_halting_edges is not None else 0
         #with open(filename, "w") as file:
         #    file.write(f"p min {len(self.nodes)} {len(self.adjacency_list)}\n")
@@ -607,7 +611,7 @@ class Graph:
         num_edges = num_edges + num_halting_edges
         
         with open(filename, 'w') as file:
-            file.write(f"p min {Max} {num_edges}\n")
+            file.write(f"p min {M} {num_edges}\n")
             """if(Max == 8161 and num_edges == 13865):
                 pdb.set_trace()
             for start in self.graph_processor.startedNodes:
@@ -619,11 +623,11 @@ class Graph:
             #    pdb.set_trace()
             
             startedNodes = self.getAllNewStartedNodes()
-            buggySet1 = {43075, 42060}
-            buggySet2 = {41988, 42060}
-            if(startedNodes == buggySet1 or startedNodes == buggySet2):
-                #print(f'Graph.py:566 {startedNodes}')
-                pdb.set_trace()
+            #buggySet1 = {43075, 42060}
+            #buggySet2 = {41988, 42060}
+            #if(startedNodes == buggySet1 or startedNodes == buggySet2):
+            #    #print(f'Graph.py:566 {startedNodes}')
+            #    pdb.set_trace()
             #if(len(startedNodes) != len(self.graph_processor.getTargets())):
             #    pdb.set_trace()
             for start_node in startedNodes:
