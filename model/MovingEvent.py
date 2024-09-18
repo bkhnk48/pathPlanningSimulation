@@ -3,6 +3,8 @@ from .HaltingEvent import HaltingEvent
 import inspect
 import pdb
 from discrevpy import simulator
+from datetime import datetime
+
 class MovingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node):
         super().__init__(startTime, endTime, agv, graph)
@@ -27,7 +29,9 @@ class MovingEvent(Event):
         M = self.graph.numberOfNodesInSpaceGraph
         space_start_node = self.start_node % M + (M if self.start_node % M == 0 else 0)
         space_end_node = self.end_node % M + (M if self.end_node % M == 0 else 0)
-        return f"\t MovingEvent for {self.agv.id} to move from {self.start_node}({space_start_node}) at {self.startTime} and agv reaches {space_end_node} at {self.endTime}"
+        now = datetime.now()
+        formatted_time = now.strftime("%j-%m-%y:%H-%M-%S")
+        return f"\t . Now: {formatted_time}. MovingEvent for {self.agv.id} to move from {self.start_node}({space_start_node}) at {self.startTime} and agv reaches {space_end_node} at {self.endTime}"
         
     def updateGraph(self):
         actual_time = self.endTime - self.startTime
@@ -102,8 +106,8 @@ class MovingEvent(Event):
             self.graph.update_graph(self.start_node, self.end_node, real_end_node, self.agv.id)
             #self.agv.set_traces([self.graph.nodes[real_end_node]])
             self.agv.update_traces(self.end_node, self.graph.nodes[real_end_node])
-            if(len(self.agv.get_traces()) == 0):
-                pdb.set_trace()
+            #if(len(self.agv.get_traces()) == 0):
+            #    pdb.set_trace()
             #self.graph.nodes[real_end_node].agv = self.agv
             self.graph.reset_agv(real_end_node, self.agv)
             
@@ -120,7 +124,7 @@ class MovingEvent(Event):
     def process(self):
         #if(self.agv.id == 'AGV4'):
         #    pdb.set_trace()
-        if(self.graph.graph_processor.printOut):
+        if(self.graph.graph_processor.printOut or True):
             print(self)
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
