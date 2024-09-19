@@ -13,15 +13,18 @@ import time
 def choose_solver():
     print("Choose the method for solving:")
     print("1 - Use LINK II solver")
-    print("2 - Use network-simplex")
-    choice = input("Enter your choice (1 or 2): ")
+    print("2 - Use parallel network-simplex")
+    print("3 - Use NetworkX")
+    choice = input("Enter your choice (1 or 2 or 3): ")
     if choice == '1':
         config.solver_choice = 'solver'
     elif choice == '2':
         config.solver_choice = 'network-simplex'
+    elif choice == '3':
+        config.solver_choice = 'networkx'
     else:
-        print("Invalid choice. Defaulting to network-simplex.")
-        config.solver_choice = 'network-simplex'
+        print("Invalid choice. Defaulting to Network X.")
+        config.solver_choice = 'networkx'
 def getForecast():
     return 17
 
