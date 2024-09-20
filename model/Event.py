@@ -9,6 +9,7 @@ import os
 from collections import defaultdict
 import config
 from inspect import currentframe, getframeinfo
+from .NXSolution import NetworkXSolution
 
 
 numberOfNodesInSpaceGraph = 0
@@ -178,14 +179,24 @@ class Event:
             #print("----------------------------")
             self.createTracesFromSolver(DimacsFileReader, filename, ForecastingModel)
                     #self.graph.version += 1
-        else:
+        elif config.solver_choice == 'network-simplex':
             if len(self.pns_path) == 0:
                 self.pns_path = input("Enter the path for pns-seq: ")
             command = f"{self.pns_path}/pns-seq -f {filename} > seq-f.txt"
             print("Running network-simplex:", command)
             subprocess.run(command, shell=True)
+        elif config.solver_choice == 'networkx':
+            nx = NetworkXSolution()
+            nx.read_dimac_file('TSG.txt')
+            edges_with_costs = { (int(edge[1]), int(edge[2])): [int(edge[4]), int(edge[5])] for edge in self.graph.graph_processor.spaceEdges \
+                if edge[3] == '0' and int(edge[4]) >= 1 }
+            nx.edges_with_costs = edges_with_costs
+            nx.M = self.graph.graph_processor.M
+            print(nx.flowCost)
+            nx.write_trace()
+            #pdb.set_trace()
 
-        if config.solver_choice != 'solver':
+        if config.solver_choice == 'network-simplex':
             command = "python3 filter.py > traces.txt"
             subprocess.run(command, shell=True)
 
