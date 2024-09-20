@@ -124,7 +124,7 @@ class MovingEvent(Event):
     def process(self):
         #if(self.agv.id == 'AGV4'):
         #    pdb.set_trace()
-        if(self.graph.graph_processor.printOut or True):
+        if(self.graph.graph_processor.printOut):
             print(self)
         self.calculateCost()
         # Thực hiện cập nhật đồ thị khi xử lý sự kiện di chuyển
