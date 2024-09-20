@@ -254,21 +254,27 @@ class Graph:
                 if len(self.cur) >= 1:
                     start = number % M + (M if number % M == 0 else 0)
                     end = self.cur[0].id % M + (M if self.cur[0].id % M == 0 else 0)
+                    start_time = number // M - (1 if number % M == 0 else 0)
+                    end_time = self.cur[0].id // M - (1 if self.cur[0].id % M == 0 else 0)
                     min_cost = edges_with_cost.get((start, end), [-1, -1])[1]
                     if(min_cost == -1):
+                        need_to_remove_first_cur = True
+                        if(start == end and number != self.cur[0].id and end_time - start_time == self.graph_processor.d):
+                            need_to_remove_first_cur = False
                         #if(isinstance(self.cur[0], TimeWindowNode) or len(self.cur) == 1):
                         #    pdb.set_trace()
                         #pdb.set_trace()
                         #indices_dict = {source_id: [index for index, e in enumerate(edges) if e[0].id == end]\
-                        found = False
-                        for source_id, edges in self.graph_processor.time_window_controller.TWEdges.items():
-                            if edges is not None and source_id % M == start:
-                                for index, e in enumerate(edges):
-                                    if e[0].id ==end:
-                                        found = True
-                                        break
-                        if(not found):                                    
-                            self.cur = self.cur[1:]
+                        if need_to_remove_first_cur:
+                            found = False
+                            for source_id, edges in self.graph_processor.time_window_controller.TWEdges.items():
+                                if edges is not None and source_id % M == start:
+                                    for index, e in enumerate(edges):
+                                        if e[0].id ==end:
+                                            found = True
+                                            break
+                            if(not found):                                    
+                                self.cur = self.cur[1:]
                 #if(len(self.cur) == 0):
                 #    pdb.set_trace()
                 self.map[number] = self.cur #[1: ] if len(self.cur) > 1 else self.cur
