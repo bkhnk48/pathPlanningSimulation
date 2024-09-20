@@ -192,7 +192,7 @@ class Event:
                 if edge[3] == '0' and int(edge[4]) >= 1 }
             nx.edges_with_costs = edges_with_costs
             nx.M = self.graph.graph_processor.M
-            print(nx.flowCost)
+            #print(nx.flowCost)
             nx.write_trace()
             #pdb.set_trace()
 
