@@ -98,6 +98,7 @@ while(config.count < 2):
         logger.log("Log.csv", config.filepath, config.numOfAGVs, config.H, \
             config.d, config.solver_choice, config.reachingTargetAGVs, config.haltingAGVs, \
                 config.totalCost, elapsed_time)
+        config.totalCost = 0
         from model.AGV import AGV
         AGV.reset()
         simulator.reset()
