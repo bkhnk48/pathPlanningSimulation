@@ -72,6 +72,9 @@ class AGV:
     @staticmethod
     def allInstances():
         return AGV.__allInstances
+    @staticmethod
+    def reset():
+        AGV.__allInstances.clear()
     
     @target_node.setter
     def target_node(self, value):
