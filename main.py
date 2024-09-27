@@ -16,16 +16,21 @@ def choose_solver():
     print("1 - Use LINK II solver")
     print("2 - Use parallel network-simplex")
     print("3 - Use NetworkX")
-    choice = input("Enter your choice (1 or 2 or 3): ")
-    if choice == '1':
+    choice = 3
+    if(config.count == 2):
+        choice = 1
         config.solver_choice = 'solver'
-    elif choice == '2':
-        config.solver_choice = 'network-simplex'
-    elif choice == '3':
-        config.solver_choice = 'networkx'
     else:
-        print("Invalid choice. Defaulting to Network X.")
-        config.solver_choice = 'networkx'
+        choice = input("Enter your choice (1 or 2 or 3): ")
+        if choice == '1':
+            config.solver_choice = 'solver'
+        elif choice == '2':
+            config.solver_choice = 'network-simplex'
+        elif choice == '3':
+            config.solver_choice = 'networkx'
+        else:
+            print("Invalid choice. Defaulting to Network X.")
+            config.solver_choice = 'networkx'
 def getForecast():
     return 17
 
