@@ -1,6 +1,7 @@
 from .Event import Event
 import inspect
 import pdb
+import config
 class HaltingEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, start_node, end_node, deltaT):
         super().__init__(startTime, endTime, agv, graph)
@@ -71,6 +72,7 @@ class HaltingEvent(Event):
         self.re_calculate(self.agv.path)
         self.calculateCost()
         print(f"The total cost of {self.agv.id} is {self.agv.cost}")
+        config.haltingAGVs = config.haltingAGVs + 1
         #self.getNext()
     
     def __str__(self):
