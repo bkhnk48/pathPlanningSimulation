@@ -90,20 +90,24 @@ class Graph:
                 #pdb.set_trace()
                 result = abs(endTime - startTime) if result == -1 else result
         #pdb.set_trace()
-        result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
-        collision = True
-        #pdb.set_trace()
-        while(collision):
-            collision = False
-            if (next_id not in allIDsOfTargetNodes):
-                if(next_id in self.nodes.keys()):
-                    if(self.nodes[next_id].agv is not None):
-                        if(self.nodes[next_id].agv != agv):
-                            print(f'{self.nodes[next_id].agv.id} != {agv.id}')
-                            #pdb.set_trace()
-                            collision = True
-                            result = result + 1
-                            next_id = next_id + M
+
+        if config.sfm == False:
+            result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
+            collision = True
+            #pdb.set_trace()
+            while(collision):
+                collision = False
+                if (next_id not in allIDsOfTargetNodes):
+                    if(next_id in self.nodes.keys()):
+                        if(self.nodes[next_id].agv is not None):
+                            if(self.nodes[next_id].agv != agv):
+                                print(f'{self.nodes[next_id].agv.id} != {agv.id}')
+                                #pdb.set_trace()
+                                collision = True
+                                result = result + 1
+                                next_id = next_id + M
+        else:
+            result = self.getAGVRuntime(config.filepath, config.functions_file, start_id, next_id, agv, startTime)
         return result
     
 
@@ -176,8 +180,8 @@ class Graph:
             functions_list.append(line)
         return hallways_list, functions_list
 
-    def getReal_V2(self, Map_file, function_file, start_id, next_id, agv, current_time):
-        hallways_list, functions_list = getReal_preprocess(Map_file, function_file)
+    def getAGVRuntime(self, Map_file, function_file, start_id, next_id, agv, current_time):
+        hallways_list, functions_list = self.getReal_preprocess(Map_file, function_file)
         events_list = []  # actually only has one event but because of the structure of the code, it has to be a list
         """
         {
@@ -224,7 +228,7 @@ class Graph:
         print(functions_list)
         print(events_list)
 
-        bulk_sim = BulkHallwaySimulator("test", 800, hallways_list, functions_list, events_list)
+        bulk_sim = BulkHallwaySimulator("test", 3600, hallways_list, functions_list, events_list)
         result = bulk_sim.run_simulation()
         # result will look like this: {0: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}, 1: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}}
         # get the completion_time from the result

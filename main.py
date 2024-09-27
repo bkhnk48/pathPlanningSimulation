@@ -29,6 +29,20 @@ def choose_solver():
     else:
         print("Invalid choice. Defaulting to Network X.")
         config.solver_choice = 'networkx'
+
+    # choose to run sfm or not
+    print("Choose to run sfm or not:")
+    print("1 - Run sfm")
+    print("0 - Not run sfm")
+    choice = input("Enter your choice (1 or 0): ")
+    if choice == '1':
+        config.sfm = True
+    elif choice == '0':
+        config.sfm = False
+    else:
+        print("Invalid choice. Defaulting to not run sfm.")
+        config.sfm = False
+        
 def getForecast():
     return 17
 

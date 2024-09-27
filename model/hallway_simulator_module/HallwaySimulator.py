@@ -439,6 +439,8 @@ class BulkHallwaySimulator:
         a, b, _ = self.read_function(selected_function)
         if int(int(a) * int(time_stamp) + int(b)) > self.MaxAgents:
             return int(self.MaxAgents / 100 * agents_distribution)
+        if int(int(a) * int(time_stamp) + int(b)) < 0:
+            return 0
         return int(int(int(a) * int(time_stamp) + int(b)) / 100 * agents_distribution)
 
 
