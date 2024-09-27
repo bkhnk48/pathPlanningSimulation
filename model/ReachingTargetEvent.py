@@ -1,5 +1,6 @@
 from .Event import Event
 import pdb
+import config
 from .AGV import AGV
 class ReachingTargetEvent(Event):
     def __init__(self, startTime, endTime, agv, graph, target_node):
@@ -135,8 +136,10 @@ class ReachingTargetEvent(Event):
         self.re_calculate(self.agv.path)
         cost = self.calculateCost()  # Calculate and update the cost of reaching the target
         #print("DSFFDdsfsdDF")
-        print(f"The total cost of {self.agv.id} is {cost}")
         
+        print(f"The total cost of {self.agv.id} is {cost}")
+        config.totalCost = config.totalCost + cost
+        config.reachingTargetAGVs = config.reachingTargetAGVs + 1
         self.agv.destroy()
         del self.agv
     
