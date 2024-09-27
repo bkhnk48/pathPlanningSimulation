@@ -125,6 +125,12 @@ class GraphProcessor:
             return self.mapNodes[id]
         else:
             # Nếu không có trên mapNodes, thêm vào cả ts_nodes và mapNodes
+            #if(id == 26272):
+            #    pdb.set_trace()
+            for node in self._targetNodes:
+                if(node.id == id):
+                    self.mapNodes[id] = node
+                    return node
             time = id // self.M - (1 if id % self.M == 0 else 0)
             new_node = None
             if(time >= self.H):
@@ -557,7 +563,11 @@ class GraphProcessor:
     def insert_halting_edges(self):
         halting_nodes = set()
         for edge in self.ts_edges:
+            if(isinstance(edge.end_node, TimeWindowNode)):
+                continue
             time = edge.end_node.id // self.M - (1 if edge.end_node.id % self.M == 0 else 0)
+            #if(edge.end_node.id == 26272):
+            #    pdb.set_trace()
             if(time >= self.H):
                 halting_nodes.add(edge.end_node.id)
         targets = self.getTargets()
@@ -584,11 +594,15 @@ class GraphProcessor:
                 """if not hasattr(edge, 'start_node'):
                     pdb.set_trace()
                     print(edge)"""
-                if edge is not None:   
+                if (edge is not None):   
                     if(edge.weight == self.H*self.H):
                         #pdb.set_trace()
+                        if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
+                            pdb.set_trace()
                         file.write(f"c Exceed {edge.weight} {edge.weight // self.M}\na {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
                     else:
+                        if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
+                            pdb.set_trace()
                         file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
@@ -1079,7 +1093,8 @@ class GraphProcessor:
         self.startBan = 0
         self.endBan = 2*self.d
         #self.restrictions = [[1, 2]]
-        self.restrictions = [[2, 1]]#dành cho map Redundant3x3Wards.txt
+        #self.restrictions = [[2, 1]]#dành cho map Redundant3x3Wards.txt
+        self.restrictions = []
         self.Ur = 3
         #pdb.set_trace()
         self.process_restrictions()
