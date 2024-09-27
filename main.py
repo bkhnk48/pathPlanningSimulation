@@ -11,6 +11,9 @@ import sys
 import pdb
 import time
 
+from model.hallway_simulator_module import clean_up
+clean_up()
+
 def choose_solver():
     print("Choose the method for solving:")
     print("1 - Use LINK II solver")

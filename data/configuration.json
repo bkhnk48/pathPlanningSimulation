@@ -1,0 +1,18 @@
+{
+  "runMode": {
+    "description": "Run mode (1 - Statistical calculation, 0 - Test)",
+    "value": 1
+  },
+  "graphicsMode": {
+    "description": "Graphics mode (1 - Graphics, 0 - No Graphics)",
+    "value": 1
+  },
+  "timeRatio": {
+    "description": "The time ratio of the demo simulation",
+    "value": 5
+  },
+  "jsonOutput": {
+    "description": "Output file in JSON format",
+    "value": 1
+  }
+}
