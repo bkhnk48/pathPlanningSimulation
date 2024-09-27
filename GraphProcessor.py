@@ -976,50 +976,78 @@ class GraphProcessor:
 
 
 
-    def use_in_main(self, printOutput = False):
+    def use_in_main(self, useConfigData = False, printOutput = False):
         self.printOut = printOutput
         #filepath = input("Nhap ten file can thuc hien (hint: simplest.txt): ")
         #filepath = input("Nhap ten file can thuc hien (hint: 3x3Wards.txt): ")
-        filepath = input("Nhap ten file can thuc hien (hint: Redundant3x3Wards.txt): ")
-        if filepath == '':
-            #filepath = 'simplest.txt'
-            #filepath = '3x3Wards.txt'
-            filepath = 'Redundant3x3Wards.txt'
+        if(useConfigData):
+            filepath = config.filepath
+        else:
+            filepath = input("Nhap ten file can thuc hien (hint: Redundant3x3Wards.txt): ")
+            if filepath == '':
+                #filepath = 'simplest.txt'
+                #filepath = '3x3Wards.txt'
+                filepath = 'Redundant3x3Wards.txt'
+            config.filepath = filepath
         self.startedNodes = [] #[1, 10]
 
         self.process_input_file(filepath)
-        self.H = input("Nhap thoi gian can gia lap (default: 10): ")
-        if(self.H == ''):
-            self.H = 10
+        if(useConfigData):
+            self.H = config.H
         else:
-            self.H = int(self.H)
+            self.H = input("Nhap thoi gian can gia lap (default: 10): ")
+            if(self.H == ''):
+                self.H = 10
+            else:
+                self.H = int(self.H)
+            config.H = self.H
+
         self.generate_hm_matrix()
-        self.d = input("Nhap time unit (default: 1): ")
-        if(self.d == ''):
-            self.d = 1
+        if(useConfigData):
+            self.d = config.d
         else:
-            self.d = int(self.d)
+            self.d = input("Nhap time unit (default: 1): ")
+            if(self.d == ''):
+                self.d = 1
+            else:
+                self.d = int(self.d)
+            config.d = self.d
         
         self.generate_adj_matrix()
         
-        self.numMaxAGVs = input("Nhap so luong AGV toi da di chuyen trong toan moi truong (default: 4):")
-        if(self.numMaxAGVs == ''):
-            self.numMaxAGVs = 2
+        numOfAGVs = 0
+        if(useConfigData):
+            self.numMaxAGVs = config.numMaxAGVs
+            self.ID = config.ID
+            self.earliness = config.earliness
+            self.tardiness = config.tardiness
+            self.startedNodes = config.startedNodes
+            numOfAGVs = config.numOfAGVs
         else:
-            self.numMaxAGVs = int(self.numMaxAGVs)
-        numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
-        if len(self.startedNodes) == 0:
-            self.ID = []
-            self.earliness = []
-            self.tardiness = []
-            #pdb.set_trace()
-            for i in range(numOfAGVs):
-                [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
-                self.startedNodes.append(s)
-                self.ID.append(d)
-                self.earliness.append(e)
-                self.tardiness.append(t)
-            print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
+            self.numMaxAGVs = input("Nhap so luong AGV toi da di chuyen trong toan moi truong (default: 4):")
+            if(self.numMaxAGVs == ''):
+                self.numMaxAGVs = 2
+            else:
+                self.numMaxAGVs = int(self.numMaxAGVs)
+            numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
+            config.numMaxAGVs = self.numMaxAGVs
+            config.numOfAGVs = numOfAGVs
+            if len(self.startedNodes) == 0:
+                self.ID = []
+                self.earliness = []
+                self.tardiness = []
+                #pdb.set_trace()
+                for i in range(numOfAGVs):
+                    [s, d, e, t] = self.generate_numbers_student(self.M, self.H, 12, 100)
+                    self.startedNodes.append(s)
+                    self.ID.append(d)
+                    self.earliness.append(e)
+                    self.tardiness.append(t)
+                print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')
+                config.startedNodes = self.startedNodes.copy()
+                config.ID = self.ID.copy()
+                config.earliness = self.earliness.copy()
+                config.tardiness = self.tardiness.copy()
             """self.numMaxAGVs = 8
             numOfAGVs = 8
             self.startedNodes = [23, 4, 29, 30, 31, 32, 33, 35] 
@@ -1029,7 +1057,6 @@ class GraphProcessor:
             print(f'Start: {self.startedNodes} \n End: {self.ID} \n Earliness: {self.earliness} \n Tardiness: {self.tardiness}')"""
         
         self.create_tsg_file()
-        #pdb.set_trace()
         count = 0
         
         while(count <= numOfAGVs - 1):
