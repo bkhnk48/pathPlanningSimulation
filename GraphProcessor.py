@@ -1043,7 +1043,8 @@ class GraphProcessor:
                 self.numMaxAGVs = 2
             else:
                 self.numMaxAGVs = int(self.numMaxAGVs)
-            numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
+            #numOfAGVs = len(self.startedNodes) if len(self.startedNodes) > 0 else self.generate_poisson_random(self.numMaxAGVs)
+            numOfAGVs = self.numMaxAGVs
             config.numMaxAGVs = self.numMaxAGVs
             config.numOfAGVs = numOfAGVs
             if len(self.startedNodes) == 0:
