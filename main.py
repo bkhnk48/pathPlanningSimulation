@@ -31,8 +31,6 @@ def choose_solver():
         else:
             print("Invalid choice. Defaulting to Network X.")
             config.solver_choice = 'networkx'
-def getForecast():
-    return 17
 
 allAGVs = set()
 TASKS = set()
