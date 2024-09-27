@@ -93,7 +93,7 @@ class Graph:
 
         if config.sfm == True:
             print(f"Using sfm for AGV {agv.id} from {start_id} to {next_id} at time {startTime}.")
-            result = self.getAGVRuntime(config.filepath, config.functions_file, start_id, next_id, agv, startTime)
+            result = self.getAGVRuntime(config.filepath, config.functions_file, space_start_node, space_end_node, agv, startTime)
             if result != -1:
                 return result
 
