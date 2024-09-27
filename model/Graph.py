@@ -598,7 +598,10 @@ class Graph:
         return startedNodes
         
     def write_to_file(self, agv_id_and_new_start = None, new_halting_edges = None, filename="TSG.txt"):
-        #self.calling = self.calling + 1
+        #self.calling = self.calling + 1rite
+        #print("Call write_to_file of Graph.py")
+        #if(config.count == 2):
+        #    pdb.set_trace()
         M = max(target.id for target in self.graph_processor.getTargets())
         m1 = max(edge[1] for edge in new_halting_edges)
         M = max(M, m1)
