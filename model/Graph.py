@@ -91,23 +91,27 @@ class Graph:
                 result = abs(endTime - startTime) if result == -1 else result
         #pdb.set_trace()
 
-        if config.sfm == False:
-            result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
-            collision = True
-            #pdb.set_trace()
-            while(collision):
-                collision = False
-                if (next_id not in allIDsOfTargetNodes):
-                    if(next_id in self.nodes.keys()):
-                        if(self.nodes[next_id].agv is not None):
-                            if(self.nodes[next_id].agv != agv):
-                                print(f'{self.nodes[next_id].agv.id} != {agv.id}')
-                                #pdb.set_trace()
-                                collision = True
-                                result = result + 1
-                                next_id = next_id + M
-        else:
+        if config.sfm == True:
+            print(f"Using sfm for AGV {agv.id} from {start_id} to {next_id} at time {startTime}.")
             result = self.getAGVRuntime(config.filepath, config.functions_file, start_id, next_id, agv, startTime)
+            if result != -1:
+                return result
+
+        result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
+        collision = True
+        #pdb.set_trace()
+        while(collision):
+            collision = False
+            if (next_id not in allIDsOfTargetNodes):
+                if(next_id in self.nodes.keys()):
+                    if(self.nodes[next_id].agv is not None):
+                        if(self.nodes[next_id].agv != agv):
+                            print(f'{self.nodes[next_id].agv.id} != {agv.id}')
+                            #pdb.set_trace()
+                            collision = True
+                            result = result + 1
+                            next_id = next_id + M
+            
         return result
     
 
@@ -200,16 +204,20 @@ class Graph:
                 direction = 1
                 hallway_id = hallway["hallway_id"]
                 break
-            if hallway["src"] == next_id and hallway["dest"] == start_id:
+            elif hallway["src"] == next_id and hallway["dest"] == start_id:
                 direction = -1
                 hallway_id = hallway["hallway_id"]
                 break
+            else:
+                hallway_id = None
         
         # get the time_stamp from the current_time
         time_stamp = current_time
 
         # if hallway_id is not found, return -1
         if hallway_id is None:
+            # just pass this entire function
+            print(f"{bcolors.WARNING}Hallway not found!{bcolors.ENDC}")
             return -1
 
         # add to json

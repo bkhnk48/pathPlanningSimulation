@@ -10,9 +10,12 @@ import subprocess
 import sys
 import pdb
 import time
+import os
 
-from model.hallway_simulator_module import clean_up
-clean_up()
+os.system("rm -rf data/input/*")
+os.system("rm -rf data/output/*")
+os.system("rm -rf data/timeline/*")
+os.system("rm -rf data/tmp/*")
 
 def choose_solver():
     print("Choose the method for solving:")
@@ -42,7 +45,7 @@ def choose_solver():
     else:
         print("Invalid choice. Defaulting to not run sfm.")
         config.sfm = False
-        
+
 def getForecast():
     return 17
 
