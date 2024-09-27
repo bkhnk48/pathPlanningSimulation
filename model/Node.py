@@ -42,6 +42,8 @@ class Node:
         from .RestrictionEdge import RestrictionEdge
         from .TimeWindowEdge import TimeWindowEdge 
         from .Edge import MovingEdge
+        if(isinstance(node, int)):
+            pdb.set_trace()
         if node.id % M == self.id % M and \
         ((node.id - self.id) // M == d) and \
         isinstance(node, Node) and \
@@ -111,10 +113,14 @@ class Node:
         from .MovingEvent import MovingEvent
         from .HaltingEvent import HaltingEvent
         from .ReachingTargetEvent import ReachingTargetEvent
+        #if(len(event.agv.get_traces()) == 0):
+        #    pdb.set_trace()
         if(not isinstance(event, StartEvent)):
-            #pdb.set_trace()
+            #if(event.agv.id == 'AGV31'):
+            #    pdb.set_trace()
             event.agv.move_to(event)
-        #pdb.set_trace()
+        ##if(len(event.agv.get_traces()) == 0):
+        #    pdb.set_trace()
         """print(f'Node.py:94 {event.agv.id}', end=' ')
         for node in event.agv.get_traces():
             print(node.id, end= ' ')
