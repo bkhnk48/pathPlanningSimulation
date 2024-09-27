@@ -80,6 +80,14 @@ while(config.count < 2):
             #pdb.set_trace()
             simulator.schedule(event.startTime, event.process)
     
+    def reset(simulator):
+        config.totalCost = 0
+        config.reachingTargetAGVs = 0
+        config.haltingAGVs = 0
+        from model.AGV import AGV
+        AGV.reset()
+        simulator.reset()
+    
     if __name__ == "__main__":
         import time
         start_time = time.time()
@@ -98,8 +106,4 @@ while(config.count < 2):
         logger.log("Log.csv", config.filepath, config.numOfAGVs, config.H, \
             config.d, config.solver_choice, config.reachingTargetAGVs, config.haltingAGVs, \
                 config.totalCost, elapsed_time)
-        config.totalCost = 0
-        from model.AGV import AGV
-        AGV.reset()
-        simulator.reset()
-        
+        reset(simulator)
