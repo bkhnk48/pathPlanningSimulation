@@ -14,3 +14,4 @@ haltingAGVs = 0
 totalCost = 0
 sfm = False
 functions_file = "functions.txt"
+totalSolving = 0
