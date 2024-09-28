@@ -8,6 +8,8 @@ from .TimeWindowNode import TimeWindowNode
 from .TimeoutNode import TimeoutNode
 from .Node import Node
 import config
+from .hallway_simulator_module.HallwaySimulator import BulkHallwaySimulator
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -89,6 +91,13 @@ class Graph:
                 #pdb.set_trace()
                 result = abs(endTime - startTime) if result == -1 else result
         #pdb.set_trace()
+        
+        
+        if config.sfm == True:
+            #print(f"Using sfm for AGV {agv.id} from {start_id} to {next_id} at time {startTime}.")
+            result = self.getAGVRuntime(config.filepath, config.functions_file, space_start_node, space_end_node, agv, startTime)
+            if result != -1:
+                return result
         result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
         collision = True
         #pdb.set_trace()
@@ -104,6 +113,135 @@ class Graph:
                             result = result + 1
                             next_id = next_id + M
         return result
+        
+        
+    def getReal_preprocess(self, Map_file, function_file):
+        # read 2 files Map_file(txt) and function_file(txt)
+        """
+        Map_file: a <src> <dest> <low> <cap> <cost> <hallway_id> <human_distribution_percentage>
+        if src < dest: left to right
+        if src > dest: right to left
+        a 1 2 0 1 1 Region_1 3
+        a 3 2 0 1 1 Region_1 4
+        a 1 4 0 1 1 Region_2 5
+        a 5 4 0 1 1 Region_2 3
+        ...
+        """
+        """
+        function_file: each line
+        y = 34 * x + 32 (0,50)
+        y = 3 * x + -100 (60,500)
+        """
+        # read files
+        map_data = None
+        function_data = None
+        with open(Map_file, 'r', encoding='utf-8') as file:
+            map_data = file.readlines()
+        with open(function_file, 'r', encoding='utf-8') as file:
+            function_data = file.readlines()
+        # process data
+        """
+        hallways_list = [
+            {
+                "hallway_id": "Region_1",
+                "length": 66, # change base on cost * 0.6
+                "width": 4, # constant default to 4
+                "agents_distribution": 15
+            },
+            {
+                "hallway_id": "Region_2",
+                "length": 66, # change base on cost * 0.6
+                "width": 4, # constant
+                "agents_distribution": 12
+            }
+        ]
+        """
+        """
+        functions_list = [
+            "y = 34 * x + 32 (0,50)",
+            "y = 3 * x + -100 (60,500)"
+        ]
+        """
+        hallways_list = []
+        functions_list = []
+        for line in map_data:
+            line = line.strip()
+            parts = line.split(" ")
+            if len(parts) == 8:
+                hallway = {
+                    "hallway_id": parts[6],
+                    "length": int(int(parts[5]) * 0.6),
+                    "width": 4,
+                    "agents_distribution": int(parts[7]),
+                    "src": int(parts[1]),
+                    "dest": int(parts[2])
+                }
+                hallways_list.append(hallway)
+        for line in function_data:
+            line = line.strip()
+            functions_list.append(line)
+        return hallways_list, functions_list
+
+    def getAGVRuntime(self, Map_file, function_file, start_id, next_id, agv, current_time):
+        hallways_list, functions_list = self.getReal_preprocess(Map_file, function_file)
+        events_list = []  # actually only has one event but because of the structure of the code, it has to be a list
+        """
+        {
+            "AgvIDs": [0], # depends
+            "AgvDirections": [0], # depends
+            "time_stamp": 0, # depends
+            "hallway_id": "hallway_1" # depends
+        }
+        """
+        # get the agv id from the agv object id: AGV1 -> 1
+        agv_id = int(agv.id[3:])
+        # get the direction of the agv by querying the hallways_list with the start_id and next_id
+        direction = 0
+        for hallway in hallways_list:
+            if hallway["src"] == start_id and hallway["dest"] == next_id:
+                direction = 1
+                hallway_id = hallway["hallway_id"]
+                break
+            elif hallway["src"] == next_id and hallway["dest"] == start_id:
+                direction = -1
+                hallway_id = hallway["hallway_id"]
+                break
+            else:
+                hallway_id = None
+        
+        # get the time_stamp from the current_time
+        time_stamp = current_time
+
+        # if hallway_id is not found, return -1
+        if hallway_id is None:
+            # just pass this entire function
+            print(f"{bcolors.WARNING}Hallway not found!{bcolors.ENDC}")
+            return -1
+
+        # add to json
+        event = {
+            "AgvIDs": [agv_id],
+            "AgvDirections": [direction],
+            "time_stamp": time_stamp,
+            "hallway_id": hallway_id
+        }
+        events_list.append(event)
+
+        # filter the hallways_list to only have the hallway that the agv is currently in
+        hallways_list = [hallway for hallway in hallways_list if event["hallway_id"] == hallway_id and (hallway["src"] - hallway["dest"]) * direction > 0]
+
+        print(hallways_list)
+        print(functions_list)
+        print(events_list)
+
+        bulk_sim = BulkHallwaySimulator("test", 3600, hallways_list, functions_list, events_list)
+        result = bulk_sim.run_simulation()
+        # result will look like this: {0: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}, 1: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}}
+        # get the completion_time from the result
+        completion_time = result[agv_id][hallway_id]["completion_time"]
+        return completion_time # int
+#=======================================================================================================
+
     def count_edges(self):
         count = 0
         for node in self.adjacency_list:
