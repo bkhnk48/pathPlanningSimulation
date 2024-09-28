@@ -1,5 +1,6 @@
 import networkx as nx
 import pdb
+import config
 from collections import defaultdict
 
 class NetworkXSolution:
@@ -28,12 +29,13 @@ class NetworkXSolution:
                     C = int(parts[5])
                     G.add_edge(ID1, ID2, weight=C, capacity=U)
         self.flowCost, self.flowDict = nx.network_simplex(G)
+        config.totalSolving += 1
         #print(type(self.flowDict))
         #return [flowCost, flowDict]
         """print("flowCost:", flowCost)
         print("flowDict:", flowDict)"""
     def write_trace(self, file_path = 'traces.txt'):
-        
+        #pdb.set_trace()
         filtered_data = {}
         for key, sub_dict in self.flowDict.items():
             # Lọc các phần tử có giá trị khác 0
