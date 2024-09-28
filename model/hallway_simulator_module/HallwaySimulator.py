@@ -8,11 +8,24 @@ import time
 import sys
 import platform
 
-def clean_up():
-    os.system("rm -rf data/input/*")
-    os.system("rm -rf data/output/*")
-    os.system("rm -rf data/timeline/*")
-    os.system("rm -rf data/tmp/*")
+class DirectoryManager: # just use to manage the directory(like create, remove, check if exists)
+    def full_cleanup(self):
+        os.system("rm -rf data/input/*")
+        os.system("rm -rf data/output/*")
+        os.system("rm -rf data/timeline/*")
+        os.system("rm -rf data/tmp/*")
+    def half_cleanup(self):
+        os.system("rm -rf data/input/*")
+        os.system("rm -rf data/output/*")
+        files = os.listdir("data/tmp")
+        for file in files:
+            with open(f"data/tmp/{file}", "r") as f:
+                data = json.load(f)
+                for event in data["timeline"]:
+                    event["agvs"] = []
+            with open(f"data/tmp/{file}", "w") as f:
+                output_json = json.dumps(data, indent=4)
+                f.write(output_json)
 
 class HallwaySimulator:
     def __init__(self):

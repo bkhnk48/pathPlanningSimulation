@@ -230,9 +230,9 @@ class Graph:
         # filter the hallways_list to only have the hallway that the agv is currently in
         hallways_list = [hallway for hallway in hallways_list if event["hallway_id"] == hallway_id and (hallway["src"] - hallway["dest"]) * direction > 0]
 
-        print(hallways_list)
-        print(functions_list)
-        print(events_list)
+        # print(hallways_list)
+        # print(functions_list)
+        # print(events_list)
 
         bulk_sim = BulkHallwaySimulator("test", 3600, hallways_list, functions_list, events_list)
         result = bulk_sim.run_simulation()

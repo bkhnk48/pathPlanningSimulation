@@ -1,4 +1,4 @@
-from model.Graph import Graph#, graph
+from model.Graph import Graph, bcolors#, graph
 from model.AGV import AGV
 from model.Event import Event, debug
 from model.StartEvent import StartEvent
@@ -10,12 +10,10 @@ import subprocess
 import sys
 import pdb
 import time
-import os
 
-os.system("rm -rf data/input/*")
-os.system("rm -rf data/output/*")
-os.system("rm -rf data/timeline/*")
-os.system("rm -rf data/tmp/*")
+from model.hallway_simulator_module.HallwaySimulator import DirectoryManager
+dm = DirectoryManager()
+dm.full_cleanup()
 
 def choose_solver():
     print("Choose the method for solving:")
@@ -64,6 +62,9 @@ logger = Logger()
 while(config.count < 2):
     #pdb.set_trace()
     config.count = config.count + 1
+    if config.count > 1:
+        print(f"{bcolors.WARNING}Start half cleanup{bcolors.ENDC}")
+        dm.half_cleanup()
     choose_solver()
     choose_time_measurement()
     graph_processor = GraphProcessor()
