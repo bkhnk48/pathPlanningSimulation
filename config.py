@@ -15,3 +15,4 @@ totalCost = 0
 sfm = False
 functions_file = "functions.txt"
 totalSolving = 0
+timeSolving = 0
