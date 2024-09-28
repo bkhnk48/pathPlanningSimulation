@@ -12,5 +12,5 @@ count = 0
 reachingTargetAGVs = 0
 haltingAGVs = 0
 totalCost = 0
-sfm = False
+useSFM = False
 functions_file = "functions.txt"

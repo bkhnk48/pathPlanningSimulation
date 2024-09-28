@@ -91,7 +91,7 @@ class Graph:
                 result = abs(endTime - startTime) if result == -1 else result
         #pdb.set_trace()
 
-        if config.sfm == True:
+        if config.useSFM == True:
             print(f"Using sfm for AGV {agv.id} from {start_id} to {next_id} at time {startTime}.")
             result = self.getAGVRuntime(config.filepath, config.functions_file, space_start_node, space_end_node, agv, startTime)
             if result != -1:

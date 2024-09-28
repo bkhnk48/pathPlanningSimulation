@@ -39,12 +39,12 @@ def choose_solver():
     print("0 - Not run sfm")
     choice = input("Enter your choice (1 or 0): ")
     if choice == '1':
-        config.sfm = True
+        config.useSFM = True
     elif choice == '0':
-        config.sfm = False
+        config.useSFM = False
     else:
         print("Invalid choice. Defaulting to not run sfm.")
-        config.sfm = False
+        config.useSFM = False
 
 def getForecast():
     return 17
