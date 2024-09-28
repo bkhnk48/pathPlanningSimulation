@@ -1,5 +1,5 @@
 from pyscipopt import Model, quicksum
-
+import config
 # Additional function to track running time
 import time
 import datetime
@@ -341,6 +341,7 @@ class ForecastingModel:
                 self.model.addCons(z_var_tw_e >= (earliness * vars_sum) - z_var)
 
     def solve(self):
+        config.totalSolving += 1
         if self.z_vars is not None:
             alpha = 1
             beta = 1
