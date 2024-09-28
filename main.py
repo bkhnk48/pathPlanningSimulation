@@ -111,6 +111,7 @@ while(config.count < 2):
         config.reachingTargetAGVs = 0
         config.haltingAGVs = 0
         config.totalSolving = 0
+        config.timeSolving = 0
         from model.AGV import AGV
         AGV.reset()
         simulator.reset()
@@ -128,9 +129,10 @@ while(config.count < 2):
         # Chuyển đổi thời gian chạy sang định dạng hh-mm-ss
         hours, rem = divmod(elapsed_time, 3600)
         minutes, seconds = divmod(rem, 60)
+        config.timeSolving = config.timeSolving / config.totalSolving
         #runTime = f'{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds)
         print("Thời gian chạy: {:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds)))
         logger.log("Log.csv", config.filepath, config.numOfAGVs, config.H, \
             config.d, config.solver_choice, config.reachingTargetAGVs, config.haltingAGVs, \
-                config.totalCost, elapsed_time, config.totalSolving)
+                config.totalCost, elapsed_time, config.timeSolving)
         reset(simulator)
