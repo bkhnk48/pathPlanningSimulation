@@ -360,9 +360,10 @@ class ForecastingModel:
                 self.supply_nodes_dict for (i, j) in self.arc_descriptors_dict), "minimize")
 
         self.model.hideOutput()
-        self.model.optimize()
+        self.model.optimize() 
         self.solve_time = self.model.getSolvingTime()
         self.total_time = self.model.getTotalTime()
+        config.timeSolving += self.total_time()
         self.reading_time = self.model.getReadingTime()
         self.presolving_time = self.model.getPresolvingTime()
 
