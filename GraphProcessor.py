@@ -597,12 +597,12 @@ class GraphProcessor:
                 if (edge is not None):   
                     if(edge.weight == self.H*self.H):
                         #pdb.set_trace()
-                        if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
-                            pdb.set_trace()
+                        """if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
+                            pdb.set_trace()"""
                         file.write(f"c Exceed {edge.weight} {edge.weight // self.M}\na {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
                     else:
-                        if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
-                            pdb.set_trace()
+                        """if(edge.start_node.id == 26272 or edge.start_node.id == '26272'):
+                            pdb.set_trace()"""
                         file.write(f"a {edge.start_node.id} {edge.end_node.id} {edge.lower} {edge.upper} {edge.weight}\n")
         if(self.printOut):
             print("Đã cập nhật các cung mới vào file TSG.txt.")
