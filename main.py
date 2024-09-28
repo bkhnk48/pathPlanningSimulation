@@ -10,6 +10,12 @@ import subprocess
 import sys
 import pdb
 import time
+import os
+
+os.system("rm -rf data/input/*")
+os.system("rm -rf data/output/*")
+os.system("rm -rf data/timeline/*")
+os.system("rm -rf data/tmp/*")
 
 def choose_solver():
     print("Choose the method for solving:")
@@ -32,6 +38,21 @@ def choose_solver():
             print("Invalid choice. Defaulting to Network X.")
             config.solver_choice = 'networkx'
 
+def choose_time_measurement():
+    # choose to run sfm or not
+    if(config.count == 1):
+        print("Choose to run sfm or not:")
+        print("1 - Run sfm")
+        print("0 - Not run sfm")
+        choice = input("Enter your choice (1 or 0): ")
+        if choice == '1':
+            config.sfm = True
+        elif choice == '0':
+            config.sfm = False
+        else:
+            print("Invalid choice. Defaulting to run sfm.")
+            config.sfm = True
+
 allAGVs = set()
 TASKS = set()
 
@@ -44,6 +65,7 @@ while(config.count < 2):
     #pdb.set_trace()
     config.count = config.count + 1
     choose_solver()
+    choose_time_measurement()
     graph_processor = GraphProcessor()
     start_time = time.time()
     graph_processor.use_in_main(config.count != 1)
