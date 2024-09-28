@@ -109,6 +109,7 @@ while(config.count < 2):
         config.totalCost = 0
         config.reachingTargetAGVs = 0
         config.haltingAGVs = 0
+        config.totalSolving = 0
         from model.AGV import AGV
         AGV.reset()
         simulator.reset()
@@ -130,5 +131,5 @@ while(config.count < 2):
         print("Thời gian chạy: {:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds)))
         logger.log("Log.csv", config.filepath, config.numOfAGVs, config.H, \
             config.d, config.solver_choice, config.reachingTargetAGVs, config.haltingAGVs, \
-                config.totalCost, elapsed_time)
+                config.totalCost, elapsed_time, config.totalSolving)
         reset(simulator)
