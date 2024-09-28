@@ -28,7 +28,11 @@ class NetworkXSolution:
                     U = int(parts[4])
                     C = int(parts[5])
                     G.add_edge(ID1, ID2, weight=C, capacity=U)
+        import time
+        start_time = time.time()
         self.flowCost, self.flowDict = nx.network_simplex(G)
+        end_time = time.time()
+        config.timeSolving += (end_time - start_time)
         config.totalSolving += 1
         #print(type(self.flowDict))
         #return [flowCost, flowDict]
