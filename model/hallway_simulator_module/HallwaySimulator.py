@@ -256,7 +256,7 @@ class HallwaySimulator:
             },
             "timeline_pointer": {
                 "description": "Timeline pointer",
-                "value": self.time_stamp
+                "value": int(self.time_stamp)
             },
             "hallwayID": {
                 "description": "Arc ID",
