@@ -10,6 +10,15 @@ import platform
 
 class DirectoryManager: # just use to manage the directory(like create, remove, check if exists)
     def full_cleanup(self):
+        # check if the directory exists
+        if not os.path.exists("data/input"):
+            os.makedirs("data/input")
+        if not os.path.exists("data/output"):
+            os.makedirs("data/output")
+        if not os.path.exists("data/timeline"):
+            os.makedirs("data/timeline")
+        if not os.path.exists("data/tmp"):
+            os.makedirs("data/tmp")
         os.system("rm -rf data/input/*")
         os.system("rm -rf data/output/*")
         os.system("rm -rf data/timeline/*")
