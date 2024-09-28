@@ -12,10 +12,13 @@ import pdb
 import time
 import os
 
-os.system("rm -rf data/input/*")
-os.system("rm -rf data/output/*")
-os.system("rm -rf data/timeline/*")
-os.system("rm -rf data/tmp/*")
+def cleanup():
+    os.system("rm -rf data/input/*")
+    os.system("rm -rf data/output/*")
+    os.system("rm -rf data/timeline/*")
+    os.system("rm -rf data/tmp/*")
+
+cleanup()
 
 def choose_solver():
     print("Choose the method for solving:")
@@ -33,6 +36,7 @@ def choose_solver():
         print("Invalid choice. Defaulting to Network X.")
         config.solver_choice = 'networkx'
 
+def use_SFM():
     # choose to run sfm or not
     print("Choose to run sfm or not:")
     print("1 - Run sfm")
@@ -61,6 +65,8 @@ while(config.count < 2):
     #pdb.set_trace()
     config.count = config.count + 1
     choose_solver()
+    use_SFM()
+    cleanup()
     graph_processor = GraphProcessor()
     start_time = time.time()
     graph_processor.use_in_main(config.count != 1)
