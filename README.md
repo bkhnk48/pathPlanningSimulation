@@ -3,10 +3,19 @@ To run the code, please type: python3 main.py
 
 
 The program then askes user to type the name of input file, user could type: Redundant3x3Wards.txt
+
+
 For example:
+
+
 leegie@leegies-MacBook-Pro pps % python3 main.py
+
+
 Choose the method for solving:
+
+
 1 - Use LINK II solver
+
 2 - Use parallel network-simplex
 3 - Use NetworkX
 Enter your choice (1 or 2 or 3): 
