@@ -363,7 +363,7 @@ class ForecastingModel:
         self.model.optimize() 
         self.solve_time = self.model.getSolvingTime()
         self.total_time = self.model.getTotalTime()
-        config.timeSolving += self.total_time()
+        config.timeSolving += self.total_time
         self.reading_time = self.model.getReadingTime()
         self.presolving_time = self.model.getPresolvingTime()
 
