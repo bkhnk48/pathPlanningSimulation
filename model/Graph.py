@@ -97,6 +97,7 @@ class Graph:
             #print(f"Using sfm for AGV {agv.id} from {start_id} to {next_id} at time {startTime}.")
             result = self.getAGVRuntime(config.filepath, config.functions_file, space_start_node, space_end_node, agv, startTime)
             if result != -1:
+                print(f"AGV {agv.id} from {space_start_node} to {space_end_node} at time {startTime} has runtime {result}.")
                 return result
         result = (3 if (endTime - startTime <= 3) else 2*(endTime - startTime) - 3) if result == -1 else result
         collision = True
@@ -203,7 +204,7 @@ class Graph:
                 hallway_id = hallway["hallway_id"]
                 break
             elif hallway["src"] == next_id and hallway["dest"] == start_id:
-                direction = -1
+                direction = 0
                 hallway_id = hallway["hallway_id"]
                 break
             else:
@@ -230,15 +231,16 @@ class Graph:
         # filter the hallways_list to only have the hallway that the agv is currently in
         hallways_list = [hallway for hallway in hallways_list if event["hallway_id"] == hallway_id and (hallway["src"] - hallway["dest"]) * direction > 0]
 
-        # print(hallways_list)
-        # print(functions_list)
-        # print(events_list)
+        print(hallways_list)
+        print(functions_list)
+        print(events_list)
 
         bulk_sim = BulkHallwaySimulator("test", 3600, hallways_list, functions_list, events_list)
         result = bulk_sim.run_simulation()
         # result will look like this: {0: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}, 1: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}}
         # get the completion_time from the result
         completion_time = result[agv_id][hallway_id]["completion_time"]
+        print(f"{bcolors.OKGREEN}AGV {agv_id} from {start_id} to {next_id} at time {current_time} has runtime {completion_time}.{bcolors.ENDC}")
         return completion_time # int
 #=======================================================================================================
 
