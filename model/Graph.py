@@ -9,7 +9,7 @@ from .TimeoutNode import TimeoutNode
 from .Node import Node
 import config
 from .hallway_simulator_module.HallwaySimulator import BulkHallwaySimulator
-
+import json
 
 class bcolors:
     HEADER = '\033[95m'
@@ -48,7 +48,8 @@ class Graph:
         #stack = inspect.stack()
         #for frame in stack[1:]:
         #    print(f"Hàm '{frame.function}' được gọi từ file '{frame.filename}' tại dòng {frame.lineno}")
-        
+
+        self.History = []
     def getReal(self, start_id, next_id, agv):
         result = -1
         from .TimeWindowNode import TimeWindowNode
@@ -184,6 +185,12 @@ class Graph:
         return hallways_list, functions_list
 
     def getAGVRuntime(self, Map_file, function_file, start_id, next_id, agv, current_time):
+        if os.path.exists("output_history.json"):
+            with open("output_history.json", "r") as file:
+                data = json.load(file)
+                self.History = data["History"]
+
+        event_history = {}
         hallways_list, functions_list = self.getReal_preprocess(Map_file, function_file)
         events_list = []  # actually only has one event but because of the structure of the code, it has to be a list
         """
@@ -209,6 +216,35 @@ class Graph:
                 break
             else:
                 hallway_id = None
+
+        if hallway_id is not None:
+            event_history["hallway_id"] = hallway_id
+            event_history["AgvID"] = int(agv_id)
+            event_history["AgvDirection"] = direction
+            event_history["time_stamp"] = int(current_time)
+            event_history["src"] = int(start_id)
+            event_history["dest"] = int(next_id)
+        else:
+            event_history = None
+
+        # query the self.History, if the event_history is already in the self.History, return the completion_time
+        if event_history is not None:
+            print(event_history)
+            for event in self.History:
+                if event["src"] == start_id and event["dest"] == next_id and event["time_stamp"] == current_time:
+                    #[(23, 90)]
+
+                    print(f"{bcolors.WARNING}Found in History!{bcolors.ENDC}")
+                    print(f"[({int(agv.id[3:])}, {event["completion_time"]})]")
+
+                    # {23: {'Region_7': {'time_stamp': 187, 'completion_time': 90}}}
+                    # print the exact format above
+                    ouput_line = "{" + f"{int(agv.id[3:])}: " + "{" + f"'{hallway_id}': " + "{" + f"'time_stamp': {int(current_time)}, 'completion_time': {int(event['completion_time'])}" + "}" + "}" + "}"
+                    print(ouput_line)
+                    print(
+                        f"{bcolors.OKGREEN}AGV {agv_id} from {start_id} to {next_id} at time {current_time} has runtime {event["completion_time"]}.{bcolors.ENDC}")
+                    return int(event["completion_time"])
+
         
         # get the time_stamp from the current_time
         time_stamp = current_time
@@ -223,7 +259,7 @@ class Graph:
         event = {
             "AgvIDs": [agv_id],
             "AgvDirections": [direction],
-            "time_stamp": time_stamp,
+            "time_stamp": int(time_stamp),
             "hallway_id": hallway_id
         }
         events_list.append(event)
@@ -240,6 +276,17 @@ class Graph:
         # result will look like this: {0: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}, 1: {'hallway_1': {'time_stamp': 0, 'completion_time': 111}}}
         # get the completion_time from the result
         completion_time = result[agv_id][hallway_id]["completion_time"]
+        event_history["completion_time"] = int(completion_time)
+        self.History.append(event_history)
+        # write the History to a file
+
+        output_history = {}
+        output_history["History"] = self.History
+        with open("output_history.json", "w") as file:
+            output_json = json.dumps(output_history, indent=4)
+            file.write(output_json)
+
+
         print(f"{bcolors.OKGREEN}AGV {agv_id} from {start_id} to {next_id} at time {current_time} has runtime {completion_time}.{bcolors.ENDC}")
         return completion_time # int
 #=======================================================================================================
