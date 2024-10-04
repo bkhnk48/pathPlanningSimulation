@@ -2,6 +2,12 @@
 
 ## Instructions
 
+### Prerequisites
+- Architecture: x86_64 (Could be run on ARM64 but need to compile the `hallway_simulator_module` repository in that machine architecture)
+- Platform: Linux (Recommended: Ubuntu 20.04/Ubuntu 22.04)
+- Python version: 3.10 or higher
+- OpenGL version: 4.6 or higher
+
 ### Clone the repository
 
 Clone the main repository to your local machine using the following command:
